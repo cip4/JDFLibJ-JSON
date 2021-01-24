@@ -1,0 +1,25 @@
+plugins {
+	id 'java'
+}
+
+group = 'org.cip4.lib.jdf.json'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.cip4.lib.jdf:JDFLibJ:2.1.7.2'
+
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.+'
+	testImplementation 'org.junit.platform:junit-platform-runner:1.+'
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
