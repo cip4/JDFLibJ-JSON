@@ -1,4 +1,4 @@
-package org.cip4.jdflib.json;
+package org.cip4.lib.jdf.json;
 
 
 import org.cip4.jdflib.core.JDFVersion;
