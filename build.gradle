@@ -3,7 +3,11 @@ plugins {
 }
 
 group = 'org.cip4.lib.jdf.json'
-version = '0.0.1-SNAPSHOT'
+if (project.hasProperty('projectVersion')) {
+    version = project.projectVersion
+} else {
+    version = '1.1.0.x-SNAPSHOT'
+}
 sourceCompatibility = '11'
 
 repositories {
