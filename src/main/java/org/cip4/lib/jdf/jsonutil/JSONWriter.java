@@ -115,12 +115,32 @@ public class JSONWriter extends JSONObjHelper
 
 	public enum eJSONCase
 	{
-		retain, lower, upper, lowerfirst
+		retain, lower, upper, lowerfirst;
+
+		public static List<String> getNames()
+		{
+			final StringArray a = new StringArray();
+			for (final eJSONCase e : values())
+			{
+				a.add(e.name());
+			}
+			return a;
+		}
 	}
 
 	public enum eJSONPrefix
 	{
-		retain, underscore, none
+		retain, underscore, none;
+
+		public static List<String> getNames()
+		{
+			final StringArray a = new StringArray();
+			for (final eJSONPrefix e : values())
+			{
+				a.add(e.name());
+			}
+			return a;
+		}
 	}
 
 	eJSONCase keyCase;
