@@ -1,17 +1,124 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
-	id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.codearte.nexus-staging' version '0.21.2'
 }
 
-group = 'org.cip4.lib.jdf.json'
+group = 'org.cip4.lib.jdf'
+description = 'CIP4 JDF JSON Writer Java'
+
 if (project.hasProperty('projectVersion')) {
     version = project.projectVersion
 } else {
     version = '1.1.0.x-SNAPSHOT'
 }
-sourceCompatibility = '11'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.name
+
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = project.description
+                description = 'CIP4 JDF JSON Library for JDF 1.x'
+                url = 'https://github.com/cip4/JDFLibJ-JSON'
+
+                organization {
+                    name = "CIP4 Organization"
+                    url = "https://www.cip4.org"
+                }
+                developers {
+                    developer {
+                        id = "rainer"
+                        name = "Dr. Rainer Prosi"
+                    }
+                }
+                licenses {
+                    license {
+                        name = 'TCIP4 Software License'
+                        url = 'https://github.com/cip4/JDFLibJ-JSON/blob/master/LICENSE.md'
+                    }
+                }
+                scm {
+                    connection = 'https://github.com/cip4/JDFLibJ-JSON.git'
+                    developerConnection = 'scm:git:https://github.com/cip4/JDFLibJ-JSON.git'
+                    url = 'https://github.com/cip4/JDFLibJ-JSON'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+nexusStaging {
+    packageGroup = 'org.cip4'
+    stagingProfileId = '105e2b532689c6'
+    numberOfRetries = 400
+    delayBetweenRetriesInMillis = 2500
+    username ossrhUsername
+    password ossrhPassword
+}
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+}
+
+signing {
+    if (!version.endsWith("SNAPSHOT")) {
+         sign publishing.publications.mavenJava
+    }
+}
+
+javadoc {
+    failOnError = false
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+processResources {
+    filesMatching('**/*.properties') {
+        filter(ReplaceTokens, tokens:  [
+                'name': project.properties['description'],
+                'version': project.properties['version'],
+                'artifactId': project.properties['name'],
+                'timestamp': new Date().format('yyyy-MM-dd HH:mm:ssZ')
+        ])
+    }
 }
 
 dependencies {
@@ -19,11 +126,4 @@ dependencies {
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 
     testCompile 'junit:junit:4.13'
-}
-
-test {
-	useJUnitPlatform()
-	testLogging {
-		events "passed", "skipped", "failed"
-	}
 }
