@@ -98,7 +98,7 @@ public class JSONWriter extends JSONObjHelper
 	/**
 	 * @return the wantPrefix
 	 */
-	eJSONPrefix getPrefix()
+	public eJSONPrefix getPrefix()
 	{
 		return prefix;
 	}
@@ -106,7 +106,7 @@ public class JSONWriter extends JSONObjHelper
 	/**
 	 * @param prefix the wantPrefix to set
 	 */
-	void setPrefix(final eJSONPrefix prefix)
+	public void setPrefix(final eJSONPrefix prefix)
 	{
 		this.prefix = prefix;
 	}
@@ -126,6 +126,16 @@ public class JSONWriter extends JSONObjHelper
 			}
 			return a;
 		}
+
+		public static eJSONCase getEnum(final String name)
+		{
+			for (final eJSONCase e : values())
+			{
+				if (e.name().equalsIgnoreCase(name))
+					return e;
+			}
+			return null;
+		}
 	}
 
 	public enum eJSONPrefix
@@ -141,6 +151,17 @@ public class JSONWriter extends JSONObjHelper
 			}
 			return a;
 		}
+
+		public static eJSONPrefix getEnum(final String name)
+		{
+			for (final eJSONPrefix e : values())
+			{
+				if (e.name().equalsIgnoreCase(name))
+					return e;
+			}
+			return null;
+		}
+
 	}
 
 	eJSONCase keyCase;
