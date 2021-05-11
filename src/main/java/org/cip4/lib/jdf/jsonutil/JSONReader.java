@@ -77,6 +77,11 @@ public class JSONReader
 		return wantAttributes;
 	}
 
+	String getKey(final String key)
+	{
+		return KElement.xmlnsLocalName(key);
+	}
+
 	public void setWantAttributes(final boolean wantAttributes)
 	{
 		this.wantAttributes = wantAttributes;
@@ -178,7 +183,7 @@ public class JSONReader
 		KElement next = root;
 		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
 		{
-			final String key = kid.getKey();
+			final String key = getKey(kid.getKey());
 			final Object val = kid.getValue();
 			if (val instanceof JSONObject)
 			{

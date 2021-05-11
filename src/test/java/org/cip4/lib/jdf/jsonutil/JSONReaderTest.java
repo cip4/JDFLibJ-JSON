@@ -319,6 +319,19 @@ public class JSONReaderTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testSimpleObjNS()
+	{
+		final XMLDoc d = new XMLDoc();
+		final JSONReader r = new JSONReader();
+		final KElement a = r.getElement("{\"x:a\":{\"x:b\":{\"y:c1\":\"d1\",\"z:c2\":\"d2\"}}}");
+		assertNotNull(a);
+		assertEquals("a", a.getLocalName());
+		assertNotNull(a.getElement("b"));
+		assertNull(a.getElement("b", null, 1));
+
+	}
+
+	@Test
 	public void testDoubleArray1()
 	{
 		final JSONReader r = new JSONReader();
