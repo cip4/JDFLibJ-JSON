@@ -71,6 +71,7 @@ import org.json.simple.JSONObject;
  */
 public class JSONWriter extends JSONObjHelper
 {
+	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
 	boolean wantArray;
 	boolean learnArrays;
@@ -213,6 +214,11 @@ public class JSONWriter extends JSONObjHelper
 		this.wantArray = wantArray;
 	}
 
+	/**
+	 *
+	 * @param element
+	 * @return
+	 */
 	public boolean addArray(final String element)
 	{
 		final String key = StringUtil.normalize(element, true, "_ -");
@@ -270,7 +276,7 @@ public class JSONWriter extends JSONObjHelper
 	public void fillTypesFromSchema(final KElement schema)
 	{
 
-		final Collection<KElement> ve = schema == null ? null : schema.getChildrenByTagName("element", "http://www.w3.org/2001/XMLSchema", null, false, true, 0);
+		final Collection<KElement> ve = schema == null ? null : schema.getChildrenByTagName("element", XML_SCHEMA_NS, null, false, true, 0);
 		if (ve != null)
 		{
 			for (final KElement e : ve)
@@ -278,13 +284,12 @@ public class JSONWriter extends JSONObjHelper
 				final String maxOcc = e.getNonEmpty("maxOccurs");
 				if ("unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 0) > 1)
 				{
-					final String name = e.getNonEmpty("ref");
-					addArray(name);
+					fillArrayFromSchema(e);
 				}
 			}
 		}
 
-		final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", "http://www.w3.org/2001/XMLSchema", null, false, true, 0);
+		final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
 		if (va != null)
 		{
 			final Set<String> types = new HashSet<>();
@@ -308,6 +313,37 @@ public class JSONWriter extends JSONObjHelper
 				}
 			}
 		}
+	}
+
+	KElement getAncestor(final KElement e, final String name)
+	{
+		if (e == null)
+			return null;
+		final KElement parent = e.getParentNode_KElement();
+		if (parent != null && name.equals(parent.getLocalName()))
+			return parent;
+		return getAncestor(parent, name);
+	}
+
+	public void fillArrayFromSchema(final KElement e)
+	{
+		final String name = e.getNonEmpty("ref");
+		KElement parentContent = getAncestor(e, "complexType");
+		String contentName = null;
+		if (parentContent == null || parentContent.getNonEmpty("name") == null)
+		{
+			parentContent = getAncestor(e, "element");
+			contentName = parentContent == null || parentContent.equals(e) ? null : parentContent.getNonEmpty("name");
+		}
+		else
+		{
+			contentName = parentContent.getNonEmpty("name");
+		}
+		if (parentContent != null && contentName == null)
+			contentName = parentContent.getNonEmpty("ref");
+
+		final String key = contentName == null ? name : contentName + JDFConstants.SLASH + name;
+		addArray(key);
 	}
 
 	public boolean addTransferFunction(final String name)
@@ -716,6 +752,7 @@ public class JSONWriter extends JSONObjHelper
 	boolean processChild(final KElement parentElem, final JSONObject me, boolean hasContent, final HashSet<String> names, final KElement e)
 	{
 		final String childName = getNodeName(e);
+		final String parentName = getNodeName(parentElem);
 		if (!names.contains(childName))
 		{
 			final Collection<KElement> v1 = parentElem.getChildArray(e.getLocalName(), null);
@@ -723,7 +760,7 @@ public class JSONWriter extends JSONObjHelper
 			final int size = v1.size();
 			if (size > 0)
 			{
-				final JSONAware a = getParent(childName, size);
+				final JSONAware a = getParent(parentName, childName, size);
 				boolean hasChild = false;
 				for (final KElement cc : v1)
 				{
@@ -745,9 +782,10 @@ public class JSONWriter extends JSONObjHelper
 		return hasContent;
 	}
 
-	JSONArray getParent(final String childName, final int n)
+	JSONArray getParent(final String parentName, final String childName, final int n)
 	{
 		final String key = StringUtil.normalize(childName, true, "_ -");
+
 		if (skipPool.contains(key))
 		{
 			return null;
@@ -756,18 +794,23 @@ public class JSONWriter extends JSONObjHelper
 		{
 			return new JSONArray();
 		}
-		else if (n > 1)
-		{
-			if (addArray(childName))
-			{
-				log.info("found new array type: " + childName);
-			}
-			return new JSONArray();
-		}
 		else
 		{
-			return null;
+			final String key2 = StringUtil.normalize(parentName, true, "_ -");
+			if (key2 != null)
+			{
+				return getParent(null, key2 + JDFConstants.SLASH + key, n);
+			}
+			else if (n > 1)
+			{
+				if (addArray(childName))
+				{
+					log.info("found new array type: " + childName);
+				}
+				return new JSONArray();
+			}
 		}
+		return null;
 	}
 
 	/**

@@ -448,7 +448,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONObject o2 = jsonWriter.convert(e);
 		final String jsonString2 = o2.toJSONString();
 		assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"},{\"e\":\"f\"}]}}", jsonString2);
-		assertTrue(jsonWriter.getArrayNames().contains("b"));
+		assertTrue(jsonWriter.getArrayNames().contains("a/b"));
 		e.removeChild("b", null, 1);
 		final JSONObject o3 = jsonWriter.convert(e);
 		final String jsonString3 = o3.toJSONString();
@@ -465,12 +465,13 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
-		assertTrue(jsonWriter.getArrayNames().contains("part"));
-		assertTrue(jsonWriter.getArrayNames().contains("placedobject"));
-		assertTrue(jsonWriter.getArrayNames().contains("comment"));
-		assertTrue(jsonWriter.getArrayNames().contains("addressline"));
+		assertTrue(jsonWriter.getArrayNames().contains("resource/part"));
+		assertTrue(jsonWriter.getArrayNames().contains("layout/placedobject"));
+		assertTrue(jsonWriter.getArrayNames().contains("xjdf/comment"));
+		assertTrue(jsonWriter.getArrayNames().contains("address/addressline"));
 		assertFalse(jsonWriter.getArrayNames().contains("xjdf"));
-		assertFalse(jsonWriter.getArrayNames().contains("markobject"));
+		assertFalse(jsonWriter.getArrayNames().contains("xjmf/header"));
+		assertFalse(jsonWriter.getArrayNames().contains("placedobject/markobject"));
 	}
 
 	/**
