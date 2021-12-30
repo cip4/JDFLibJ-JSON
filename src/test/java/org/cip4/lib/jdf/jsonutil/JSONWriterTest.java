@@ -153,6 +153,23 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testConvertMixedArray()
+	{
+		final KElement r = KElement.createRoot("r", null);
+		r.appendElement("a").setAttribute("c", "1");
+		r.appendElement("b").setAttribute("c", "2");
+		r.appendElement("a").setAttribute("c", "3");
+		r.appendElement("b").setAttribute("c", "4");
+		final JSONObject o = new JSONWriter().convert(r);
+		assertNotNull(o.toJSONString());
+		log.info(r.toDisplayXML(2));
+		log.info(o.toJSONString());
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testNumberArray()
 	{
 		final KElement e = KElement.createRoot("a", null);

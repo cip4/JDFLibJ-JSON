@@ -44,8 +44,16 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFElement;
+import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
+import org.cip4.jdflib.extensions.XJDFHelper;
+import org.cip4.jdflib.resource.process.JDFAddress;
+import org.cip4.jdflib.resource.process.JDFCompany;
+import org.cip4.jdflib.resource.process.JDFContact;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -93,6 +101,53 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		return jsonWriter;
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testAddressLine()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
+		final JDFContact c = (JDFContact) cs.getCreatePartition(0, true).getResource();
+		final JDFAddress add = c.appendAddress();
+		add.appendAddressLine().setText("line 1");
+		add.appendAddressLine().setText("line 2");
+		add.appendAddressLine().setText("line 3");
+		h.cleanUp();
+
+		final JSONObject o = jsonWriter.convert(xjdf);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "addressline.json");
+		h.writeToFile(sm_dirTestDataTemp + "addressline.xjdf");
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testOrgUnit()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
+		final JDFContact c = (JDFContact) cs.getCreatePartition(0, true).getResource();
+		final JDFCompany cm = c.appendCompany();
+		cm.setOrganizationName("ACME");
+		cm.appendOrganizationalUnit("ACME Unit 1");
+		cm.appendOrganizationalUnit("ACME Unit 2");
+		cm.appendOrganizationalUnit("ACME Unit 3");
+		h.cleanUp();
+
+		final JSONObject o = jsonWriter.convert(xjdf);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "orgunit.json");
+		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
 	}
 
 }

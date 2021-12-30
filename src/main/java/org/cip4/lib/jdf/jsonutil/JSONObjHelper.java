@@ -359,6 +359,16 @@ public class JSONObjHelper implements IStreamWriter
 	 * @param path
 	 * @return
 	 */
+	public JSONArrayHelper getArrayHelper(final String path)
+	{
+		final JSONArray a = getArray(path);
+		return a == null ? null : new JSONArrayHelper(a);
+	}
+
+	/**
+	 * @param path
+	 * @return
+	 */
 	public JSONObject getObject(final String path)
 	{
 		final Object base = getPathObject(path);

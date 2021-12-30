@@ -112,7 +112,7 @@ public class JSONWriter extends JSONObjHelper
 		this.prefix = prefix;
 	}
 
-	private final String mixedText;
+	private String mixedText;
 
 	public enum eJSONCase
 	{
@@ -730,6 +730,9 @@ public class JSONWriter extends JSONObjHelper
 	boolean processChildren(final KElement parentElem, final JSONObject me)
 	{
 		boolean hasContent = false;
+		final String parentName = getNodeName(parentElem);
+		final boolean isArray = isArray(parentName);
+		final JSONArray parentArray = new JSONArray();
 		final Collection<KElement> v = parentElem.getChildArray(null, null);
 		if (!ContainerUtil.isEmpty(v))
 		{
@@ -740,13 +743,30 @@ public class JSONWriter extends JSONObjHelper
 				{
 					hasContent = processChildren(e, me) || hasContent;
 				}
+				else if (isArray)
+				{
+					final JSONObject o = new JSONObject();
+					walk(e, o);
+					parentArray.add(o);
+					hasContent = true;
+				}
 				else
 				{
 					hasContent = processChild(parentElem, me, hasContent, processedNames, e);
 				}
 			}
 		}
+		if (isArray)
+		{
+			me.put(parentName, parentArray);
+		}
+
 		return hasContent;
+	}
+
+	boolean isArray(final String nodeName)
+	{
+		return wantArray || arrayNames.contains(nodeName);
 	}
 
 	boolean processChild(final KElement parentElem, final JSONObject me, boolean hasContent, final HashSet<String> names, final KElement e)
@@ -914,6 +934,22 @@ public class JSONWriter extends JSONObjHelper
 	public void setValueCase(final eJSONCase valueCase)
 	{
 		this.valueCase = valueCase;
+	}
+
+	/**
+	 * @return the mixedText
+	 */
+	String getMixedText()
+	{
+		return mixedText;
+	}
+
+	/**
+	 * @param mixedText the mixedText to set
+	 */
+	void setMixedText(final String mixedText)
+	{
+		this.mixedText = mixedText;
 	}
 
 }

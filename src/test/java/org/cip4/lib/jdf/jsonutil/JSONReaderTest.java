@@ -212,6 +212,57 @@ public class JSONReaderTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testMixedArray4()
+	{
+
+		final JSONObjHelper h = new JSONObjHelper("{\"r\":[]}");
+		final JSONObjHelper a1 = new JSONObjHelper("{\"a\":{\"c\": \"1\"}}");
+		final JSONObjHelper a2 = new JSONObjHelper("{\"b\":{\"c\": \"2\"}}");
+		final JSONObjHelper a3 = new JSONObjHelper("{\"a\":{\"c\": \"3\"}}");
+		final JSONObjHelper a3b = new JSONObjHelper("{\"c\":{}}");
+		final JSONObjHelper a4 = new JSONObjHelper("{\"b\":{\"c\": \"5\"}}");
+		final JSONArrayHelper ah = h.getArrayHelper("r");
+		ah.add(a1);
+		ah.add(a2);
+		ah.add(a3);
+		ah.add(a3b);
+		ah.add(a4);
+		final JSONReader r = new JSONReader();
+		final KElement e = r.getElement(h.getRoot());
+		log.info(h.toJSONString());
+		log.info(e);
+		final JSONWriter w = new JSONWriter();
+		final String roundtrip1 = w.getString(e);
+		log.info(roundtrip1);
+	}
+
+	@Test
+	public void testMixedArray5()
+	{
+
+		final JSONObjHelper h = new JSONObjHelper("{\"r\":[]}");
+		final JSONObjHelper a1 = new JSONObjHelper("{\"a\":{\"c\": \"1\"}}");
+		final JSONObjHelper a2 = new JSONObjHelper("{\"b\":{\"c\": \"2\"}}");
+		final JSONObjHelper a3 = new JSONObjHelper("{\"a\":{\"c\": \"3\"}}");
+		final JSONObjHelper a3b = new JSONObjHelper("{\"c\":{}}");
+		final JSONObjHelper a4 = new JSONObjHelper("{\"b\":{\"c\": \"5\"}}");
+		final JSONArrayHelper ah = h.getArrayHelper("r");
+		ah.add(a1);
+		ah.add(a2);
+		ah.add(a3);
+		ah.add(a3b);
+		ah.add(a4);
+		final JSONReader r = new JSONReader();
+		final KElement e = r.getElement(h.getRoot());
+		log.info(h.toJSONString());
+		log.info(e);
+		final JSONWriter w = new JSONWriter();
+		w.addArray("r");
+		final String roundtrip2 = w.getString(e);
+		log.info(roundtrip2);
+	}
+
+	@Test
 	public void testMixedArray()
 	{
 		final JSONReader r = new JSONReader();
