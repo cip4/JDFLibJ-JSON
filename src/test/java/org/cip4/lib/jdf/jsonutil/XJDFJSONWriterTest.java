@@ -100,7 +100,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "schema/Version_2_1/xjdf.xsd"));
+
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
 		jsonWriter.setPrepWalker(new JSONPrepWalker());
 		return jsonWriter;
 	}

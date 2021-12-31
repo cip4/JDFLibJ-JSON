@@ -328,7 +328,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		xjdf.setXPathValue("Comment", "foo");
 		final JSONObject o = new JSONWriter().convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":[\"foo\"") > 0);
+		assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
 		log.info(jsonString);
 	}
 
@@ -401,7 +401,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		xjdf.setXPathValue("Comment", "foo");
 		final JSONObject o = new JSONWriter().convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":[\"foo\"]") > 0);
+		assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
 		log.info(jsonString);
 	}
 

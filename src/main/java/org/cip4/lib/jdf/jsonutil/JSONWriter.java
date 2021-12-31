@@ -400,7 +400,7 @@ public class JSONWriter extends JSONObjHelper
 	{
 		super();
 		prepWalker = null;
-		wantArray = true;
+		wantArray = false;
 		learnArrays = true;
 		typeSafe = true;
 		arrayNames = new HashSet<>();

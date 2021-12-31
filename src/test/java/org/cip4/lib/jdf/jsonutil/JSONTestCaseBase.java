@@ -88,7 +88,7 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @return
 	 */
-	public String getXJDFSchema(final int minor)
+	public static String getXJDFSchema(final int minor)
 	{
 		final String file = StringUtil.replaceToken(sm_dirTestSchema, -1, File.separator, "Version_2_" + minor) + File.separator + "xjdf.xsd";
 		final String normalize = UrlUtil.normalize(file);
@@ -104,7 +104,7 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @return
 	 */
-	public KElement getXJDFSchemaElement(final int minor)
+	public static KElement getXJDFSchemaElement(final int minor)
 	{
 		return KElement.parseFile(getXJDFSchema(minor));
 	}
