@@ -54,6 +54,7 @@ import org.cip4.jdflib.core.JDFParserFactory;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
+import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.jdflib.util.logging.LogConfigurator;
 import org.junit.After;
@@ -91,11 +92,12 @@ public abstract class JSONTestCaseBase
 	public static String getXJDFSchema(final int minor)
 	{
 		final String file = StringUtil.replaceToken(sm_dirTestSchema, -1, File.separator, "Version_2_" + minor) + File.separator + "xjdf.xsd";
-		final String normalize = UrlUtil.normalize(file);
+		final String normalize = FilenameUtils.normalize(file);
 		if (!new File(normalize).exists())
 		{
-			FileUtil.streamToFile(UrlUtil.writeToURL("http://schema.cip4.org/jdfschema_2_" + minor
-					+ "/xjdf.xsd", null, UrlUtil.GET, null, null).getResponseStream(), new File(normalize));
+			final String strUrl = "http://schema.cip4.org/jdfschema_2_" + minor + "/xjdf.xsd";
+			final UrlPart schemaUrlPart = UrlUtil.writeToURL(strUrl, null, UrlUtil.GET, null, null);
+			FileUtil.streamToFile(schemaUrlPart.getResponseStream(), new File(normalize));
 		}
 		return normalize;
 	}
