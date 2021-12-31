@@ -144,7 +144,7 @@ public abstract class JSONTestCaseBase
 		{
 			path = resource.getPath();
 		}
-		if (path == null || StringUtil.hasToken(path, "cmpINFRA_CommonParsers", "/", 0) || StringUtil.hasToken(path, "cmpINFRA_Common", "/", 0))
+		if (path == null)
 		{
 			// legacy - pre maven file structure support
 			path = "test" + File.separator + "data";
