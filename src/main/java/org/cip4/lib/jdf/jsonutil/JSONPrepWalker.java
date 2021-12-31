@@ -91,6 +91,38 @@ public class JSONPrepWalker extends BaseElementWalker
 
 	}
 
+	public class WalkAuditPool extends BaseWalker
+	{
+
+		/**
+		 *
+		 */
+		public WalkAuditPool()
+		{
+			super(getFactory());
+		}
+
+		/**
+		 * @param xjdf
+		 * @return true if must continue
+		 */
+		@Override
+		public KElement walk(final KElement jdf, final KElement xjdf)
+		{
+			// we currently do not zapp auditPool jdf.deleteNode();
+			return xjdf;
+		}
+
+		/**
+		 * @see org.cip4.jdflib.elementwalker.BaseWalker#getElementNames()
+		 */
+		@Override
+		public VString getElementNames()
+		{
+			return new VString(ElementName.AUDITPOOL);
+		}
+	}
+
 	/**
 	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
@@ -112,6 +144,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		{
 			e.setAttribute(AttributeName.NAME, StringUtil.rightStr(e.getLocalName(), -5));
 			e.renameElement(ElementName.AUDIT, null);
+			// trackElem.moveElement(e, null);
 			return super.walk(e, trackElem);
 		}
 

@@ -48,6 +48,7 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.AuditPoolHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
@@ -99,7 +100,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "schema/Version_2_1/xjdf.xsd"));
+		jsonWriter.setPrepWalker(new JSONPrepWalker());
 		return jsonWriter;
 	}
 
@@ -147,6 +149,31 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 		final JSONObject o = jsonWriter.convert(xjdf);
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "orgunit.json");
+		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testAuditPool()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final AuditPoolHelper ap = h.getCreateAuditPool();
+		ap.appendAudit("AuditCreated");
+		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO);
+		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
+		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO);
+		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
+		ap.appendAudit("AuditNotification");
+		ap.appendAudit("AuditProcessRun");
+		h.cleanUp();
+
+		final JSONObject o = jsonWriter.convert(xjdf);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
 		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
 	}
 
