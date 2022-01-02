@@ -217,6 +217,7 @@ public class JSONReader
 			{
 				postWalker.walkTree(elem, null);
 			}
+			return elem;
 		}
 		catch (final Exception e)
 		{
