@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -53,9 +53,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.elementwalker.ElementWalker;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.util.StringUtil;
 import org.json.simple.JSONArray;
@@ -71,6 +73,33 @@ public class JSONReader
 	private static Log log = LogFactory.getLog(JSONReader.class);
 	private boolean wantAttributes;
 	private final Set<String> text;
+	ElementWalker postWalker;
+
+	public boolean addText(final String attribute)
+	{
+		final String key = StringUtil.normalize(attribute, true, "_ -");
+		if (key != null)
+		{
+			return text.add(key);
+		}
+		return false;
+	}
+
+	/**
+	 * @return the postWalker
+	 */
+	ElementWalker getPostWalker()
+	{
+		return postWalker;
+	}
+
+	/**
+	 * @param postWalker the postWalker to set
+	 */
+	public void setPostWalker(final ElementWalker postWalker)
+	{
+		this.postWalker = postWalker;
+	}
 
 	public boolean isWantAttributes()
 	{
@@ -98,11 +127,24 @@ public class JSONReader
 		return JSONWriter.APPLICATION_JSON.equalsIgnoreCase(StringUtil.normalize(contentType, false));
 	}
 
+	/**
+	 * apply standard xjdf settings
+	 */
+	public void setXJDF()
+	{
+		final JSONPostWalker pw = new JSONPostWalker();
+		this.postWalker = pw;
+		wantAttributes = true;
+		addText(ElementName.ADDRESSLINE);
+		addText(ElementName.ORGANIZATIONALUNIT);
+	}
+
 	public JSONReader()
 	{
 		super();
 		wantAttributes = true;
 		text = new HashSet<>();
+		postWalker = null;
 	}
 
 	public KElement getElement(final String s)
@@ -122,7 +164,12 @@ public class JSONReader
 		{
 			return null;
 		}
-		return walkTree(o, null);
+		final KElement walkTree = walkTree(o, null);
+		if (postWalker != null)
+		{
+			postWalker.walkTree(walkTree, null);
+		}
+		return walkTree;
 	}
 
 	/**
@@ -156,14 +203,19 @@ public class JSONReader
 		try
 		{
 			final Object parsed = p.parse(reader);
+			KElement elem = null;
 			if (parsed instanceof JSONObject)
 			{
 				final JSONObject o = (JSONObject) parsed;
-				return walkTree(o, null);
+				elem = walkTree(o, null);
 			}
 			else if (parsed instanceof JSONArray)
 			{
-				return getElement((JSONArray) parsed);
+				elem = getElement((JSONArray) parsed);
+			}
+			if (postWalker != null && elem != null)
+			{
+				postWalker.walkTree(elem, null);
 			}
 		}
 		catch (final Exception e)
@@ -292,7 +344,7 @@ public class JSONReader
 			{
 				a0.appendText(a.toString());
 			}
-			else if (wantAttributes)
+			else if (wantAttributes && !isText(key))
 			{
 				a0.appendAttribute(key, a.toString(), null, null, false);
 			}
@@ -301,6 +353,12 @@ public class JSONReader
 				a0.appendElement(key).setText(a.toString());
 			}
 		}
+	}
+
+	boolean isText(final String key)
+	{
+		final String normalized = StringUtil.normalize(key, true, "_ -");
+		return normalized != null && text.contains(normalized);
 	}
 
 	@Override

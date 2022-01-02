@@ -42,7 +42,7 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
@@ -56,53 +56,20 @@ import org.cip4.jdflib.resource.process.JDFAddress;
 import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
 import org.json.simple.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author rainer prosi
  *
  */
-public class XJDFJSONWriterTest extends JSONTestCaseBase
+public class XJDFJSONReaderTest extends JSONTestCaseBase
 {
 
-	/**
-	 *
-	 */
-	@Test
-	@Ignore
-	public void testConvertSkipProductList()
+	public static JSONReader getXJDFReader()
 	{
-		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
-		final JSONWriter jsonWriter = getXJDFWriter();
-		jsonWriter.addSkipPool(XJDFConstants.ProductList);
-		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/poster.noproductlist.json");
-	}
-
-	/**
-	 *
-	 */
-	@Test
-	@Ignore
-	public void testConvertSkipProductListBroc()
-	{
-		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
-		final JSONWriter jsonWriter = getXJDFWriter();
-		jsonWriter.addSkipPool(XJDFConstants.ProductList);
-		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/Brochure.noproductlist.json");
-	}
-
-	public static JSONWriter getXJDFWriter()
-	{
-		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setXJDF();
-
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
-		return jsonWriter;
+		final JSONReader jr = new JSONReader();
+		jr.setXJDF();
+		return jr;
 	}
 
 	/**
@@ -111,7 +78,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testAddressLine()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -124,8 +91,13 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 
 		final JSONObject o = jsonWriter.convert(xjdf);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "addressline.json");
-		h.writeToFile(sm_dirTestDataTemp + "addressline.xjdf");
+		final JSONReader jr = getXJDFReader();
+		final KElement xjdf2 = jr.getElement(o);
+		xjdf2.write2File(sm_dirTestDataTemp + "addressline.xjdf");
+		assertEquals("line 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[1]", null));
+		assertEquals("line 2", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[2]", null));
+		assertEquals("line 3", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[3]", null));
+
 	}
 
 	/**
@@ -134,7 +106,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testOrgUnit()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -150,6 +122,10 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = jsonWriter.convert(xjdf);
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "orgunit.json");
 		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
+		final JSONReader jr = getXJDFReader();
+		final KElement xjdf2 = jr.getElement(o);
+		xjdf2.write2File(sm_dirTestDataTemp + "orgunit2.xjdf");
+		assertEquals("ACME Unit 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Company/OrganizationalUnit[1]", null));
 	}
 
 	/**
@@ -158,7 +134,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testAuditPool()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -174,7 +150,9 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 		final JSONObject o = jsonWriter.convert(xjdf);
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
-		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
+		final JSONReader jr = getXJDFReader();
+		final KElement xjdf2 = jr.getElement(o);
+		xjdf2.write2File(sm_dirTestDataTemp + "auditpool2.xjdf");
 	}
 
 }

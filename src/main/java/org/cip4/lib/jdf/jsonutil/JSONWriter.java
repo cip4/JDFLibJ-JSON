@@ -87,6 +87,19 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
+	 * apply standard xjdf settings
+	 */
+	public void setXJDF()
+	{
+		final JSONPrepWalker jsonPrepWalker = new JSONPrepWalker();
+		jsonPrepWalker.setExplicitAudit(true);
+		this.prepWalker = jsonPrepWalker;
+		setPrefix(eJSONPrefix.retain);
+		setKeyCase(eJSONCase.retain);
+		setValueCase(eJSONCase.retain);
+	}
+
+	/**
 	 * @param prepWalker the prepWalker to set
 	 */
 	public void setPrepWalker(final ElementWalker prepWalker)

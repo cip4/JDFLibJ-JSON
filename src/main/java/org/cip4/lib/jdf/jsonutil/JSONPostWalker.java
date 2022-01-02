@@ -40,51 +40,30 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.KElement;
-import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.core.VString;
 import org.cip4.jdflib.elementwalker.BaseElementWalker;
 import org.cip4.jdflib.elementwalker.BaseWalker;
 import org.cip4.jdflib.elementwalker.BaseWalkerFactory;
-import org.cip4.jdflib.util.StringUtil;
 
 /**
  * @author rainer prosi
  *
  *         class to preprocess xjdf or printTalk for json conversion
  */
-public class JSONPrepWalker extends BaseElementWalker
+public class JSONPostWalker extends BaseElementWalker
 {
 
 	/**
 	 *
 	 */
-	public JSONPrepWalker()
+	public JSONPostWalker()
 	{
 		super(new BaseWalkerFactory());
-		explicitAudit = true;
-	}
-
-	private boolean explicitAudit;
-
-	/**
-	 * @return the explicitAudit
-	 */
-	boolean isExplicitAudit()
-	{
-		return explicitAudit;
-	}
-
-	/**
-	 * @param explicitAudit the explicitAudit to set
-	 */
-	void setExplicitAudit(final boolean explicitAudit)
-	{
-		this.explicitAudit = explicitAudit;
 	}
 
 	/**
@@ -122,29 +101,22 @@ public class JSONPrepWalker extends BaseElementWalker
 			super();
 		}
 
-		final private StringArray auditnames = StringArray.getVString("AuditCreated AuditNotification AuditProcessRun AuditResource AuditStatus", null);
-
 		/**
 		 * @param xjdf
 		 * @return true if must continue
 		 */
 		@Override
-		public KElement walk(final KElement e, final KElement xjdf)
+		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			final List<KElement> elems = e.getChildArray_KElement(null, null, null, true, 0);
-			final KElement m = e.getParentNode_KElement();
-			for (final KElement elem : elems)
+			final String name = e.getNonEmpty(AttributeName.NAME);
+			if (name != null)
 			{
-				if (auditnames.contains(elem.getLocalName()))
-				{
-
-					m.moveElement(elem, null);
-					elem.setAttribute(AttributeName.NAME, StringUtil.rightStr(elem.getLocalName(), -5));
-					elem.renameElement(ElementName.AUDITPOOL, null);
-				}
+				e.renameElement(ElementName.AUDIT + name, null);
+				e.removeAttribute(AttributeName.NAME);
+				final KElement pool = ensureRealPool(e, ElementName.AUDITPOOL);
+				pool.moveElement(e, null);
 			}
-			e.deleteNode();
-			return null;
+			return super.walk(e, trackElem);
 		}
 
 		/**
@@ -154,15 +126,6 @@ public class JSONPrepWalker extends BaseElementWalker
 		public VString getElementNames()
 		{
 			return new VString(ElementName.AUDITPOOL);
-		}
-
-		/**
-		 * @see org.cip4.jdflib.elementwalker.BaseWalker#matches(org.cip4.jdflib.core.KElement)
-		 */
-		@Override
-		public boolean matches(final KElement e)
-		{
-			return !explicitAudit;
 		}
 	}
 
@@ -185,36 +148,29 @@ public class JSONPrepWalker extends BaseElementWalker
 		@Override
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			e.setAttribute(AttributeName.NAME, StringUtil.rightStr(e.getLocalName(), -5));
-			e.renameElement(ElementName.AUDIT, null);
+			final String name = e.getAttribute(AttributeName.NAME);
+			e.renameElement(ElementName.AUDIT + name, null);
+			e.removeAttribute(AttributeName.NAME);
+			// trackElem.moveElement(e, null);
 			return super.walk(e, trackElem);
 		}
 
 		@Override
 		public VString getElementNames()
 		{
-			return VString.getVString("AuditCreated AuditNotification AuditProcessRun AuditResource AuditStatus", null);
-		}
-
-		/**
-		 * @see org.cip4.jdflib.elementwalker.BaseWalker#matches(org.cip4.jdflib.core.KElement)
-		 */
-		@Override
-		public boolean matches(final KElement e)
-		{
-			return explicitAudit;
+			return VString.getVString(ElementName.AUDIT, null);
 		}
 
 	}
 
 	/**
-	 *
+	 * TODO invert
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
 	 *
 	 */
-	public class WalkPrintTalkSingleString extends WalkElement
+	public class WalkMediaLayer extends WalkElement
 	{
-		public WalkPrintTalkSingleString()
+		public WalkMediaLayer()
 		{
 			super();
 		}
@@ -226,55 +182,20 @@ public class JSONPrepWalker extends BaseElementWalker
 		@Override
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			final KElement parent = e.getParentNode_KElement();
-			if (parent != null)
+			final String name = e.getNonEmpty(AttributeName.NAME);
+			if (name != null)
 			{
-				parent.setAttribute(e.getLocalName(), e.getText());
-				e.deleteNode();
+				e.renameElement(name, null);
+				e.removeAttribute(AttributeName.NAME);
+				final KElement eml = ensureRealMediaLayers(e);
+				eml.moveElement(e, null);
 			}
-			return null;
+			return super.walk(e, trackElem);
 		}
 
-		@Override
-		public VString getElementNames()
+		KElement ensureRealMediaLayers(final KElement e)
 		{
-			return VString.getVString("Identity UserAgent", null);
-		}
-
-	}
-
-	/**
-	 *
-	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
-	 */
-	public class WalkMediaLayers extends WalkElement
-	{
-		public WalkMediaLayers()
-		{
-			super();
-		}
-
-		/**
-		 * @param e
-		 * @return the created resource
-		 */
-		@Override
-		public KElement walk(final KElement e, final KElement trackElem)
-		{
-			final List<KElement> elems = e.getChildArray_KElement(null, null, null, true, 0);
-			final KElement m = e.getParentNode_KElement();
-			for (final KElement elem : elems)
-			{
-				if (ElementName.GLUE.equals(elem.getLocalName()) || ElementName.MEDIA.equals(elem.getLocalName()))
-				{
-					m.moveElement(elem, null);
-					elem.setAttribute(AttributeName.NAME, elem.getLocalName());
-					elem.renameElement(ElementName.MEDIALAYERS, null);
-				}
-			}
-			e.deleteNode();
-			return null;
+			return ensureRealPool(e, ElementName.MEDIALAYERS);
 		}
 
 		@Override
@@ -285,14 +206,26 @@ public class JSONPrepWalker extends BaseElementWalker
 
 	}
 
+	KElement ensureRealPool(final KElement e, final String pool)
+	{
+		final KElement m = e.getParentNode_KElement();
+		final Collection<KElement> v = m.getChildArray(pool, null);
+		for (final KElement ml : v)
+		{
+			if (!ml.hasNonEmpty(AttributeName.NAME))
+				return ml;
+		}
+		return m.appendElement(pool);
+	}
+
 	/**
 	 *
-	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
+	 * @author rainerprosi
 	 *
 	 */
-	public class WalkBoxFoldingParams extends WalkElement
+	public class WalkBoxFoldAction extends WalkElement
 	{
-		public WalkBoxFoldingParams()
+		public WalkBoxFoldAction()
 		{
 			super();
 		}
@@ -304,24 +237,12 @@ public class JSONPrepWalker extends BaseElementWalker
 		@Override
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			final List<KElement> elems = e.getChildArray_KElement(null, null, null, true, 0);
-			for (final KElement elem : elems)
+			final String name = e.getAttribute(AttributeName.ACTION);
+			if (ElementName.GLUE.equals(name))
 			{
-				if (ElementName.GLUE.equals(elem.getLocalName()) || ElementName.BOXFOLDACTION.equals(elem.getLocalName()))
-				{
-					final KElement e2;
-					if (ElementName.GLUE.equals(elem.getLocalName()))
-					{
-						e2 = e.insertBefore(ElementName.BOXFOLDACTION, elem, null);
-						e2.moveElement(elem, null);
-						e2.setAttribute(AttributeName.ACTION, ElementName.GLUE);
-					}
-					else
-					{
-						e2 = elem;
-					}
-					e2.renameElement(ElementName.BOXFOLDACTION, null);
-				}
+				final KElement g = e.getCreateElement(ElementName.GLUE);
+				e.getParentNode_KElement().moveElement(g, e);
+				e.deleteNode();
 			}
 			return super.walk(e, trackElem);
 		}
@@ -329,7 +250,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		@Override
 		public VString getElementNames()
 		{
-			return VString.getVString(ElementName.BOXFOLDINGPARAMS, null);
+			return VString.getVString(ElementName.BOXFOLDACTION, null);
 		}
 
 	}

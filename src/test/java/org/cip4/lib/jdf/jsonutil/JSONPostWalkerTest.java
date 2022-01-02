@@ -44,6 +44,7 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -63,7 +64,7 @@ import org.junit.Test;
  * @author rainer prosi
  *
  */
-public class JSONPrepWalkerTest extends JSONTestCaseBase
+public class JSONPostWalkerTest extends JSONTestCaseBase
 {
 
 	/**
@@ -74,10 +75,15 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final KElement xjdf = KElement.createRoot(XJDFConstants.XJDF, null);
 		xjdf.setXPathValue("AuditPool/AuditCreated/Header/@DeviceID", "foo");
+		final KElement xjdf2 = xjdf.cloneNewDoc();
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(false);
 		w.walkTree(xjdf, null);
 		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"Created\"]/Header/@DeviceID", null));
+		final JSONPostWalker pw = new JSONPostWalker();
+		pw.walkTree(xjdf, null);
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/AuditCreated/Header/@DeviceID", null));
+		assertTrue(xjdf2.isEqual(xjdf));
 	}
 
 	/**
@@ -88,10 +94,15 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final KElement xjdf = KElement.createRoot(XJDFConstants.XJDF, null);
 		xjdf.setXPathValue("AuditPool/AuditCreated/Header/@DeviceID", "foo");
+		final KElement xjdf2 = xjdf.cloneNewDoc();
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(true);
 		w.walkTree(xjdf, null);
 		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/Audit[@Name=\"Created\"]/Header/@DeviceID", null));
+		final JSONPostWalker pw = new JSONPostWalker();
+		pw.walkTree(xjdf, null);
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/AuditCreated/Header/@DeviceID", null));
+		assertTrue(xjdf2.isEqual(xjdf));
 	}
 
 	/**
@@ -109,12 +120,16 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		mediaLayers.appendElement(ElementName.GLUE);
 		mediaLayers.appendElement(ElementName.GLUE);
 
+		final KElement xjdf2 = h.getRoot().cloneNewDoc();
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(h.getRoot(), null);
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@Name", null));
 		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@Name", null));
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@Name", null));
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@Name", null));
+		final JSONPostWalker pw = new JSONPostWalker();
+		pw.walkTree(h.getRoot(), null);
+		assertTrue(xjdf2.isEqual(h.getRoot()));
 	}
 
 	/**
@@ -130,6 +145,7 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		bp.appendElement(ElementName.BOXFOLDACTION).setAttribute(AttributeName.ACTION, "A1");
 		bp.appendElement(ElementName.GLUE);
 		bp.appendElement(ElementName.GLUE);
+		final KElement xjdf2 = h.getRoot().cloneNewDoc();
 
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(h.getRoot(), null);
@@ -137,6 +153,9 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		assertEquals("A1", bp.getXPathAttribute("BoxFoldAction[2]/@Action", null));
 		assertEquals("Glue", bp.getXPathAttribute("BoxFoldAction[3]/@Action", null));
 		assertEquals("Glue", bp.getXPathAttribute("BoxFoldAction[4]/@Action", null));
+		final JSONPostWalker pw = new JSONPostWalker();
+		pw.walkTree(h.getRoot(), null);
+		assertTrue(xjdf2.isEqual(h.getRoot()));
 	}
 
 	/**
