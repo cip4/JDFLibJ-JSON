@@ -56,7 +56,6 @@ import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
-import org.cip4.jdflib.util.logging.LogConfigurator;
 import org.junit.After;
 import org.junit.Before;
 
@@ -128,7 +127,7 @@ public abstract class JSONTestCaseBase
 	public JSONTestCaseBase()
 	{
 		super();
-		LogConfigurator.configureLog(null, null);
+		//		LogConfigurator.configureLog(null, null);
 	}
 
 	final protected static int MINOR = 1;
