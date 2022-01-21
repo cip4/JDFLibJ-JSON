@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -67,7 +67,6 @@ import org.json.simple.JSONObject;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONWriter extends JSONObjHelper
 {
@@ -210,7 +209,6 @@ public class JSONWriter extends JSONObjHelper
 	final Set<String> transferFunction;
 
 	/**
-	 *
 	 * @return true if all elements should be wrapped in an array
 	 */
 	public boolean isWantArray()
@@ -219,7 +217,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param wantArray true if all elements should be wrapped in an array (default=true)
 	 */
 	public void setWantArray(final boolean wantArray)
@@ -228,7 +225,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param element
 	 * @return
 	 */
@@ -283,7 +279,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param schema
 	 */
 	public void fillTypesFromSchema(final KElement schema)
@@ -306,8 +301,8 @@ public class JSONWriter extends JSONObjHelper
 		if (va != null)
 		{
 			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
-					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList",
+					"IntegerRange", "LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			for (final KElement e : va)
 			{
 				final String type = getTypeFromSchemaAttribute(e);
@@ -428,7 +423,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @return
 	 */
@@ -445,7 +439,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @return
 	 */
@@ -457,7 +450,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @return
 	 */
@@ -472,7 +464,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @return
 	 */
@@ -484,7 +475,6 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @param parent
 	 * @return
@@ -503,29 +493,25 @@ public class JSONWriter extends JSONObjHelper
 		}
 		final JSONObject me = createJSonFromAttributes(map);
 		final boolean hasChildren = processChildren(e, me);
-		if (hasContent || hasChildren || txt != null)
+		if (txt != null)
 		{
-			if (txt != null)
+			if (hasContent || hasChildren)
 			{
-				if (hasContent || hasChildren)
-				{
-					final JSONArray a = new JSONArray();
-					a.add(me);
-					a.add(getObjectFromVal(nodeName, txt));
-					addToParent(parent, nodeName, a);
-				}
-				else
-				{
-					addToParent(parent, nodeName, getObjectFromVal(nodeName, txt));
-				}
+				final JSONArray a = new JSONArray();
+				a.add(me);
+				a.add(getObjectFromVal(nodeName, txt));
+				addToParent(parent, nodeName, a);
 			}
 			else
 			{
-				addToParent(parent, nodeName, me);
+				addToParent(parent, nodeName, getObjectFromVal(nodeName, txt));
 			}
-			return true;
 		}
-		return false;
+		else
+		{
+			addToParent(parent, nodeName, me);
+		}
+		return true;
 	}
 
 	public String getCheckName(final KElement e)
@@ -925,8 +911,8 @@ public class JSONWriter extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe=" + isTypeSafe()
-				+ ", arrayNames=" + arrayNames + "]";
+		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe="
+				+ isTypeSafe() + ", arrayNames=" + arrayNames + "]";
 	}
 
 	public eJSONCase getKeyCase()
@@ -963,6 +949,101 @@ public class JSONWriter extends JSONObjHelper
 	void setMixedText(final String mixedText)
 	{
 		this.mixedText = mixedText;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((alwaysString == null) ? 0 : alwaysString.hashCode());
+		result = prime * result + ((arrayNames == null) ? 0 : arrayNames.hashCode());
+		result = prime * result + ((keyCase == null) ? 0 : keyCase.hashCode());
+		result = prime * result + (learnArrays ? 1231 : 1237);
+		result = prime * result + ((mixedElements == null) ? 0 : mixedElements.hashCode());
+		result = prime * result + ((mixedText == null) ? 0 : mixedText.hashCode());
+		result = prime * result + ((prefix == null) ? 0 : prefix.hashCode());
+		result = prime * result + ((skipPool == null) ? 0 : skipPool.hashCode());
+		result = prime * result + ((stringArray == null) ? 0 : stringArray.hashCode());
+		result = prime * result + ((transferFunction == null) ? 0 : transferFunction.hashCode());
+		result = prime * result + (typeSafe ? 1231 : 1237);
+		result = prime * result + ((valueCase == null) ? 0 : valueCase.hashCode());
+		result = prime * result + (wantArray ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JSONWriter other = (JSONWriter) obj;
+		if (alwaysString == null)
+		{
+			if (other.alwaysString != null)
+				return false;
+		}
+		else if (!alwaysString.equals(other.alwaysString))
+			return false;
+		if (arrayNames == null)
+		{
+			if (other.arrayNames != null)
+				return false;
+		}
+		else if (!arrayNames.equals(other.arrayNames))
+			return false;
+		if (keyCase != other.keyCase)
+			return false;
+		if (learnArrays != other.learnArrays)
+			return false;
+		if (mixedElements == null)
+		{
+			if (other.mixedElements != null)
+				return false;
+		}
+		else if (!mixedElements.equals(other.mixedElements))
+			return false;
+		if (mixedText == null)
+		{
+			if (other.mixedText != null)
+				return false;
+		}
+		else if (!mixedText.equals(other.mixedText))
+			return false;
+		if (prefix != other.prefix)
+			return false;
+		if (skipPool == null)
+		{
+			if (other.skipPool != null)
+				return false;
+		}
+		else if (!skipPool.equals(other.skipPool))
+			return false;
+		if (stringArray == null)
+		{
+			if (other.stringArray != null)
+				return false;
+		}
+		else if (!stringArray.equals(other.stringArray))
+			return false;
+		if (transferFunction == null)
+		{
+			if (other.transferFunction != null)
+				return false;
+		}
+		else if (!transferFunction.equals(other.transferFunction))
+			return false;
+		if (typeSafe != other.typeSafe)
+			return false;
+		if (valueCase != other.valueCase)
+			return false;
+		if (wantArray != other.wantArray)
+			return false;
+		return true;
 	}
 
 }

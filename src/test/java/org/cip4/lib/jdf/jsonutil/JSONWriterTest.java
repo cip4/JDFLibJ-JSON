@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -44,6 +44,7 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +60,10 @@ import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumDeviceDetails;
 import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumJobDetails;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFNodeInfo;
+import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.extensions.XJMFHelper;
@@ -69,7 +73,6 @@ import org.cip4.jdflib.jmf.JDFJMF;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JDFSignal;
 import org.cip4.jdflib.jmf.JMFBuilderFactory;
-import org.cip4.jdflib.node.JDFNode;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ByteArrayIOStream.ByteArrayIOInputStream;
 import org.cip4.jdflib.util.FileUtil;
@@ -84,7 +87,6 @@ import org.junit.Test;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONWriterTest extends JSONTestCaseBase
 {
@@ -102,6 +104,25 @@ public class JSONWriterTest extends JSONTestCaseBase
 		log.info(o.toJSONString());
 	}
 
+	@Test
+	public void testEquals()
+	{
+		final JSONWriter w1 = new JSONWriter();
+		final JSONWriter w2 = new JSONWriter();
+		assertEquals(w1, w2);
+		w2.setLearnArrays(false);
+		w1.setLearnArrays(true);
+		assertNotEquals(w1, w2);
+	}
+
+	@Test
+	public void testHash()
+	{
+		final JSONWriter w1 = new JSONWriter();
+		final JSONWriter w2 = new JSONWriter();
+		assertEquals(w1.hashCode(), w2.hashCode());
+	}
+
 	/**
 	 *
 	 */
@@ -117,7 +138,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 
 	/**
 	 * @throws UnsupportedEncodingException
-	 *
 	 */
 	@Test
 	public void testGetStream() throws UnsupportedEncodingException
@@ -153,17 +173,13 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertMixedArray()
+	public void testConvertArrayEmpty()
 	{
-		final KElement r = KElement.createRoot("r", null);
-		r.appendElement("a").setAttribute("c", "1");
-		r.appendElement("b").setAttribute("c", "2");
-		r.appendElement("a").setAttribute("c", "3");
-		r.appendElement("b").setAttribute("c", "4");
-		final JSONObject o = new JSONWriter().convert(r);
+		final KElement e = KElement.parseString("<e><a/><a/><a b=\"c\"/><a/></e>");
+		final JSONObject o = new JSONWriter().convert(e);
 		assertNotNull(o.toJSONString());
-		log.info(r.toDisplayXML(2));
 		log.info(o.toJSONString());
+		assertEquals(4, new JSONObjHelper(o).getArray("e/a").size());
 	}
 
 	/**
@@ -261,27 +277,13 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
-	public void testConvertJDF()
-	{
-		final JDFNode node = JDFNode.parseFile(sm_dirTestData + "J09-0031.jdf");
-		final KElement xjdf = new JDFToXJDF().convert(node);
-		final JSONObject o = new JSONWriter().convert(xjdf);
-		assertNotNull(o.toJSONString());
-		log.info(o.toJSONString());
-	}
-
-	/**
-	 *
-	 */
-	@Test
 	public void testConvertProduct()
 	{
 		final XJDFHelper h = new XJDFHelper("a", "b");
 		h.getCreateRootProduct(0).setAmount(123);
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		final JSONObject o = jsonWriter.convert(h.getRoot());
 		assertNotNull(o.toJSONString());
 		final JSONObjHelper oh = new JSONObjHelper(o);
@@ -300,22 +302,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final String fileName = sm_dirTestDataTemp + "simple.json";
 		FileUtil.streamToFile(new JSONWriter().getStream(xjdf), fileName);
 		assertTrue(new File(fileName).exists());
-	}
-
-	/**
-	 *
-	 */
-	@Test
-	@Ignore
-	public void testConvertJDFNoArray()
-	{
-		final JDFNode node = JDFNode.parseFile(sm_dirTestData + "J09-0031.jdf");
-		final KElement xjdf = new JDFToXJDF().convert(node);
-		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setWantArray(false);
-		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
-		log.info(o.toJSONString());
 	}
 
 	/**
@@ -392,17 +378,34 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJMF()
+	public void testConvertXJDFTotalDuration()
 	{
-		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
-		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
-		xjmfHelper.cleanUp();
-		final KElement xjdf = xjmfHelper.getRoot();
-		xjdf.setXPathValue("Comment", "foo");
-		final JSONObject o = new JSONWriter().convert(xjdf);
+		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
+		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
+		final JDFNodeInfo ni = (JDFNodeInfo) sh.getCreatePartition(0, true).getResource();
+		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
+		final JSONObject o = jsonWriter.convert(xjdfHelper.getRoot());
+
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
+		assertTrue(jsonString.indexOf("\"TotalDuration\":\"1234\"") > 0);
 		log.info(jsonString);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testFillTotalDuration()
+	{
+		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
+		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
+		final JDFNodeInfo ni = (JDFNodeInfo) sh.getCreatePartition(0, true).getResource();
+		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
+		assertTrue(jsonWriter.alwaysString.contains("totalduration"));
 	}
 
 	/**
@@ -499,7 +502,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
 		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
 		assertTrue(jsonWriter.isTypesafeKey("Amount"));
@@ -517,7 +520,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
 		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
 		assertTrue(jsonWriter.isTypesafeKey("Amount"));
@@ -532,7 +535,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		final KElement xjdf = KElement.createRoot("XJDF", null);
 		xjdf.setAttribute(ElementName.COLORANTORDER, "C M Y K");
 		final String fileName = sm_dirTestDataTemp + "co.json";
@@ -549,7 +552,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(1));
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
 		assertTrue(jsonWriter.isTransferCurve(AttributeName.SPECTRUM));
 
 	}
@@ -558,7 +561,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
 	public void testMany()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -567,8 +569,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/"
-					+ UrlUtil.newExtension(x.getName(), "json")));
+			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())),
+					sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
@@ -577,14 +579,13 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
 	public void testQCTransferCurce()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
-		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
-				+ "json/QualityControlColorSpectrum.json");
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
+		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")),
+				sm_dirTestDataTemp + "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
 
 	}
