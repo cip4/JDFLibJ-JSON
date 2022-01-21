@@ -113,8 +113,23 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final String root2 = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final String root3 = "{\"a\":{\"b\":[{\"c\":5}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(root, root2);
-		assertNotEquals(root, root3);
+		final JSONObjHelper r2 = new JSONObjHelper(root2);
+		final JSONObjHelper r3 = new JSONObjHelper(root3);
+		assertEquals(r, r2);
+		assertNotEquals(r, r3);
+	}
+
+	@Test
+	public void testHash()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final String root2 = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final String root3 = "{\"a\":{\"b\":[{\"c\":5}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		final JSONObjHelper r2 = new JSONObjHelper(root2);
+		final JSONObjHelper r3 = new JSONObjHelper(root3);
+		assertEquals(r.hashCode(), r2.hashCode());
+		assertNotEquals(r.hashCode(), r3.hashCode());
 	}
 
 	@Test

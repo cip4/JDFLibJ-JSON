@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -569,7 +569,9 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public String getRootName()
 	{
-		final Set keySet = obj == null ? null : obj.keySet();
+		if (obj == null)
+			return null;
+		final Set keySet = obj.keySet();
 		return ContainerUtil.isEmpty(keySet) ? null : (String) keySet.iterator().next();
 	}
 

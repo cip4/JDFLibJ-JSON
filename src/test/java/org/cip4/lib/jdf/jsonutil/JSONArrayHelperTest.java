@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -41,6 +41,7 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
@@ -55,6 +56,46 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
 		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
 		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b/c"));
+	}
+
+	@Test
+	public void testGetArray()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNotNull(r.getArray());
+	}
+
+	@Test
+	public void testSize()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertEquals(1, r.size());
+	}
+
+	@Test
+	public void testGetJSonHelper()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNotNull(r.getJSONHelper(0));
+	}
+
+	@Test
+	public void testGetListString()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNotNull(r.getListString());
+	}
+
+	@Test
+	public void testCopyOf()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNotNull(r.copyOf());
 	}
 
 }
