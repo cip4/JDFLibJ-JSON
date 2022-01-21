@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XJDF Category="Printing" DescriptiveName="UNILE Parogencyl 125 ml ES"
+  JobID="1113660-sr4" RelatedJobID="10009946-0001"
+  Types="ConventionalPrinting" xmlns="http://www.CIP4.org/JDFSchema_2_0">
+  <AuditPool>
+    <AuditCreated>
+      <Header AgentName="RLC_ZERDA" AgentVersion="0.0.1" Time="2020-05-05T09:37:04+02:00"/>
+    </AuditCreated>
+  </AuditPool>
+  <Comment ExternalID="IDComm_0000" Type="JobDescription">Ersetzt FAUF 1113503
+
+ABRUF: 28.4.20
+
+Erstauftrag neue Sorte
+
+Druck: Pantone nach Pantone, Skala nach Skala
+
+int. FK erstellen
+
+Material aufbrauchen</Comment>
+  <GeneralID IDUsage="ProductionType" IDValue="Sortenrein"/>
+  <ProductList>
+    <Product Amount="70000" DescriptiveName="UNILE Parogencyl 125 ml ES"
+      ExternalID="10009946-0001" ID="ID_PRD_0001" IsRoot="true">
+      <Intent Name="ColorIntent">
+        <ColorIntent Coatings="56000194"
+          ColorsUsed="52002086 52005212 52003672" Surface="Front"/>
+      </Intent>
+      <Intent Name="MediaIntent">
+        <MediaIntent BackISOPaperSubstrate="PS5"
+          Dimension="903 mm 596 mm" ExternalID="20000139-00056"
+          GrainDirection="YDirection" ISOPaperSubstrate="PS1"
+          MediaQuality="GC1" MediaType="Paper" MediaUnit="Sheet"
+          StockBrand="GC1 Performa White 260 596x903 FSC"
+          Thickness="400" Weight="260"/>
+      </Intent>
+    </Product>
+  </ProductList>
+  <ResourceSet Name="CustomerInfo" ProcessUsage="Product" Usage="Input">
+    <Resource>
+      <CustomerInfo ContactType="0000102119"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Contact">
+    <Resource>
+      <Part ContactType="Customer"/>
+      <Contact>
+        <Company CompanyID="0000102119" OrganizationName="Unilever Europe BV"/>
+      </Contact>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Contact">
+    <Resource>
+      <Part ContactType="CSR"/>
+      <Contact>
+        <Company CompanyID="1131" OrganizationName="LEUNISMAN GMBH"/>
+        <Address City="Hannover" CountryCode="DE" PostalCode="30169" Street="Andertensche Wiese 21"/>
+        <ComChannel ChannelType="Phone" Locato="0511-16499"/>
+        <ComChannel ChannelType="Email" Locato="Denis.Muscharski@ar-packaging.com"/>
+        <Person FamilyName="Denis" FirstName="Muscharski" JobTitle="Customer Service"/>
+      </Contact>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="NodeInfo" ProcessUsage="Product" Usage="Input">
+    <Resource>
+      <NodeInfo JobPriority="50" LastEnd="2020-05-14T00:00:00+02:00"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Media">
+    <Resource Brand="GC1 Performa White 260 596x903 FSC"
+      DescriptiveName="GC1 Performa White 260 596x903 FSC"
+      ExternalID="20000139-00056" ID="ID_PAPER01.1">
+      <Part SheetName="BG_1"/>
+      <Media Dimension="903 mm 596 mm" GrainDirection="YDirection"
+        MediaQuality="GC1" MediaType="Paper" MediaUnit="Sheet"
+        Thickness="400" Weight="260"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Device" Usage="Input">
+    <Resource DescriptiveName="Heidelberger XL 106-9+LYYL /2019">
+      <Part SheetName="BG_1" Side="Front"/>
+      <Device DeviceID="1315467"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="ConventionalPrintingParams" Usage="Input">
+    <Resource>
+      <Part SheetName="BG_1" Side="Front"/>
+      <ConventionalPrintingParams SheetLay="Left" WorkStyle="Simplex"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="NodeInfo" Usage="Input">
+    <Resource ExternalID="0040">
+      <Part SheetName="BG_1" Side="Front"/>
+      <NodeInfo End="2020-05-14T09:29:17+02:00"
+        SetupDuration="PT1H58M0S" Start="2020-05-14T07:09:00+02:00"
+        Status="Waiting" TotalDuration="PT2H46M0S">
+        <Comment Type="Instruction">Drucken</Comment>
+      </NodeInfo>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Component" Usage="Output">
+    <Resource>
+      <AmountPool>
+        <PartAmount Amount="7439" Waste="528">
+          <Part Side="Front"/>
+        </PartAmount>
+      </AmountPool>
+      <Part SheetName="BG_1"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Component" Usage="Input">
+    <Resource>
+      <Part SheetName="BG_1"/>
+      <Component MediaRef="ID_PAPER01.1"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="ColorantControl" Usage="Input">
+    <Resource>
+      <Part SheetName="BG_1" Side="Front"/>
+      <ColorantControl
+        ColorantOrder="52002086 52005212 52003672 56000194" ColorantParams="52002086 52005212 52003672 56000194"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Color" Usage="Input">
+    <Resource DescriptiveName="Black">
+      <Part Separation="52002086"/>
+      <Color ActualColorName="52002086" sRGB="0.18 0.18 0.18"/>
+    </Resource>
+    <Resource DescriptiveName="PANTONE 2192 C">
+      <Part Separation="52005212"/>
+      <Color ActualColorName="52005212" sRGB="0.00 0.59 0.89"/>
+    </Resource>
+    <Resource DescriptiveName="PANTONE Red 032 C">
+      <Part Separation="52003672"/>
+      <Color ActualColorName="52003672" sRGB="1.00 0.23 0.25"/>
+    </Resource>
+    <Resource DescriptiveName="F_Gloss_Varnish">
+      <Part Separation="56000194"/>
+      <Color ActualColorName="56000194" ColorType="Transparent"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Ink" Usage="Input">
+    <Resource Brand="UV" ExternalID="52002086">
+      <Part Separation="52002086" SheetName="BG_1" Side="Front"/>
+      <Ink InkType="Ink"/>
+    </Resource>
+    <Resource Brand="UV" ExternalID="52003672">
+      <Part Separation="52003672" SheetName="BG_1" Side="Front"/>
+      <Ink InkType="Ink"/>
+    </Resource>
+    <Resource Brand="UV" ExternalID="52005212">
+      <Part Separation="52005212" SheetName="BG_1" Side="Front"/>
+      <Ink InkType="Ink"/>
+    </Resource>
+    <Resource Brand="LACK" ExternalID="56000194">
+      <Part Separation="56000194" SheetName="BG_1" Side="Front"/>
+      <Ink InkType="Varnish"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Media">
+    <Resource ID="REF_50000010">
+      <Media Dimension="1030 mm 785 mm" MediaType="Plate"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="ExposedMedia" Usage="Input">
+    <Resource>
+      <Part Separation="52002086" SheetName="BG_1" Side="Front"/>
+      <ExposedMedia MediaRef="REF_50000010"/>
+    </Resource>
+    <Resource>
+      <Part Separation="52005212" SheetName="BG_1" Side="Front"/>
+      <ExposedMedia MediaRef="REF_50000010"/>
+    </Resource>
+    <Resource>
+      <Part Separation="52003672" SheetName="BG_1" Side="Front"/>
+      <ExposedMedia MediaRef="REF_50000010"/>
+    </Resource>
+  </ResourceSet>
+</XJDF>

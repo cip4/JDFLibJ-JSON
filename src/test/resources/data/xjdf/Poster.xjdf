@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- START SNIPPET -->
+<XJDF xmlns="http://www.CIP4.org/JDFSchema_2_0"
+  JobID="Simple_Poster" Types="Product" Version="2.1">
+  <!-- END SNIPPET -->
+  <!-- START SNIPPET -->
+  <AuditPool>
+    <AuditCreated>
+      <Header AgentName="CIP4 JDF Writer Java"
+        AgentVersion="2.1.7 BLD 012" DeviceID="TestSender" Time="2020-11-29T20:24:56+01:00"/>
+    </AuditCreated>
+  </AuditPool>
+  <ProductList>
+    <Product Amount="42" IsRoot="true" ProductType="Poster">
+      <Intent Name="MediaIntent">
+        <MediaIntent MediaType="Paper" Weight="130"/>
+      </Intent>
+      <Intent Name="LayoutIntent">
+        <LayoutIntent FinishedDimensions="2267.7 1417.3 0"/>
+      </Intent>
+      <Intent Name="ColorIntent">
+        <ColorIntent>
+          <SurfaceColor ColorsUsed="Black Cyan Magenta Yellow" Surface="Front"/>
+          <SurfaceColor ColorsUsed="Black Cyan Magenta Yellow" Surface="Back"/>
+        </ColorIntent>
+      </Intent>
+    </Product>
+  </ProductList>
+  <ResourceSet Name="NodeInfo" Usage="Input">
+    <Resource>
+      <NodeInfo End="2020-11-29T13:00:00+01:00"/>
+    </Resource>
+  </ResourceSet>
+</XJDF>
+<!-- END SNIPPET -->

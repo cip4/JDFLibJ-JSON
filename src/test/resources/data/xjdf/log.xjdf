@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--JDFToXJDF version: using: ICSPortal ICSPortal 19.10.34.0-->
+<XJDF xmlns="http://www.CIP4.org/JDFSchema_2_0"
+  Category="MISPRE.ImpositionPreparation" DescriptiveName="Inhalt 1"
+  ICSVersions="MISPRE_L1-1.4 MISPRE_L2-1.4" JobID="191211"
+  JobPartID="SR__010" MaxVersion="2.0" Status="Waiting"
+  Types="Stripping" Version="2.0"
+  xmlns:HDM="www.heidelberg.com/schema/HDM"
+  xmlns:crm="http://www.cerm.be/JDFSchema_1_3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ProcessGroup">
+  <ResourceSet Name="NodeInfo" Usage="Input">
+    <Resource>
+      <NodeInfo JobPriority="50" NodeStatus="Waiting" TotalDuration="PT00M"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="StrippingParams" Usage="Input">
+    <Resource DescriptiveName="Umschlag">
+      <Part BinderySignatureName="BN001000200030" SheetName="ST160755" SignatureName="SN160755"/>
+      <StrippingParams
+        AssemblyIDs="Inhalt_1_Zan_Essen_010.001.0 Inhalt_1_Fi-Zan_hoch_010.002.0 Inhalt_1_Fi-Zan_Albstadt_010.003.0"
+        BinderySignatureRef="BS010U4-1_C.1" PaperRef="Paper.1"
+        PlateRef="Plates.1" SectionList="0" WorkStyle="Perfecting">
+        <Position MarginBottom="0" MarginLeft="22.67716535"
+          MarginRight="0" MarginTop="22.67716535" Orientation="Rotate0" RelativeBox="0.00000000 0.50000000 0.50000000 1.00000000"/>
+        <StripCellParams BackOverfold="0" BleedFace="5.66929134"
+          BleedFoot="5.66929134" BleedHead="5.66929134" BleedSpine="0"
+          FrontOverfold="0" MillingDepth="0" Spine="0"
+          TrimFace="17.00787402" TrimFoot="14.17322835"
+          TrimHead="14.17322835" TrimSize="595.27559055 841.88976378"/>
+      </StrippingParams>
+    </Resource>
+    <Resource DescriptiveName="Umschlag">
+      <Part BinderySignatureName="BN001000200050" SheetName="ST160755" SignatureName="SN160755"/>
+      <StrippingParams
+        AssemblyIDs="Inhalt_1_Zan_Essen_010.001.0 Inhalt_1_Fi-Zan_hoch_010.002.0 Inhalt_1_neutral_Zander_010.005.0"
+        BinderySignatureRef="BS010U4-1_C.1" PaperRef="Paper.1"
+        PlateRef="Plates.1" SectionList="0" WorkStyle="Perfecting">
+        <Position MarginBottom="0" MarginLeft="0"
+          MarginRight="22.67716535" MarginTop="22.67716535"
+          Orientation="Rotate0" RelativeBox="0.50000000 0.50000000 1.00000000 1.00000000"/>
+        <StripCellParams BackOverfold="0" BleedFace="5.66929134"
+          BleedFoot="5.66929134" BleedHead="5.66929134" BleedSpine="0"
+          FrontOverfold="0" MillingDepth="0" Spine="0"
+          TrimFace="17.00787402" TrimFoot="14.17322835"
+          TrimHead="14.17322835" TrimSize="595.27559055 841.88976378"/>
+      </StrippingParams>
+    </Resource>
+    <Resource DescriptiveName="Umschlag">
+      <Part BinderySignatureName="BN004000200060" SheetName="ST160755" SignatureName="SN160755"/>
+      <StrippingParams
+        AssemblyIDs="Inhalt_1_Heix_010.004.0 Inhalt_1_Fi-Zan_hoch_010.002.0 Inhalt_1_neutral_Mitegro_010.006.0"
+        BinderySignatureRef="BS010U4-1_C.1" PaperRef="Paper.1"
+        PlateRef="Plates.1" SectionList="0" WorkStyle="Perfecting">
+        <Position MarginBottom="22.67716535" MarginLeft="22.67716535"
+          MarginRight="0" MarginTop="0" Orientation="Rotate0" RelativeBox="0.00000000 0.00000000 0.50000000 0.50000000"/>
+        <StripCellParams BackOverfold="0" BleedFace="5.66929134"
+          BleedFoot="5.66929134" BleedHead="5.66929134" BleedSpine="0"
+          FrontOverfold="0" MillingDepth="0" Spine="0"
+          TrimFace="17.00787402" TrimFoot="14.17322835"
+          TrimHead="14.17322835" TrimSize="595.27559055 841.88976378"/>
+      </StrippingParams>
+    </Resource>
+    <Resource DescriptiveName="Umschlag">
+      <Part BinderySignatureName="BN004000200050" SheetName="ST160755" SignatureName="SN160755"/>
+      <StrippingParams
+        AssemblyIDs="Inhalt_1_Heix_010.004.0 Inhalt_1_Fi-Zan_hoch_010.002.0 Inhalt_1_neutral_Zander_010.005.0"
+        BinderySignatureRef="BS010U4-1_C.1" PaperRef="Paper.1"
+        PlateRef="Plates.1" SectionList="0" WorkStyle="Perfecting">
+        <Position MarginBottom="22.67716535" MarginLeft="0"
+          MarginRight="22.67716535" MarginTop="0" Orientation="Rotate0" RelativeBox="0.50000000 0.00000000 1.00000000 0.50000000"/>
+        <StripCellParams BackOverfold="0" BleedFace="5.66929134"
+          BleedFoot="5.66929134" BleedHead="5.66929134" BleedSpine="0"
+          FrontOverfold="0" MillingDepth="0" Spine="0"
+          TrimFace="17.00787402" TrimFoot="14.17322835"
+          TrimHead="14.17322835" TrimSize="595.27559055 841.88976378"/>
+      </StrippingParams>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="U4 RDH" Name="BinderySignature">
+    <Resource DescriptiveName="U4 RDH" ID="BS010U4-1_C.1">
+      <BinderySignature BinderySignatureType="Fold" FoldCatalog="U4-1"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Partitioned Paper" Name="Media" ProcessUsage="Paper">
+    <Resource Brand="Omnigloss, FSC, Bilderdruck"
+      DescriptiveName="Glänzend holzfrei gestrichen FSC 115g/m², 630x880-B"
+      ID="Paper.1" ProductID="113862">
+      <GeneralID DataType="NMTOKEN" IDUsage="OrderStatus" IDValue="Reserved"/>
+      <Part SheetName="ST160755" SignatureName="SN160755"/>
+      <Media BackCoatings="None" Dimension="2494.48818898 1785.82677165"
+        FrontCoatings="None" Grade="1" GrainDirection="ShortEdge"
+        MediaQuality="Omnigloss, FSC, Bilderdruck" MediaType="Paper"
+        MediaUnit="Sheet" Thickness="115" Weight="115"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Partitioned Plates" Name="Media" ProcessUsage="Plate">
+    <Resource Brand="-" DescriptiveName="XL-Druckplatte" ID="Plates.1">
+      <Part SheetName="ST160755" SignatureName="SN160755"/>
+      <Media Dimension="2298.8976378 2990.5511811" MediaType="Plate" Thickness="30"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Colors of the job"
+    Name="ColorantControl" Usage="Input">
+    <Resource DescriptiveName="Colors of the job">
+      <Part SheetName="ST160755" SignatureName="SN160755"/>
+      <ColorantControl ColorRef="ColorPool"
+        ColorantOrder="Black Cyan Magenta Yellow"
+        ColorantParams="Black Cyan Magenta Yellow"
+        HDM:KeepMISColorOrder="true" xmlns:HDM="www.heidelberg.com/schema/HDM"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Colors for the job" ID="ColorPool" Name="Color">
+    <Resource DescriptiveName="Colors for the job">
+      <Part Separation="Black"/>
+      <Color ActualColorName="Black" HDM:Purpose="Printing"/>
+    </Resource>
+    <Resource DescriptiveName="Colors for the job">
+      <Part Separation="Cyan"/>
+      <Color ActualColorName="Cyan" HDM:Purpose="Printing"/>
+    </Resource>
+    <Resource DescriptiveName="Colors for the job">
+      <Part Separation="Magenta"/>
+      <Color ActualColorName="Magenta" HDM:Purpose="Printing"/>
+    </Resource>
+    <Resource DescriptiveName="Colors for the job">
+      <Part Separation="Yellow"/>
+      <Color ActualColorName="Yellow" HDM:Purpose="Printing"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Assembly" Usage="Input">
+    <Resource DescriptiveName="Zan Essen">
+      <Part PartVersion="A_001"/>
+      <Assembly AssemblyIDs="Inhalt_1_Zan_Essen_010.001.0"
+        BindingSide="Left" Order="Collecting" PageListRef="PL010.1"/>
+    </Resource>
+    <Resource DescriptiveName="Fi-Zan hoch">
+      <Part PartVersion="B_002"/>
+      <Assembly AssemblyIDs="Inhalt_1_Fi-Zan_hoch_010.002.0"
+        BindingSide="Left" Order="Collecting" PageListRef="PL010.2"/>
+    </Resource>
+    <Resource DescriptiveName="Fi-Zan Albstadt">
+      <Part PartVersion="C_003"/>
+      <Assembly AssemblyIDs="Inhalt_1_Fi-Zan_Albstadt_010.003.0"
+        BindingSide="Left" Order="Collecting" PageListRef="PL010.3"/>
+    </Resource>
+    <Resource DescriptiveName="Heix">
+      <Part PartVersion="D_004"/>
+      <Assembly AssemblyIDs="Inhalt_1_Heix_010.004.0" BindingSide="Left"
+        Order="Collecting" PageListRef="PL010.4"/>
+    </Resource>
+    <Resource DescriptiveName="neutral Zander">
+      <Part PartVersion="E_005"/>
+      <Assembly AssemblyIDs="Inhalt_1_neutral_Zander_010.005.0"
+        BindingSide="Left" Order="Collecting" PageListRef="PL010.5"/>
+    </Resource>
+    <Resource DescriptiveName="neutral Mitegro">
+      <Part PartVersion="F_006"/>
+      <Assembly AssemblyIDs="Inhalt_1_neutral_Mitegro_010.006.0"
+        BindingSide="Left" Order="Collecting" PageListRef="PL010.6"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Inhalt 1" Name="PageList">
+    <Resource DescriptiveName="Inhalt 1 Zan Essen" ID="PL010.1">
+      <Part PartVersion="A_001"/>
+    </Resource>
+    <Resource DescriptiveName="Inhalt 1 Fi-Zan hoch" ID="PL010.2">
+      <Part PartVersion="B_002"/>
+    </Resource>
+    <Resource DescriptiveName="Inhalt 1 Fi-Zan Albstadt" ID="PL010.3">
+      <Part PartVersion="C_003"/>
+    </Resource>
+    <Resource DescriptiveName="Inhalt 1 Heix" ID="PL010.4">
+      <Part PartVersion="D_004"/>
+    </Resource>
+    <Resource DescriptiveName="Inhalt 1 neutral Zander" ID="PL010.5">
+      <Part PartVersion="E_005"/>
+    </Resource>
+    <Resource DescriptiveName="Inhalt 1 neutral Mitegro" ID="PL010.6">
+      <Part PartVersion="F_006"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="LO191211" Name="Layout" Usage="Output">
+    <Dependent JobID="191211" JobPartID="PG__010"/>
+    <Dependent JobID="191211" JobPartID="RP__010"/>
+    <Dependent JobID="191211" JobPartID="IC_CV__010_ST160755_U4-1"/>
+    <Dependent JobID="191211" JobPartID="BD__191211_0"/>
+    <Resource DescriptiveName="Umschlag" ProductID="LO191211">
+      <Part SheetName="ST160755" Side="Front" SignatureName="SN160755"/>
+      <Layout PaperRef="Paper.1" crm:VersionMode="long" xmlns:crm="http://www.cerm.be/JDFSchema_1_3"/>
+    </Resource>
+    <Resource DescriptiveName="Umschlag" ProductID="LO191211">
+      <Part SheetName="ST160755" Side="Back" SignatureName="SN160755"/>
+      <Layout PaperRef="Paper.1" crm:VersionMode="long"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet DescriptiveName="Marks" Name="RunList"
+    ProcessUsage="Marks" Usage="Output">
+    <Dependent JobID="191211" JobPartID="PG__010"/>
+    <Dependent JobID="191211" JobPartID="RP__010"/>
+    <Resource DescriptiveName="Marks"/>
+  </ResourceSet>
+</XJDF>

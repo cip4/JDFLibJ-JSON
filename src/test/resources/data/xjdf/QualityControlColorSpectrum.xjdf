@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XJDF xmlns="http://www.CIP4.org/JDFSchema_2_0" JobID="qc1"
+  Types="ConventionalPrinting QualityControl" Version="2.1">
+  <AuditPool>
+    <AuditCreated>
+      <Header DeviceID="TestSender" Time="2020-12-27T14:58:03+01:00"/>
+    </AuditCreated>
+  </AuditPool>
+  <ResourceSet Name="QualityControlParams" Usage="Input">
+    <Resource>
+      <Part Separation="Cyan"/>
+      <Part Separation="Magenta"/>
+      <Part Separation="Yellow"/>
+      <Part Separation="Black"/>
+      <QualityControlParams QualityControlMethods="ColorSpectrophotometry Colorimetry"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="Layout" Usage="Input">
+    <Resource>
+      <Part SheetName="S1" Side="Front"/>
+      <Layout>
+        <PlacedObject CTM="1 0 0 1 30 40">
+          <MarkObject>
+            <ColorControlStrip StripType="xxx">
+              <ColorMeasurementConditions/>
+              <Patch Center="50 0" ExternalID="Patch_0"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 100" ExternalID="Patch_1"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 200" ExternalID="Patch_2"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 300" ExternalID="Patch_3"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 400" ExternalID="Patch_4"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 500" ExternalID="Patch_5"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 600" ExternalID="Patch_6"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 700" ExternalID="Patch_7"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 800" ExternalID="Patch_8"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+              <Patch Center="50 900" ExternalID="Patch_9"
+                PatchUsage="Color" Size="30 30" Spectrum="400 0 450 0.5 500 1 550 0.8 600 0.3 650 0.2 700 0"/>
+            </ColorControlStrip>
+          </MarkObject>
+        </PlacedObject>
+      </Layout>
+    </Resource>
+  </ResourceSet>
+</XJDF>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- START SNIPPET -->
+<XJDF xmlns="http://www.CIP4.org/JDFSchema_2_0"
+  JobID="Brochure4_16" Types="Product" Version="2.1">
+  <!-- END SNIPPET -->
+  <!-- START SNIPPET -->
+  <AuditPool>
+    <AuditCreated>
+      <Header AgentName="CIP4 JDF Writer Java"
+        AgentVersion="2.1.7 BLD 012" DeviceID="TestSender" Time="2020-11-29T20:19:40+01:00"/>
+    </AuditCreated>
+  </AuditPool>
+  <ProductList>
+    <Product Amount="42" IsRoot="true" ProductType="Brochure">
+      <Intent Name="BindingIntent">
+        <BindingIntent BindingType="SaddleStitch" ChildRefs="l_000006 l_000007"/>
+      </Intent>
+      <Intent Name="LayoutIntent">
+        <LayoutIntent FinishedDimensions="595.3 841.9 22.7"/>
+      </Intent>
+    </Product>
+    <Product ID="l_000006" IsRoot="false" ProductType="Cover">
+      <Intent Name="MediaIntent">
+        <MediaIntent MediaType="Paper" Weight="130"/>
+      </Intent>
+      <Intent Name="ColorIntent">
+        <ColorIntent>
+          <SurfaceColor ColorsUsed="Black Cyan Magenta Yellow" Surface="Front"/>
+          <SurfaceColor ColorsUsed="Black Cyan Magenta Yellow" Surface="Back"/>
+        </ColorIntent>
+      </Intent>
+      <Intent Name="LayoutIntent">
+        <LayoutIntent Pages="2" SpreadType="Spread"/>
+      </Intent>
+    </Product>
+    <Product ID="l_000007" IsRoot="false" ProductType="Body">
+      <Intent Name="MediaIntent">
+        <MediaIntent MediaType="Paper" Weight="90"/>
+      </Intent>
+      <Intent Name="ColorIntent">
+        <ColorIntent>
+          <SurfaceColor ColorsUsed="Black" Surface="Front"/>
+          <SurfaceColor ColorsUsed="Black" Surface="Back"/>
+        </ColorIntent>
+      </Intent>
+      <Intent Name="LayoutIntent">
+        <LayoutIntent Pages="16" SpreadType="SinglePage"/>
+      </Intent>
+    </Product>
+  </ProductList>
+  <ResourceSet Name="NodeInfo" Usage="Input">
+    <Resource>
+      <NodeInfo End="2020-11-29T13:00:00+01:00"/>
+    </Resource>
+  </ResourceSet>
+</XJDF>
+<!-- END SNIPPET -->

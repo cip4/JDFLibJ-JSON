@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XJDF DescriptiveName="Jobname" JobID="J123"
+  Types="Screening ImageSetting ConventionalPrinting" xmlns="http://www.CIP4.org/JDFSchema_2_0">
+  <AuditPool>
+    <AuditCreated>
+      <Header
+        AgentName="XXX" Time="2020-05-11T22:12:35+02:00"/>
+    </AuditCreated>
+  </AuditPool>
+  <GeneralID IDUsage="ProductionType" IDValue="Supara@Intserver_DefaultDruckmaschine_6259_einseitig"/>
+  <ProductList>
+    <Product IsRoot="true">
+      <Intent ExternalID="688777">
+        <MediaIntent MediaQuality="90_KIL"/>
+      </Intent>
+      <Intent Name="ColorIntent">
+        <ColorIntent>
+          <SurfaceColor ColorsUsed="Cyan Magenta Yellow Black" Surface="Front"/>
+        </ColorIntent>
+      </Intent>
+      <Intent Name="LayoutIntent">
+        <LayoutIntent Dimensions="1540mm 1106mm"/>
+      </Intent>
+    </Product>
+  </ProductList>
+  <ResourceSet CombinedProcessIndex="1" Name="Device" Usage="Input">
+    <Resource>
+      <Part SheetName="Sheet1"/>
+      <Device DeviceID="Supara@Intserver"/>
+    </Resource>
+	<Resource>
+      <Part SheetName="Sheet2"/>
+      <Device DeviceID="Supcccc"/>
+    </Resource>
+  </ResourceSet>
+   <ResourceSet Name="Media">
+    <Resource ID="Plate">
+      <Part SheetName="Sheet1" />
+	  <Media MediaType="Plate" Dimensions="1 2"/>
+    </Resource>
+   <Resource ID="Plate2">
+      <Part SheetName="Sheet2" />
+	  <Media MediaType="Plate" Dimensions="3 4"/>
+    </Resource>
+   </ResourceSet>
+
+  <ResourceSet Name="ExposedMedia">
+    <Resource>
+      <Part Separation="Cyan" SheetName="Sheet1" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Magenta" SheetName="Sheet1" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Yellow" SheetName="Sheet1" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Black" SheetName="Sheet1" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate"/>
+    </Resource>
+   <Resource>
+      <Part Separation="Cyan" SheetName="Sheet2" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate2"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Magenta" SheetName="Sheet2" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate2"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Yellow" SheetName="Sheet2" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate2"/>
+    </Resource>
+    <Resource>
+      <Part Separation="Black" SheetName="Sheet2" Side="Front"/>
+	  <ExposedMedia MediaRef="Plate2"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet Name="RunList" Usage="Input">
+    <Resource>
+      <RunList>
+        <FileSpec URL="\\Heivm61001\1.pdf"/>
+      </RunList>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet CombinedProcessIndex="2" Name="Device" Usage="Input">
+    <Resource>
+      <Part SheetName="Sheet1"/>
+      <Device DeviceID="6259"/>
+    </Resource>
+   <Resource>
+      <Part SheetName="Sheet2"/>
+      <Device DeviceID="6260"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet CombinedProcessIndex="2" Name="NodeInfo" Usage="Input">
+    <Resource>
+      <Part SheetName="Sheet1"/>
+      <Comment/>
+      <NodeInfo Start="2020-05-11T09:33:00" TotalDuration="PT29M"/>
+    </Resource>
+   <Resource>
+      <Part SheetName="Sheet2"/>
+      <Comment/>
+      <NodeInfo Start="2020-05-11T09:33:00" TotalDuration="PT29M"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet CombinedProcessIndex="2" Name="Component" Usage="Output">
+    <Resource>
+      <Component/>
+      <Part SheetName="Sheet1"/>
+      <AmountPool>
+        <PartAmount Amount="2540" Waste="68"/>
+      </AmountPool>
+    </Resource>
+   <Resource>
+      <Component/>
+      <Part SheetName="Sheet2"/>
+      <AmountPool>
+        <PartAmount Amount="3540" Waste="68"/>
+      </AmountPool>
+    </Resource>
+  </ResourceSet>
+</XJDF>

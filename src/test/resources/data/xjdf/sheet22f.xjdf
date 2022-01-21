@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:XJDF Category="Printing"
+  DescriptiveName="500005276 Blisterk.Gizeh Original CC 4+1 FSC"
+  JobID="722110" RelatedJobID="500005276" Types="ConventionalPrinting" xmlns:ns0="http://www.CIP4.org/JDFSchema_2_0">
+  <ns0:AuditPool>
+    <ns0:AuditCreated>
+      <ns0:Header AgentName="wi-ag" AgentVersion="0.0.1"
+        DeviceID="SAPPI" Time="06-08-2020T13:25:53"/>
+    </ns0:AuditCreated>
+  </ns0:AuditPool>
+  <ns0:GeneralID IDUsage="ProductionType" IDValue="Classic"/>
+  <ns0:ProductList>
+    <ns0:Product Amount="10500"
+      DescriptiveName="500005276 Blisterk.Gizeh Original CC 4+1 FSC"
+      ExternalID="500005276" ID="IDP_PRD500005276" IsRoot="true" ProductType="FlatBox">
+      <ns0:Intent Name="MediaIntent">
+        <ns0:MediaIntent ExternalID="500005276" MediaType="Paper"/>
+      </ns0:Intent>
+    </ns0:Product>
+  </ns0:ProductList>
+  <ns0:ResourceSet Name="NodeInfo" ProcessUsage="Product" Usage="Input">
+    <ns0:Resource>
+      <ns0:NodeInfo JobPriority="50" LastEnd="2020-09-15T20:00:00+02:00"/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+  <ns0:ResourceSet CombinedProcessIndex="0" Name="Device" Usage="Input">
+    <ns0:Resource DescriptiveName="XL106-7L" ExternalID="XL106-7L" ID="XL106-7L">
+      <ns0:Part SheetName="22F"/>
+      <ns0:Device DescriptiveName="XL106-7L" DeviceID="XL106-7L"/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+  <ns0:ResourceSet CombinedProcessIndex="0"
+    Name="ConventionalPrintingParams" Usage="Input">
+    <ns0:Resource>
+      <ns0:Part SheetName="22F" Side="Front"/>
+      <ns0:ConventionalPrintingParams SheetLay="Left" WorkStyle="WorkAndBack"/>
+    </ns0:Resource>
+    <ns0:Resource>
+      <ns0:Part SheetName="22F" Side="Back"/>
+      <ns0:ConventionalPrintingParams SheetLay="Right" WorkStyle="WorkAndBack"/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+  <ns0:ResourceSet CombinedProcessIndex="0" Name="NodeInfo" Usage="Input">
+    <ns0:Resource>
+      <ns0:Comment Type="Instruction">Unverändert.</ns0:Comment>
+      <ns0:Part SheetName="22F" Side="Front"/>
+      <ns0:NodeInfo/>
+    </ns0:Resource>
+    <ns0:Resource>
+      <ns0:Comment Type="Instruction">Unverändert.</ns0:Comment>
+      <ns0:Part SheetName="22F" Side="Back"/>
+      <ns0:NodeInfo/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+  <ns0:ResourceSet CombinedProcessIndex="0" Name="Media" Usage="Input">
+    <ns0:Resource Brand="FSC Accurate GC2 715x915mm 245g SB"
+      DescriptiveName="FSC Accurate GC2 715x915mm 245g SB"
+      ExternalID="550000508" ID="ID_550000508">
+      <ns0:Part SheetName="22F"/>
+      <ns0:Media Dimension="915 mm 715 mm" GrainDirection="XDirection"
+        MediaQuality="GC2 245g" MediaType="Paper" MediaUnit="Sheet" Weight="245"/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+  <ns0:ResourceSet CombinedProcessIndex="0" Name="Component" Usage="Output">
+    <ns0:Resource>
+      <ns0:AmountPool>
+        <ns0:PartAmount Amount="10500" Waste="0"/>
+      </ns0:AmountPool>
+      <ns0:Part SheetName="22F"/>
+    </ns0:Resource>
+  </ns0:ResourceSet>
+</ns0:XJDF>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XJDF Activation="Active" Category="Web2Print"
+  DescriptiveName="Regional 4Seiter vornstuepls01_namestuepls01_stuenings_net_01"
+  JobID="6274016_88_1" ProjectID="6274016" xmlns="http://www.CIP4.org/JDFSchema_1_1">
+  <GeneralID IDUsage="CatalogID" IDValue="SAM_Reg"/>
+  <GeneralID IDUsage="ShopID" IDValue="Stünings PLS"/>
+  <GeneralID IDUsage="ProductClass" IDValue="114000"/>
+  <ProductList>
+    <Product Amount="500"
+      DescriptiveName="Regional 4Seiter vornstuepls01_namestuepls01_stuenings_net_01"
+      ID="l_160615_135935802_026472" ProductID="114000">
+      <Intent ID="l_160615_135935811_026474" Name="LayoutIntent">
+        <LayoutIntent FinishedDimensions="595.2756 793.7008 0" Pages="4"/>
+      </Intent>
+      <Intent Name="ProductionIntent">
+        <ProductionIntent PrintProcess="Lithography"/>
+      </Intent>
+      <Intent Name="MediaIntent">
+        <MediaIntent Brand="-wird nicht angezeigt-"
+          GrainDirection="ParallelToBind" MediaQuality="Reg_BDM_150" Weight="150"/>
+      </Intent>
+      <Intent ID="l_160615_135935811_026475" Name="ColorIntent">
+        <ColorIntent Coatings="None" CoatingsBack="None"
+          ColorsUsed="Black Cyan Magenta Yellow" ColorsUsedBack="Black Cyan Magenta Yellow"/>
+      </Intent>
+    </Product>
+  </ProductList>
+  <ResourceSet ID="id__160615_135935614_026468" Name="RunList" Usage="Input">
+    <Resource>
+      <RunList>
+        <FileSpec URL="http://pls.stuenings.de/pdfs/Regional_4Seiter_Workflowtest.pdf"/>
+      </RunList>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet ID="id__160615_135935615_026469" Name="NodeInfo">
+    <Resource>
+      <NodeInfo JobPriority="10" NodeStatus="Waiting" TotalDuration="P7D"/>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet ID="id__160615_135935615_026470" Name="CustomerInfo">
+    <Resource ProductID="806970">
+      <CustomerInfo CustomerID="9731001" CustomerOrderID="6274016_88_1">
+        <Contact ContactTypes="Customer" UserID="AutoLogin">
+          <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+          <Company OrganizationName="Stuenings PLS 01&lt;br>Automation PLS 01"/>
+          <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+        </Contact>
+        <Contact ContactTypes="Approver">
+          <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+          <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+          <ComChannel ChannelType="Email" Locator="vornstuepls01.namestuepls01@stuenings.net"/>
+          <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+        </Contact>
+        <Contact ContactTypes="Delivery">
+          <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+          <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+          <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+        </Contact>
+        <Contact ContactTypes="Billing">
+          <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+          <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+          <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+        </Contact>
+      </CustomerInfo>
+    </Resource>
+  </ResourceSet>
+  <ResourceSet ID="id__160615_135935615_026471" Name="Contact">
+    <Resource>
+      <Contact ContactTypes="Customer" UserID="AutoLogin">
+        <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+        <Company OrganizationName="Stuenings PLS 01&lt;br>Automation PLS 01"/>
+        <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+      </Contact>
+    </Resource>
+    <Resource>
+      <Contact ContactTypes="Approver">
+        <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+        <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+        <ComChannel ChannelType="Email" Locator="vornstuepls01.namestuepls01@stuenings.net"/>
+        <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+      </Contact>
+    </Resource>
+    <Resource>
+      <Contact ContactTypes="Delivery">
+        <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+        <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+        <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+      </Contact>
+    </Resource>
+    <Resource>
+      <Contact ContactTypes="Billing">
+        <Person FamilyName="NameStuePLS01" FirstName="VornStuePLS01"/>
+        <Address City="Krefeld" Country="Germany" PostalCode="47805" Street="Stuenings-PLS-01-Strasse 01"/>
+        <ComChannel ChannelType="Phone" Locator="02151 5100-0 01"/>
+      </Contact>
+    </Resource>
+  </ResourceSet>
+  <GeneralID IDUsage="Line_ID" IDValue="LineID_0"/>
+  <AuditPool>
+    <Created AgentName="Prinect W2PConnect" AgentVersion="18.6.003.000"
+      Author="Stünings PLS" ID="a_160615_140108106_026483" TimeStamp="2016-06-15T14:01:08+02:00">
+      <Employee DescriptiveName="Heidelberg Web2Print Connector"/>
+    </Created>
+  </AuditPool>
+</XJDF>
