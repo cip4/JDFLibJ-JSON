@@ -1,0 +1,18 @@
+<PrintTalk timestamp="2019-10-23T09:28:00.000+02:00" xmlns="http://www.printtalk.org/schema_20" 
+    ICSVersions="Cus-APP_L1-2.0">
+	<Header>
+		<From>
+			<Credential domain="URL">
+                <Identity>https://worker.example.org/XJDF</Identity>
+			</Credential>
+		</From>
+		<To>
+			<Credential domain="URL">
+				<Identity>https://manager.example.org/XJDF</Identity>
+			</Credential>
+		</To>
+	</Header>
+	<Request BusinessID="B-47" BusinessRefID="B-42">
+		<Confirmation />
+	</Request>
+</PrintTalk>

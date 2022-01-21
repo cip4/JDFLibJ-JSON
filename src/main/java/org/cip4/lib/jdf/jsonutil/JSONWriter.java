@@ -898,7 +898,7 @@ public class JSONWriter extends JSONObjHelper
 		arrayNames.clear();
 	}
 
-	public boolean removeArray(final Object arg0)
+	public boolean removeArray(final String arg0)
 	{
 		return arrayNames.remove(arg0);
 	}

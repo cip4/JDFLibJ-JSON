@@ -63,6 +63,7 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.elementwalker.ElementWalker;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
@@ -121,6 +122,112 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter w1 = new JSONWriter();
 		final JSONWriter w2 = new JSONWriter();
 		assertEquals(w1.hashCode(), w2.hashCode());
+	}
+
+	@Test
+	public void testClear()
+	{
+		final JSONWriter w1 = new JSONWriter();
+		w1.clearArray();
+	}
+
+	@Test
+	public void testRemoveArray()
+	{
+		final JSONWriter w1 = new JSONWriter();
+		w1.removeArray("a");
+	}
+
+	@Test
+	public void testToString()
+	{
+		final JSONWriter w1 = new JSONWriter();
+		assertNotNull(w1.toString());
+	}
+
+	@Test
+	public void testPrepWalker()
+	{
+		final JSONWriter w = new JSONWriter();
+		assertNull(w.getPrepWalker());
+		w.setPrepWalker(new ElementWalker(null));
+	}
+
+	@Test
+	public void testPrefix()
+	{
+		final JSONWriter w = new JSONWriter();
+		w.setPrefix(eJSONPrefix.none);
+		assertEquals(eJSONPrefix.none, w.getPrefix());
+	}
+
+	@Test
+	public void testTypesafe()
+	{
+		final JSONWriter w = new JSONWriter();
+		w.setTypeSafe(true);
+		assertTrue(w.isTypeSafe());
+	}
+
+	@Test
+	public void tesMixText()
+	{
+		final JSONWriter w = new JSONWriter();
+		w.setMixedText("a");
+		assertEquals("a", w.getMixedText());
+	}
+
+	@Test
+	public void testWantArray()
+	{
+		final JSONWriter w = new JSONWriter();
+		w.setWantArray(true);
+		assertTrue(w.isWantArray());
+	}
+
+	@Test
+	public void testPrefix2()
+	{
+		for (String n : eJSONPrefix.getNames())
+		{
+			assertNotNull(eJSONPrefix.getEnum(n));
+		}
+	}
+
+	@Test
+	public void testPrefix3()
+	{
+		final JSONWriter w = new JSONWriter();
+		KElement e = KElement.createRoot("a:b", "a.com");
+		for (String n : eJSONPrefix.getNames())
+		{
+			eJSONPrefix enum1 = eJSONPrefix.getEnum(n);
+			assertNotNull(enum1);
+			assertNotNull(w.getNodeName(e));
+		}
+	}
+
+	@Test
+	public void testCase()
+	{
+		for (String n : eJSONCase.getNames())
+		{
+			assertNotNull(eJSONCase.getEnum(n));
+		}
+	}
+
+	@Test
+	public void testCase2()
+	{
+		final JSONWriter w = new JSONWriter();
+		for (eJSONCase n : eJSONCase.values())
+		{
+			assertNotNull(w.getKey("a:b", n));
+			w.setKeyCase(n);
+			assertEquals(n, w.getKeyCase());
+			w.setValueCase(n);
+			assertEquals(n, w.getValueCase());
+		}
 	}
 
 	/**
@@ -226,6 +333,31 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testAddNull()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.addSkipPool("b");
+		jsonWriter.setWantArray(false);
+		assertFalse(jsonWriter.addSkipPool(null));
+		assertFalse(jsonWriter.addArray(null));
+		assertFalse(jsonWriter.addMixed(null));
+		assertFalse(jsonWriter.addStringArray(null));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertMap()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		assertNotNull(jsonWriter.convertMap(null));
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testNumberArray0()
 	{
 		final JSONArray a = new JSONArray();
@@ -259,6 +391,16 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setPrefix(eJSONPrefix.underscore);
 		assertEquals("HDM_Foo", jsonWriter.getKey("HDM:Foo", eJSONCase.retain));
 		assertNull(jsonWriter.getKey("xmlns", eJSONCase.retain));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testAddToParentRaw()
+	{
+		JSONWriter.addToParentRaw(new JSONObject(), "foo", "bar");
+		JSONWriter.addToParentRaw(new JSONArray(), "foo", "bar");
 	}
 
 	/**

@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -40,12 +40,14 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -63,6 +65,29 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		assertEquals("d", r.getPathObject("a/b[0]/c"));
 		assertEquals(null, r.getPathObject("a/b[1]/c"));
 		assertEquals(null, r.getPathObject("a/b/c"));
+	}
+
+	@Test
+	public void testRootName()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals("a", r.getRootNames().get(0));
+		assertEquals("a", r.getRootName());
+	}
+
+	@Test
+	public void testAdd()
+	{
+		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
+		assertNotNull(r.setArray("gg"));
+	}
+
+	@Test
+	public void testSimpleFile()
+	{
+		final JSONObjHelper r = new JSONObjHelper((File) null);
+		assertTrue(r.isNull());
 	}
 
 	@Test
@@ -107,6 +132,14 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testGetInt2()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"4\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals(4, r.getInt("a/b[0]/c", 0));
+	}
+
+	@Test
 	public void testEquals()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
@@ -130,6 +163,14 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r3 = new JSONObjHelper(root3);
 		assertEquals(r.hashCode(), r2.hashCode());
 		assertNotEquals(r.hashCode(), r3.hashCode());
+	}
+
+	@Test
+	public void isNull()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertFalse(r.isNull());
 	}
 
 	@Test
@@ -208,6 +249,33 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r = new JSONObjHelper(root);
 		assertEquals("d", r.getString("a/b[0]/c"));
 		assertEquals(null, r.getString("a/c"));
+		assertNotNull(r.getString("a/b[0]"));
+	}
+
+	@Test
+	public void testToString()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertNotNull(r.toString());
+		assertNotNull(r.toJSONString());
+		assertNotNull(r.getBytes());
+	}
+
+	@Test
+	public void testGetHelper()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertNotNull(r.getHelper("a"));
+	}
+
+	@Test
+	public void testHasPath()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertTrue(r.hasPath("a"));
 	}
 
 	@Test
@@ -217,6 +285,23 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r = new JSONObjHelper(root);
 		assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
 		assertEquals(0, r.getDouble("a/b", 0), 0);
+	}
+
+	@Test
+	public void testGetDouble2()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":\"4.2\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
+		assertEquals(0, r.getDouble("a/b", 0), 0);
+	}
+
+	@Test
+	public void testGetDoubleInt()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals(4, r.getDouble("a/b[0]/c", 0), 0);
 	}
 
 	@Test

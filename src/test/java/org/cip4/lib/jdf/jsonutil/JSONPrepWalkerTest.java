@@ -47,7 +47,6 @@ import static org.junit.Assert.assertNull;
 
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
-import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.extensions.SetHelper;
@@ -56,12 +55,10 @@ import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.resource.process.JDFBoxFoldingParams;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONPrepWalkerTest extends JSONTestCaseBase
 {
@@ -143,10 +140,9 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
 	public void testConvertPTKHeaders()
 	{
-		final KElement e = JDFDoc.parseFile(sm_dirTestData + "ptk/confirmation.ptk").getRoot();
+		final KElement e = KElement.parseFile(sm_dirTestData + "ptk/confirmation.ptk");
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(e, null);
 		assertEquals("https://worker.example.org/XJDF", e.getXPathAttribute("Header/From/Credential/@Identity", null));

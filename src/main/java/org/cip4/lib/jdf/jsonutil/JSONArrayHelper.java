@@ -55,7 +55,6 @@ import org.json.simple.parser.JSONParser;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONArrayHelper
 {
@@ -64,7 +63,6 @@ public class JSONArrayHelper
 	private static Log log = LogFactory.getLog(JSONArrayHelper.class);
 
 	/**
-	 *
 	 * @param base
 	 */
 	public JSONArrayHelper(final JSONArray base)
@@ -74,7 +72,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param f
 	 */
 	public JSONArrayHelper(final File f)
@@ -102,7 +99,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param json
 	 */
 	public JSONArrayHelper(final String json)
@@ -111,7 +107,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public JSONArray getArray()
@@ -120,7 +115,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param i
 	 * @param def
 	 * @return
@@ -136,7 +130,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param arrayIndex
 	 * @return
 	 */
@@ -151,7 +144,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param arrayIndex
 	 * @return
 	 */
@@ -162,7 +154,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param arrayIndex
 	 * @return
 	 */
@@ -201,7 +192,6 @@ public class JSONArrayHelper
 	}
 
 	/**
-	 *
 	 * @param jsonArray
 	 * @return
 	 */
@@ -212,7 +202,7 @@ public class JSONArrayHelper
 
 	public boolean isEmpty()
 	{
-		return array.isEmpty();
+		return array == null ? true : array.isEmpty();
 	}
 
 	public boolean add(final JSONObjHelper o)

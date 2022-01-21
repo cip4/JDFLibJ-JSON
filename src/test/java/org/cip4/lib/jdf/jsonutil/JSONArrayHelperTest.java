@@ -41,7 +41,12 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 
 import org.junit.Test;
 
@@ -56,6 +61,21 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
 		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
 		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b/c"));
+	}
+
+	@Test
+	public void testBadStream()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNull(r.getArray());
+	}
+
+	@Test
+	public void testSimpleFil()
+	{
+		final JSONArrayHelper r = new JSONArrayHelper((File) null);
+		assertEquals(0, r.size());
 	}
 
 	@Test
@@ -75,11 +95,20 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testSizeList()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertEquals(1, r.getJSONObjects().size());
+	}
+
+	@Test
 	public void testGetJSonHelper()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		assertNotNull(r.getJSONHelper(0));
+		assertNull(r.getJSONHelper(42));
 	}
 
 	@Test
@@ -91,11 +120,55 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testToString()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNotNull(r.toString());
+	}
+
+	@Test
+	public void testGetString()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertNull(r.getString(0));
+	}
+
+	@Test
+	public void testIsEmpty()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertFalse(r.isEmpty());
+		final JSONArrayHelper r2 = new JSONArrayHelper((String) null);
+		assertTrue(r2.isEmpty());
+	}
+
+	@Test
 	public void testCopyOf()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		assertNotNull(r.copyOf());
+	}
+
+	@Test
+	public void testAppendUnique()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		JSONObjHelper o = new JSONObjHelper("{\"c\":\"d\"}");
+		assertTrue(r.appendUnique(o));
+		assertFalse(r.appendUnique(o));
+	}
+
+	@Test
+	public void testRemove()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		r.remove(0);
 	}
 
 }

@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -47,6 +47,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Reader;
 
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
@@ -60,9 +62,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- *
  * @author prosirai
- *
  */
 public class JSONReaderTest extends JSONTestCaseBase
 {
@@ -75,6 +75,37 @@ public class JSONReaderTest extends JSONTestCaseBase
 		final KElement a = r.getElement(new ByteArrayInputStream(root.getBytes()));
 		assertNotNull(a);
 		assertEquals("a", a.getLocalName());
+		assertNotNull(r.toString());
+	}
+
+	@Test
+	public void testAddText()
+	{
+		final JSONReader r = new JSONReader();
+		assertFalse(r.addText(null));
+	}
+
+	@Test
+	public void testPostWalker()
+	{
+		final JSONReader r = new JSONReader();
+		r.setPostWalker(null);
+		assertNull(r.getPostWalker());
+	}
+
+	@Test
+	public void testIsJSON()
+	{
+		assertTrue(JSONReader.isJSON("application/JSON"));
+		assertFalse(JSONReader.isJSON("application/JPEG"));
+	}
+
+	@Test
+	public void testAttribs()
+	{
+		final JSONReader r = new JSONReader();
+		r.setWantAttributes(true);
+		assertTrue(r.isWantAttributes());
 	}
 
 	@Test
@@ -101,7 +132,8 @@ public class JSONReaderTest extends JSONTestCaseBase
 	public void testRootNoName()
 	{
 		final JSONReader r = new JSONReader();
-		final KElement a = r.getElement("{\"id\": 159877, 	\"product_id\": 107274, 	\"created_at\": \"2019-04-01T13:55:45.837Z\", 	\"updated_at\": \"2019-04-01T14:05:49.518Z\"}");
+		final KElement a = r.getElement(
+				"{\"id\": 159877, 	\"product_id\": 107274, 	\"created_at\": \"2019-04-01T13:55:45.837Z\", 	\"updated_at\": \"2019-04-01T14:05:49.518Z\"}");
 		assertNotNull(a);
 		assertEquals("json", a.getLocalName());
 		assertEquals("159877", a.getAttribute("id"));
@@ -425,6 +457,10 @@ public class JSONReaderTest extends JSONTestCaseBase
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"XJDF\":1}");
 		assertTrue(a instanceof JDFElement);
+		assertNull(r.getElement((String) null));
+		assertNull(r.getElement((JSONObject) null));
+		assertNull(r.getElement((InputStream) null));
+		assertNull(r.getElement((Reader) null));
 
 	}
 
@@ -459,8 +495,8 @@ public class JSONReaderTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
-		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
-				+ "json/QualityControlColorSpectrum.json");
+		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")),
+				sm_dirTestDataTemp + "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
 		final JSONReader r = new JSONReader();
 		final KElement e = r.getElement(o);
