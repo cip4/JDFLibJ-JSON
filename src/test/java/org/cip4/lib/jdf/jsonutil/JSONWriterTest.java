@@ -116,6 +116,23 @@ public class JSONWriterTest extends JSONTestCaseBase
 		assertNotEquals(w1, w2);
 	}
 
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		final KElement xjdfSchemaElement = getXJDFSchemaElement(1);
+		jsonWriter.convert(xjdfSchemaElement);
+		jsonWriter.setKeyCase(eJSONCase.lower);
+		jsonWriter.convert(xjdfSchemaElement);
+		jsonWriter.convert(xjdfSchemaElement);
+		jsonWriter.writeToFile(sm_dirTestDataTemp + "XJDF.xsd.json");
+
+	}
+
 	@Test
 	public void testHash()
 	{
@@ -188,7 +205,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testPrefix2()
 	{
-		for (String n : eJSONPrefix.getNames())
+		for (final String n : eJSONPrefix.getNames())
 		{
 			assertNotNull(eJSONPrefix.getEnum(n));
 		}
@@ -198,10 +215,10 @@ public class JSONWriterTest extends JSONTestCaseBase
 	public void testPrefix3()
 	{
 		final JSONWriter w = new JSONWriter();
-		KElement e = KElement.createRoot("a:b", "a.com");
-		for (String n : eJSONPrefix.getNames())
+		final KElement e = KElement.createRoot("a:b", "a.com");
+		for (final String n : eJSONPrefix.getNames())
 		{
-			eJSONPrefix enum1 = eJSONPrefix.getEnum(n);
+			final eJSONPrefix enum1 = eJSONPrefix.getEnum(n);
 			assertNotNull(enum1);
 			assertNotNull(w.getNodeName(e));
 		}
@@ -210,7 +227,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testCase()
 	{
-		for (String n : eJSONCase.getNames())
+		for (final String n : eJSONCase.getNames())
 		{
 			assertNotNull(eJSONCase.getEnum(n));
 		}
@@ -220,7 +237,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	public void testCase2()
 	{
 		final JSONWriter w = new JSONWriter();
-		for (eJSONCase n : eJSONCase.values())
+		for (final eJSONCase n : eJSONCase.values())
 		{
 			assertNotNull(w.getKey("a:b", n));
 			w.setKeyCase(n);
@@ -711,8 +728,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())),
-					sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
+			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/"
+					+ UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
@@ -726,8 +743,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
-		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")),
-				sm_dirTestDataTemp + "json/QualityControlColorSpectrum.json");
+		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
+				+ "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
 
 	}
