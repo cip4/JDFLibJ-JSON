@@ -42,11 +42,9 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import java.util.HashSet;
-import java.util.Map.Entry;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.StringArray;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -58,11 +56,47 @@ public abstract class JSONWalker
 {
 	private static Log log = LogFactory.getLog(JSONReader.class);
 	private final JSONObjHelper root;
+	boolean sorted;
+	boolean keyInArray;
+
+	/**
+	 * @return the keyInArray
+	 */
+	public boolean isKeyInArray()
+	{
+		return keyInArray;
+	}
+
+	/**
+	 * @param keyInArray the keyInArray to set
+	 */
+	public void setKeyInArray(final boolean keyInArray)
+	{
+		this.keyInArray = keyInArray;
+	}
+
+	/**
+	 * @return the sorted
+	 */
+	public boolean isSorted()
+	{
+		return sorted;
+	}
+
+	/**
+	 * @param sorted the sorted to set
+	 */
+	public void setSorted(final boolean sorted)
+	{
+		this.sorted = sorted;
+	}
 
 	public JSONWalker(final JSONObjHelper root)
 	{
 		super();
 		this.root = root;
+		sorted = true;
+		keyInArray = true;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,12 +107,14 @@ public abstract class JSONWalker
 		{
 			return null;
 		}
-		final HashSet<Entry<String, Object>> copy = new HashSet<>();
-		copy.addAll(o.entrySet());
-		for (final Entry<String, Object> kid : copy)
+		final StringArray keys = new StringArray(o.keySet());
+		if (sorted)
+			keys.sort(null);
+		int size = keys.size();
+		int i = 0;
+		for (final String key : keys)
 		{
-			final String key = kid.getKey();
-			final Object val = kid.getValue();
+			final Object val = o.get(key);
 			final Object c;
 			if (val instanceof JSONObject)
 			{
@@ -95,13 +131,21 @@ public abstract class JSONWalker
 			if (c == null)
 			{
 				o.remove(key);
+				size--;
 			}
 			else
 			{
-				o.put(key, c);
+				postArrayElement(key, o, i++, size);
 			}
 		}
+		postWalk(rootKey, o);
 		return o.isEmpty() ? null : o;
+	}
+
+	protected void postWalk(final String rootKey, final JSONObject o)
+	{
+		// nop
+
 	}
 
 	protected Object walkArray(final String key, final JSONArray val)
@@ -114,33 +158,50 @@ public abstract class JSONWalker
 		else
 		{
 
-			for (int i = val.size() - 1; i >= 0; i--)
+			int size = val.size();
+			for (int i = 0; i < size; i++)
 			{
 				final Object a = val.get(i);
 				final Object c;
+				final String newKey = keyInArray ? key : null;
 				if (a instanceof JSONObject)
 				{
-					c = walkTree(key, (JSONObject) a);
+					c = walkTree(newKey, (JSONObject) a);
 				}
 				else if (a instanceof JSONArray)
 				{
-					c = walkArray(key, (JSONArray) a);
+					c = walkArray(newKey, (JSONArray) a);
 				}
 				else
 				{
-					c = walkSimple(key, a);
+					c = walkSimple(newKey, a);
 				}
 				if (c == null)
 				{
 					val.remove(i);
+					i--;
+					size--;
 				}
 				else
 				{
-					val.set(i, c);
+					postArrayElement(key, a, i, size);
 				}
 			}
 		}
+		postWalk(key, val);
 		return val.isEmpty() ? null : val;
+	}
+
+	protected void postArrayElement(final String key, final Object a, final int i, final int size)
+	{
+		// nop
+
+	}
+
+	protected void postWalk(final String key, final JSONArray val)
+	{
+		// default nop
+
 	}
 
 	/**
@@ -155,6 +216,15 @@ public abstract class JSONWalker
 	{
 		final Object w = walkTree("", root.getRoot());
 		return (w instanceof JSONObject) ? new JSONObjHelper((JSONObject) w) : null;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "JSONWalker [sorted=" + sorted + ", " + (root != null ? "root=" + root : "") + "]";
 	}
 
 }
