@@ -122,10 +122,9 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		add.appendAddressLine().setText("line 2");
 		add.appendAddressLine().setText("line 3");
 		h.cleanUp();
+		jsonWriter.convert(add);
 
-		final JSONObject o = jsonWriter.convert(xjdf);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "addressline.json");
-		h.writeToFile(sm_dirTestDataTemp + "addressline.xjdf");
+		writeBothJson(add, jsonWriter, "addressline.json");
 	}
 
 	/**
@@ -147,9 +146,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		cm.appendOrganizationalUnit("ACME Unit 3");
 		h.cleanUp();
 
-		final JSONObject o = jsonWriter.convert(xjdf);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "orgunit.json");
-		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
+		writeBothJson(c, jsonWriter, "orgunit.json");
 	}
 
 	/**
@@ -172,9 +169,9 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ap.appendAudit("AuditProcessRun");
 		h.cleanUp();
 
-		final JSONObject o = jsonWriter.convert(xjdf);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
-		h.writeToFile(sm_dirTestDataTemp + "orgunit.xjdf");
+		jsonWriter.convert(xjdf);
+		final String output = "auditpool.json";
+		writeBothJson(ap.getRoot(), jsonWriter, output);
 	}
 
 }

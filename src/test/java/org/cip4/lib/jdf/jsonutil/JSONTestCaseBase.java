@@ -46,18 +46,24 @@ import java.net.URL;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFParser;
 import org.cip4.jdflib.core.JDFParserFactory;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.BaseXJDFHelper;
+import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
+import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.junit.After;
 import org.junit.Before;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Node;
 
 /**
  * base class for JDFLib test case classes
@@ -127,7 +133,62 @@ public abstract class JSONTestCaseBase
 	public JSONTestCaseBase()
 	{
 		super();
-		//		LogConfigurator.configureLog(null, null);
+	}
+
+	/**
+	 *
+	 * @param h
+	 * @param startFirst
+	 */
+	protected void setSnippet(final BaseXJDFHelper h, final boolean startFirst)
+	{
+		if (h != null)
+		{
+			setSnippet(h.getRoot(), startFirst);
+		}
+	}
+
+	/**
+	 *
+	 * @param e
+	 * @param startFirst if true include the enclosing element, if false exclude it
+	 */
+	protected void setSnippet(final KElement e, final boolean startFirst)
+	{
+		if (e != null)
+		{
+			final Node parent = e.getParentNode();
+			final String start = " START SNIPPET ";
+			final String end = " END SNIPPET ";
+			Comment newChild = e.getOwnerDocument().createComment(startFirst ? start : end);
+			parent.insertBefore(newChild, e);
+			newChild = e.getOwnerDocument().createComment(startFirst ? end : start);
+			parent.insertBefore(newChild, e.getNextSibling());
+		}
+	}
+
+	/**
+	 *
+	 * @param h
+	 */
+	protected void cleanSnippets(final XJDFHelper h)
+	{
+		if (h == null || h.getRoot() == null)
+			return;
+		h.cleanUp();
+		setSnippet(h, true);
+		setSnippet(h.getAuditPool(), false);
+		setSnippet(h.getSet(ElementName.NODEINFO, 0), false);
+	}
+
+	public void writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
+	{
+		setSnippet(e, true);
+		e.getOwnerDocument_KElement().write2File(new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml")), 2, false);
+
+		jsonWriter.convert(e);
+		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
+		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 	}
 
 	final protected static int MINOR = 1;
