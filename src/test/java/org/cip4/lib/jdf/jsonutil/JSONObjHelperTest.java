@@ -166,11 +166,43 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void isNull()
+	public void testIsNull()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		assertFalse(r.isNull());
+	}
+
+	@Test
+	public void testIsEmpty()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertFalse(r.isEmpty());
+		final JSONObjHelper r0 = new JSONObjHelper();
+		assertTrue(r0.isEmpty());
+	}
+
+	@Test
+	public void testIsEmptyStatic()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertFalse(JSONObjHelper.isEmpty(r));
+		final JSONObjHelper r0 = new JSONObjHelper();
+		assertTrue(JSONObjHelper.isEmpty(r0));
+		assertTrue(JSONObjHelper.isEmpty(null));
+	}
+
+	@Test
+	public void testSizeStatic()
+	{
+		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals(1, JSONObjHelper.size(r));
+		final JSONObjHelper r0 = new JSONObjHelper();
+		assertEquals(0, JSONObjHelper.size(r0));
+		assertEquals(0, JSONObjHelper.size(null));
 	}
 
 	@Test

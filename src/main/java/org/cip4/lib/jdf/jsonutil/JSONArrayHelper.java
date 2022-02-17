@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -96,6 +96,14 @@ public class JSONArrayHelper
 			log.error("cannot parse stream", e);
 			array = null;
 		}
+	}
+
+	/**
+	 *
+	 */
+	public JSONArrayHelper()
+	{
+		array = null;
 	}
 
 	/**
@@ -198,6 +206,24 @@ public class JSONArrayHelper
 	public static JSONArrayHelper getHelper(final JSONArray jsonArray)
 	{
 		return jsonArray == null ? null : new JSONArrayHelper(jsonArray);
+	}
+
+	/**
+	 * @param jsonArray
+	 * @return
+	 */
+	public static int size(final JSONArrayHelper jsonArray)
+	{
+		return jsonArray == null ? 0 : jsonArray.size();
+	}
+
+	/**
+	 * @param jsonArray
+	 * @return
+	 */
+	public static boolean isEmpty(final JSONArrayHelper jsonArray)
+	{
+		return jsonArray == null ? true : jsonArray.isEmpty();
 	}
 
 	public boolean isEmpty()

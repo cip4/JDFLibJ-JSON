@@ -52,6 +52,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.AttributeName;
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
@@ -96,6 +97,8 @@ public class JSONWriter extends JSONObjHelper
 		setPrefix(eJSONPrefix.retain);
 		setKeyCase(eJSONCase.retain);
 		setValueCase(eJSONCase.retain);
+		setMixedText(TEXT);
+		addMixed(ElementName.COMMENT);
 	}
 
 	/**
@@ -301,8 +304,8 @@ public class JSONWriter extends JSONObjHelper
 		if (va != null)
 		{
 			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList",
-					"IntegerRange", "LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
+					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			for (final KElement e : va)
 			{
 				final String type = getTypeFromSchemaAttribute(e);
@@ -911,8 +914,8 @@ public class JSONWriter extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe="
-				+ isTypeSafe() + ", arrayNames=" + arrayNames + "]";
+		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe=" + isTypeSafe()
+				+ ", arrayNames=" + arrayNames + "]";
 	}
 
 	public eJSONCase getKeyCase()
@@ -946,7 +949,7 @@ public class JSONWriter extends JSONObjHelper
 	/**
 	 * @param mixedText the mixedText to set
 	 */
-	void setMixedText(final String mixedText)
+	public void setMixedText(final String mixedText)
 	{
 		this.mixedText = mixedText;
 	}
@@ -973,7 +976,7 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(final Object obj)
 	{
 		if (this == obj)
 			return true;
@@ -981,7 +984,7 @@ public class JSONWriter extends JSONObjHelper
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JSONWriter other = (JSONWriter) obj;
+		final JSONWriter other = (JSONWriter) obj;
 		if (alwaysString == null)
 		{
 			if (other.alwaysString != null)

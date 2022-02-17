@@ -54,7 +54,7 @@ public class JSONRtfWalker extends JSONWalker implements IStreamWriter
 		if (!StringUtil.isEmpty(key))
 		{
 			printLine();
-			ps.print("\"\\cs2{" + key + "}\":");
+			ps.print("\\cs2{\"" + key + "\"}\\cs1{:}");
 		}
 	}
 
@@ -69,12 +69,12 @@ public class JSONRtfWalker extends JSONWalker implements IStreamWriter
 
 	private void printBase(final Object a)
 	{
-		ps.print("\\cs4{" + a + "}");
+		ps.print("\\cs3{" + a + "}");
 	}
 
 	private void printString(final String a)
 	{
-		ps.print("\"\\cs5{" + a + "}\"");
+		ps.print("\\cs4{\"" + a + "\"}");
 	}
 
 	private void printArray(final JSONArray a)
@@ -140,7 +140,7 @@ public class JSONRtfWalker extends JSONWalker implements IStreamWriter
 	{
 		if (i < size - 1)
 		{
-			ps.print(",");
+			ps.print("\\cs1{,}");
 		}
 		super.postArrayElement(key, a, i, size);
 	}

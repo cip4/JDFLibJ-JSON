@@ -44,7 +44,9 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFComment;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
@@ -131,6 +133,26 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testComment()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final JDFComment c = (JDFComment) h.appendElement(ElementName.COMMENT);
+		c.setText("line 1 \nline 2");
+		c.setAuthor("Wyle E Coyote");
+		c.setPersonalID("p123");
+		h.cleanUp();
+		//		jsonWriter.convert(h.getRoot());
+
+		writeBothJson(h.getRoot(), jsonWriter, "comment.json");
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
@@ -163,7 +185,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ap.appendAudit("AuditCreated");
 		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO);
 		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
-		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO);
+		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO).setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
 		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
 		ap.appendAudit("AuditNotification");
 		ap.appendAudit("AuditProcessRun");

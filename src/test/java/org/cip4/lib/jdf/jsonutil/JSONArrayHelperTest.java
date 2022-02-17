@@ -146,6 +146,28 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testIsEmptyStatic()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertFalse(JSONArrayHelper.isEmpty(r));
+		final JSONArrayHelper r0 = new JSONArrayHelper();
+		assertTrue(JSONArrayHelper.isEmpty(r0));
+		assertTrue(JSONArrayHelper.isEmpty(null));
+	}
+
+	@Test
+	public void testSizeStatic()
+	{
+		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
+		final JSONArrayHelper r = new JSONArrayHelper(root);
+		assertEquals(1, JSONArrayHelper.size(r));
+		final JSONArrayHelper r0 = new JSONArrayHelper();
+		assertEquals(0, JSONArrayHelper.size(r0));
+		assertEquals(0, JSONArrayHelper.size(null));
+	}
+
+	@Test
 	public void testCopyOf()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
@@ -158,7 +180,7 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		JSONObjHelper o = new JSONObjHelper("{\"c\":\"d\"}");
+		final JSONObjHelper o = new JSONObjHelper("{\"c\":\"d\"}");
 		assertTrue(r.appendUnique(o));
 		assertFalse(r.appendUnique(o));
 	}

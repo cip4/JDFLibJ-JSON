@@ -120,6 +120,34 @@ public class JSONObjHelper implements IStreamWriter
 	private boolean isRootJson;
 
 	/**
+	 * @param o
+	 * @return
+	 */
+	public static int size(final JSONObjHelper o)
+	{
+		return o == null ? 0 : o.size();
+	}
+
+	/**
+	 * @param o
+	 * @return
+	 */
+	public static boolean isEmpty(final JSONObjHelper o)
+	{
+		return o == null ? true : o.isEmpty();
+	}
+
+	public int size()
+	{
+		return obj == null ? 0 : obj.size();
+	}
+
+	public boolean isEmpty()
+	{
+		return obj == null ? true : obj.isEmpty();
+	}
+
+	/**
 	 * @param base
 	 */
 	public JSONObjHelper()
