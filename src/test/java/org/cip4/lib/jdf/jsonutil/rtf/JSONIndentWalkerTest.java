@@ -68,92 +68,60 @@
  */
 package org.cip4.lib.jdf.jsonutil.rtf;
 
-import org.cip4.jdflib.util.StringUtil;
-import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class JSONRtfWalker extends JSONIndentWalker
+import java.io.File;
+import java.io.IOException;
+
+import org.cip4.jdflib.util.ByteArrayIOStream;
+import org.cip4.jdflib.util.FileUtil;
+import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
+import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
+import org.junit.Test;
+
+public class JSONIndentWalkerTest extends JSONTestCaseBase
 {
 
-	public JSONRtfWalker(final JSONObjHelper root)
+	@Test
+	public void testSimple() throws IOException
 	{
-		super(root);
-	}
-
-	@Override
-	protected void printKey(final String key)
-	{
-		if (!StringUtil.isEmpty(key))
-		{
-			printLine();
-			ps.print("\\cs2{\"" + key + "\"}\\cs1{:}");
-		}
-	}
-
-	@Override
-	protected void printLine()
-	{
-		ps.println();
-		ps.print("\\line");
-		indent();
+		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}");
+		final JSONIndentWalker w = new JSONIndentWalker(root);
+		final ByteArrayIOStream ios = new ByteArrayIOStream();
+		w.writeStream(ios);
+		final String s = new String(ios.toByteArray());
+		assertNotNull(s);
+		assertEquals(root, new JSONObjHelper(s));
 
 	}
 
-	@Override
-	protected void printBase(final Object a)
+	@Test
+	public void testFile() throws IOException
 	{
-		ps.print("\\cs3{" + a + "}");
+		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
+		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test.json"));
 	}
 
-	@Override
-	protected void printString(final String a)
+	@Test
+	public void testToString() throws IOException
 	{
-		ps.print("\\cs4{\"" + a + "\"}");
+		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
+		assertNotNull(w.toString());
 	}
 
-	@Override
-	protected String getBeginArray()
+	@Test
+	public void testIndent() throws IOException
 	{
-		return "\\cs1{[}";
-	}
+		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
+		w.setSingleIndent(0);
+		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test0.json"));
+		assertEquals(0, w.getSingleIndent());
 
-	@Override
-	protected String getBeginObj()
-	{
-		return "\\cs1{\\{}";
-	}
+		final JSONIndentWalker w4 = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
+		w.setSingleIndent(4);
+		FileUtil.writeFile(w4, new File(sm_dirTestDataTemp + "test4.json"));
 
-	@Override
-	protected void writeHeader()
-	{
-		ps.println("{\\rtf1\\ansi");
-		ps.println("\\deff0" + "{\\fonttbl\\f0\\fnil Courier New;}");
-		ps.println("{\\stylesheet" + "{\\s1 SampleCode;}" + "{\\cs1 XMLToken;}" + "{\\cs2 XMLElementName;}" + "{\\cs3 XMLAttributeName;}" + "{\\cs4 XMLAttributeValue;}"
-				+ "{\\cs5 XMLComment;}" + "}" + "\\pard\\plain\\s1");
-
-	}
-
-	@Override
-	protected void writeFooter()
-	{
-		ps.println("}");
-	}
-
-	@Override
-	protected String getEndObj()
-	{
-		return "\\cs1{\\}}";
-	}
-
-	@Override
-	protected String getEndArray()
-	{
-		return "\\cs1{]}";
-	}
-
-	@Override
-	protected String getArraySep()
-	{
-		return "\\cs1{,}";
 	}
 
 }

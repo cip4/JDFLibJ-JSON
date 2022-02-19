@@ -68,92 +68,210 @@
  */
 package org.cip4.lib.jdf.jsonutil.rtf;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+import org.cip4.jdflib.ifaces.IStreamWriter;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
+import org.cip4.lib.jdf.jsonutil.JSONWalker;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-public class JSONRtfWalker extends JSONIndentWalker
+public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 {
+	private int singleIndent = 2;
 
-	public JSONRtfWalker(final JSONObjHelper root)
+	/**
+	 * @return the singleIndent
+	 */
+	public int getSingleIndent()
+	{
+		return singleIndent;
+	}
+
+	/**
+	 * @param singleIndent the singleIndent to set
+	 */
+	public void setSingleIndent(final int singleIndent)
+	{
+		this.singleIndent = singleIndent;
+	}
+
+	PrintStream ps;
+	int indent;
+
+	public JSONIndentWalker(final JSONObjHelper root)
 	{
 		super(root);
+		ps = null;
+		indent = 0;
+		setKeyInArray(false);
 	}
 
 	@Override
+	protected Object walkSimple(final String key, final Object a)
+	{
+		printKey(key);
+
+		if (a instanceof JSONObject)
+		{
+			printObject((JSONObject) a);
+		}
+		else if (a instanceof JSONArray)
+		{
+			printArray((JSONArray) a);
+		}
+		else if (a instanceof String)
+		{
+			printString((String) a);
+		}
+		else
+		{
+			printBase(a);
+		}
+		return a;
+	}
+
 	protected void printKey(final String key)
 	{
 		if (!StringUtil.isEmpty(key))
 		{
 			printLine();
-			ps.print("\\cs2{\"" + key + "\"}\\cs1{:}");
+			printQuoted(key);
+			ps.print(":");
 		}
 	}
 
-	@Override
+	protected void printQuoted(final String key)
+	{
+		ps.print("\"" + key + "\"");
+	}
+
 	protected void printLine()
 	{
 		ps.println();
-		ps.print("\\line");
 		indent();
-
 	}
 
-	@Override
+	protected void indent()
+	{
+		for (int i = 0; i < indent; i++)
+			ps.print(' ');
+	}
+
 	protected void printBase(final Object a)
 	{
-		ps.print("\\cs3{" + a + "}");
+		ps.print(a);
 	}
 
-	@Override
 	protected void printString(final String a)
 	{
-		ps.print("\\cs4{\"" + a + "\"}");
+		printQuoted(a);
 	}
 
-	@Override
+	protected void printArray(final JSONArray a)
+	{
+		indent += singleIndent;
+		ps.print(getBeginArray());
+	}
+
 	protected String getBeginArray()
 	{
-		return "\\cs1{[}";
+		return "[";
 	}
 
-	@Override
+	protected void printObject(final JSONObject o)
+	{
+		indent += singleIndent;
+		ps.print(getBeginObj());
+	}
+
 	protected String getBeginObj()
 	{
-		return "\\cs1{\\{}";
+		return "{";
 	}
 
 	@Override
-	protected void writeHeader()
+	public void writeStream(final OutputStream os) throws IOException
 	{
-		ps.println("{\\rtf1\\ansi");
-		ps.println("\\deff0" + "{\\fonttbl\\f0\\fnil Courier New;}");
-		ps.println("{\\stylesheet" + "{\\s1 SampleCode;}" + "{\\cs1 XMLToken;}" + "{\\cs2 XMLElementName;}" + "{\\cs3 XMLAttributeName;}" + "{\\cs4 XMLAttributeValue;}"
-				+ "{\\cs5 XMLComment;}" + "}" + "\\pard\\plain\\s1");
-
+		ps = new PrintStream(os);
+		writeHeader();
+		walk();
+		writeFooter();
+		ps.flush();
 	}
 
-	@Override
 	protected void writeFooter()
 	{
-		ps.println("}");
+		// nop
 	}
 
+	protected void writeHeader()
+	{
+		// nop
+	}
+
+	/**
+	 * @see org.cip4.lib.jdf.jsonutil.JSONWalker#postWalk(java.lang.String, org.json.simple.JSONObject)
+	 */
 	@Override
+	protected void postWalk(final String rootKey, final JSONObject o)
+	{
+		indent -= singleIndent;
+		printLine();
+		ps.print(getEndObj());
+		super.postWalk(rootKey, o);
+	}
+
 	protected String getEndObj()
 	{
-		return "\\cs1{\\}}";
+		return "}";
 	}
 
+	/**
+	 * @see org.cip4.lib.jdf.jsonutil.JSONWalker#postWalk(java.lang.String, org.json.simple.JSONArray)
+	 */
 	@Override
+	protected void postWalk(final String key, final JSONArray val)
+	{
+		indent -= singleIndent;
+		printLine();
+		ps.print(getEndArray());
+		super.postWalk(key, val);
+	}
+
 	protected String getEndArray()
 	{
-		return "\\cs1{]}";
+		return "]";
 	}
 
+	/**
+	 * @see org.cip4.lib.jdf.jsonutil.JSONWalker#postArrayElement(java.lang.String, java.lang.Object, int)
+	 */
 	@Override
+	protected void postArrayElement(final String key, final Object a, final int i, final int size)
+	{
+		if (i < size - 1)
+		{
+			ps.print(getArraySep());
+		}
+		super.postArrayElement(key, a, i, size);
+	}
+
 	protected String getArraySep()
 	{
-		return "\\cs1{,}";
+		return ",";
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "JSONIndentWalker [singleIndent=" + singleIndent + ", indent=" + indent + "]";
 	}
 
 }
