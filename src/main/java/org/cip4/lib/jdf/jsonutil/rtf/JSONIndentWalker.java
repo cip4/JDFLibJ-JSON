@@ -237,7 +237,6 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	protected void postWalk(final String key, final JSONArray val)
 	{
 		indent -= singleIndent;
-		printLine();
 		ps.print(getEndArray());
 		super.postWalk(key, val);
 	}
