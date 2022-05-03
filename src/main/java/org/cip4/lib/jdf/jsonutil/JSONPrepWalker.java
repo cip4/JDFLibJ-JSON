@@ -66,7 +66,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	public JSONPrepWalker()
 	{
 		super(new BaseWalkerFactory());
-		explicitAudit = true;
+		explicitAudit = false;
 	}
 
 	private boolean explicitAudit;
@@ -74,7 +74,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	/**
 	 * @return the explicitAudit
 	 */
-	boolean isExplicitAudit()
+	public boolean isExplicitAudit()
 	{
 		return explicitAudit;
 	}
@@ -82,7 +82,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	/**
 	 * @param explicitAudit the explicitAudit to set
 	 */
-	void setExplicitAudit(final boolean explicitAudit)
+	public void setExplicitAudit(final boolean explicitAudit)
 	{
 		this.explicitAudit = explicitAudit;
 	}
@@ -332,5 +332,14 @@ public class JSONPrepWalker extends BaseElementWalker
 			return VString.getVString(ElementName.BOXFOLDINGPARAMS, null);
 		}
 
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return "JSONPrepWalker [explicitAudit=" + explicitAudit + "]";
 	}
 }

@@ -43,6 +43,7 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.cip4.jdflib.core.AttributeName;
@@ -75,6 +76,16 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		w.setExplicitAudit(false);
 		w.walkTree(xjdf, null);
 		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"Created\"]/Header/@DeviceID", null));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testToString()
+	{
+		final JSONPrepWalker w = new JSONPrepWalker();
+		assertNotNull(w.toString());
 	}
 
 	/**
