@@ -398,7 +398,18 @@ public class JSONReaderTest extends JSONTestCaseBase
 		assertEquals("a", a.getLocalName());
 		assertNotNull(a.getElement("b"));
 		assertNull(a.getElement("b", null, 1));
+	}
 
+	@Test
+	public void testSimpleObjSchema()
+	{
+		final XMLDoc d = new XMLDoc();
+		final JSONReader r = new JSONReader();
+		final KElement a = r.getElement("{\"Schema\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
+		assertNotNull(a);
+		assertEquals("a", a.getLocalName());
+		assertNotNull(a.getElement("b"));
+		assertNull(a.getElement("b", null, 1));
 	}
 
 	@Test

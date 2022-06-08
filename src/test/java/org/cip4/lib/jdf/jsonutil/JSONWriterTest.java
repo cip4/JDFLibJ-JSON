@@ -81,6 +81,7 @@ import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONPrefix;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
@@ -103,6 +104,25 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = new JSONWriter().convert(xjmf);
 		assertNotNull(o.toJSONString());
 		log.info(o.toJSONString());
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertRoot()
+	{
+		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
+		final KElement xjmf = new JDFToXJDF().convert(jmf);
+		for (eJSONRoot r : eJSONRoot.values())
+		{
+			JSONWriter jsonWriter = new JSONWriter();
+			jsonWriter.setJsonRoot(r);
+			final JSONObject o = jsonWriter.convert(xjmf);
+			new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + r.name() + ".json");
+			assertNotNull(o.toJSONString());
+			log.info(o.toJSONString());
+		}
 	}
 
 	@Test
@@ -728,8 +748,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/"
-					+ UrlUtil.newExtension(x.getName(), "json")));
+			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())),
+					sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
@@ -743,8 +763,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
-		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
-				+ "json/QualityControlColorSpectrum.json");
+		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")),
+				sm_dirTestDataTemp + "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
 
 	}

@@ -71,6 +71,7 @@ import org.json.simple.JSONObject;
  */
 public class JSONWriter extends JSONObjHelper
 {
+
 	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
 	boolean wantArray;
@@ -154,6 +155,31 @@ public class JSONWriter extends JSONObjHelper
 		}
 	}
 
+	public enum eJSONRoot
+	{
+		retain, none, schema;
+
+		public static List<String> getNames()
+		{
+			final StringArray a = new StringArray();
+			for (final eJSONRoot e : values())
+			{
+				a.add(e.name());
+			}
+			return a;
+		}
+
+		public static eJSONRoot getEnum(final String name)
+		{
+			for (final eJSONRoot e : values())
+			{
+				if (e.name().equalsIgnoreCase(name))
+					return e;
+			}
+			return null;
+		}
+	}
+
 	public enum eJSONPrefix
 	{
 		retain, underscore, none;
@@ -183,6 +209,7 @@ public class JSONWriter extends JSONObjHelper
 	eJSONCase keyCase;
 	eJSONCase valueCase;
 	static final Log log = LogFactory.getLog(JSONWriter.class);
+	static final String SCHEMA = "Schema";
 
 	public boolean isTypeSafe()
 	{
@@ -210,6 +237,17 @@ public class JSONWriter extends JSONObjHelper
 	final Set<String> stringArray;
 	final Set<String> skipPool;
 	final Set<String> transferFunction;
+	private eJSONRoot jsonRoot;
+
+	public eJSONRoot getJsonRoot()
+	{
+		return jsonRoot;
+	}
+
+	public void setJsonRoot(eJSONRoot jsonRoot)
+	{
+		this.jsonRoot = jsonRoot;
+	}
 
 	/**
 	 * @return true if all elements should be wrapped in an array
@@ -304,8 +342,8 @@ public class JSONWriter extends JSONObjHelper
 		if (va != null)
 		{
 			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
-					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList",
+					"IntegerRange", "LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			for (final KElement e : va)
 			{
 				final String type = getTypeFromSchemaAttribute(e);
@@ -423,6 +461,7 @@ public class JSONWriter extends JSONObjHelper
 		keyCase = valueCase = eJSONCase.retain;
 		mixedText = TEXT;
 		prefix = eJSONPrefix.retain;
+		jsonRoot = eJSONRoot.retain;
 	}
 
 	/**
@@ -437,8 +476,34 @@ public class JSONWriter extends JSONObjHelper
 			prepWalker.walkTree(e, null);
 		}
 		walk(e, j);
-		setRoot(j);
+		JSONObject j2 = updateRoot(j);
+
+		setRoot(j2);
+		return j2;
+	}
+
+	JSONObject updateRoot(JSONObject j)
+	{
+		if (!eJSONRoot.retain.equals(getJsonRoot()))
+		{
+			Set keys = j.keySet();
+			if (ContainerUtil.size(keys) == 1)
+			{
+				String key = (String) keys.iterator().next();
+				JSONObject first = (JSONObject) j.get(key);
+				if (eJSONRoot.schema.equals(getJsonRoot()))
+				{
+					first.put(SCHEMA, key);
+				}
+				return first;
+			}
+			else
+			{
+				log.warn("Not modifying multi-root object");
+			}
+		}
 		return j;
+
 	}
 
 	/**
@@ -914,8 +979,8 @@ public class JSONWriter extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe=" + isTypeSafe()
-				+ ", arrayNames=" + arrayNames + "]";
+		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe="
+				+ isTypeSafe() + ", arrayNames=" + arrayNames + "]";
 	}
 
 	public eJSONCase getKeyCase()
