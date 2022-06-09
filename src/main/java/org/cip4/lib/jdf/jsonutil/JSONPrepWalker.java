@@ -53,9 +53,7 @@ import org.cip4.jdflib.elementwalker.BaseWalkerFactory;
 import org.cip4.jdflib.util.StringUtil;
 
 /**
- * @author rainer prosi
- *
- *         class to preprocess xjdf or printTalk for json conversion
+ * @author rainer prosi class to preprocess xjdf or printTalk for json conversion
  */
 public class JSONPrepWalker extends BaseElementWalker
 {
@@ -88,9 +86,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkElement extends BaseWalker
 	{
@@ -138,7 +134,7 @@ public class JSONPrepWalker extends BaseElementWalker
 				if (auditnames.contains(elem.getLocalName()))
 				{
 
-					m.moveElement(elem, null);
+					m.moveElement(elem, e);
 					elem.setAttribute(AttributeName.NAME, StringUtil.rightStr(elem.getLocalName(), -5));
 					elem.renameElement(ElementName.AUDITPOOL, null);
 				}
@@ -167,9 +163,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkAudit extends WalkElement
 	{
@@ -208,9 +202,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkPrintTalkSingleString extends WalkElement
 	{
@@ -244,9 +236,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkMediaLayers extends WalkElement
 	{
@@ -286,9 +276,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkBoxFoldingParams extends WalkElement
 	{

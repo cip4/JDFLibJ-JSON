@@ -62,7 +62,6 @@ import org.junit.Test;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONPostWalkerTest extends JSONTestCaseBase
 {
@@ -121,14 +120,18 @@ public class JSONPostWalkerTest extends JSONTestCaseBase
 		mediaLayers.appendElement(ElementName.GLUE);
 
 		final KElement xjdf2 = h.getRoot().cloneNewDoc();
+		h.getRoot().write2File(sm_dirTestDataTemp + "ml0.xjdf");
+
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(h.getRoot(), null);
+		h.getRoot().write2File(sm_dirTestDataTemp + "ml1.xjdf");
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@Name", null));
 		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@Name", null));
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@Name", null));
 		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@Name", null));
 		final JSONPostWalker pw = new JSONPostWalker();
 		pw.walkTree(h.getRoot(), null);
+		h.getRoot().write2File(sm_dirTestDataTemp + "ml2.xjdf");
 		assertTrue(xjdf2.isEqual(h.getRoot()));
 	}
 

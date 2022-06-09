@@ -51,9 +51,7 @@ import org.cip4.jdflib.elementwalker.BaseWalker;
 import org.cip4.jdflib.elementwalker.BaseWalkerFactory;
 
 /**
- * @author rainer prosi
- *
- *         class to preprocess xjdf or printTalk for json conversion
+ * @author rainer prosi class to preprocess xjdf or printTalk for json conversion
  */
 public class JSONPostWalker extends BaseElementWalker
 {
@@ -67,9 +65,7 @@ public class JSONPostWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkElement extends BaseWalker
 	{
@@ -130,9 +126,7 @@ public class JSONPostWalker extends BaseElementWalker
 	}
 
 	/**
-	 *
 	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
 	 */
 	public class WalkAudit extends WalkElement
 	{
@@ -164,9 +158,7 @@ public class JSONPostWalker extends BaseElementWalker
 	}
 
 	/**
-	 * TODO invert
-	 * the default is to simply stop walking and ignore these they may have been evaluated in a parent
-	 *
+	 * TODO invert the default is to simply stop walking and ignore these they may have been evaluated in a parent
 	 */
 	public class WalkMediaLayer extends WalkElement
 	{
@@ -215,13 +207,13 @@ public class JSONPostWalker extends BaseElementWalker
 			if (!ml.hasNonEmpty(AttributeName.NAME))
 				return ml;
 		}
-		return m.appendElement(pool);
+		KElement newPool = m.appendElement(pool);
+		m.moveElement(newPool, e);
+		return newPool;
 	}
 
 	/**
-	 *
 	 * @author rainerprosi
-	 *
 	 */
 	public class WalkBoxFoldAction extends WalkElement
 	{
