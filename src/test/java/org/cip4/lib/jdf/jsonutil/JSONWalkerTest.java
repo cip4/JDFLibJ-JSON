@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are
@@ -49,7 +49,10 @@
 
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
@@ -87,6 +90,46 @@ public class JSONWalkerTest extends JSONTestCaseBase
 	{
 		JSONWalker w = new TestWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}"));
 		assertNotNull(w.walk());
+	}
+
+	@Test
+	public void testWalkNull()
+	{
+		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
+		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
+		w.setRetainNull(true);
+		assertTrue(w.isRetainNull());
+		JSONObjHelper walk = w.walk();
+		String s = walk.toJSONString();
+		assertEquals(s0, s);
+	}
+
+	@Test
+	public void testWalkNullZapp()
+	{
+		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
+		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
+		w.setRetainNull(false);
+		JSONObjHelper walk = w.walk();
+		assertNull(walk);
+	}
+
+	@Test
+	public void testWalkNullZapp1()
+	{
+		String s0 = "{\"a\":{\"b\":[{\"c\":null,\"c1\":\"\"}]}}";
+		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
+		w.setRetainNull(false);
+		JSONObjHelper walk = w.walk();
+		assertNotNull(walk);
+		assertEquals(-1, walk.toJSONString().indexOf("null"));
+	}
+
+	@Test
+	public void testToString()
+	{
+		JSONWalker w = new TestWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}"));
+		assertNotNull(w.toString());
 	}
 
 }

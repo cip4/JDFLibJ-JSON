@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -54,10 +54,17 @@ import org.json.simple.JSONObject;
  */
 public abstract class JSONWalker
 {
+	@Override
+	public String toString()
+	{
+		return "JSONWalker [sorted=" + sorted + ", keyInArray=" + keyInArray + ", retainNull=" + retainNull + ", root=" + root + "]";
+	}
+
 	private static Log log = LogFactory.getLog(JSONReader.class);
 	private final JSONObjHelper root;
 	boolean sorted;
 	boolean keyInArray;
+	boolean retainNull;
 
 	/**
 	 * @return the keyInArray
@@ -97,6 +104,7 @@ public abstract class JSONWalker
 		this.root = root;
 		sorted = true;
 		keyInArray = true;
+		retainNull = false;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,7 +136,7 @@ public abstract class JSONWalker
 			{
 				c = walkSimple(key, val);
 			}
-			if (c == null)
+			if (!retainNull && c == null)
 			{
 				o.remove(key);
 				size--;
@@ -176,7 +184,7 @@ public abstract class JSONWalker
 				{
 					c = walkSimple(newKey, a);
 				}
-				if (c == null)
+				if (!retainNull && c == null)
 				{
 					val.remove(i);
 					i--;
@@ -218,13 +226,14 @@ public abstract class JSONWalker
 		return (w instanceof JSONObject) ? new JSONObjHelper((JSONObject) w) : null;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
+	public boolean isRetainNull()
 	{
-		return "JSONWalker [sorted=" + sorted + ", " + (root != null ? "root=" + root : "") + "]";
+		return retainNull;
+	}
+
+	public void setRetainNull(boolean retainNull)
+	{
+		this.retainNull = retainNull;
 	}
 
 }
