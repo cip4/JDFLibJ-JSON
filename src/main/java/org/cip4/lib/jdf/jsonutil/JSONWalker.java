@@ -143,6 +143,7 @@ public abstract class JSONWalker
 			}
 			else
 			{
+				o.put(key, c);
 				postArrayElement(key, o, i++, size);
 			}
 		}
@@ -192,6 +193,7 @@ public abstract class JSONWalker
 				}
 				else
 				{
+					val.set(i, c);
 					postArrayElement(key, a, i, size);
 				}
 			}
