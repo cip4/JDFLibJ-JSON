@@ -50,6 +50,7 @@ import org.cip4.jdflib.core.JDFComment;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.AuditHelper.eAudit;
 import org.cip4.jdflib.extensions.AuditPoolHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
@@ -182,18 +183,18 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
 		final AuditPoolHelper ap = h.getCreateAuditPool();
-		ap.appendAudit("AuditCreated");
-		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO);
-		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
-		ap.appendAudit("AuditStatus").appendElement(ElementName.DEVICEINFO).setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
-		ap.appendAudit("AuditResource").appendElement(ElementName.RESOURCEINFO);
-		ap.appendAudit("AuditNotification");
-		ap.appendAudit("AuditProcessRun");
+		ap.appendAudit(eAudit.Created);
+		ap.appendAudit(eAudit.Status).appendElement(ElementName.DEVICEINFO);
+		ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
+		ap.appendAudit(eAudit.Status).appendElement(ElementName.DEVICEINFO).setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
+		ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
+		ap.appendAudit(eAudit.Notification);
+		ap.appendAudit(eAudit.ProcessRun);
 		h.cleanUp();
 
 		jsonWriter.convert(xjdf);
 		final String output = "auditpool.json";
-		writeBothJson(ap.getRoot(), jsonWriter, output);
+		writeBothJson(xjdf, jsonWriter, output);
 	}
 
 }

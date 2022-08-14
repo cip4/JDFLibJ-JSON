@@ -229,9 +229,19 @@ public class JSONReader
 	@SuppressWarnings("unchecked")
 	KElement walkTree(final JSONObject o, KElement root)
 	{
-		if (root == null && o.size() > 1)
+
+		if (root == null)
 		{
-			root = KElement.createRoot("json", null);
+			if (o.get("Schema") != null)
+			{
+				final JSONObjHelper h = new JSONObjHelper(o);
+				root = KElement.createRoot(h.getString("Schema"), null);
+				o.remove("Schema");
+			}
+			else if (o.size() > 1)
+			{
+				root = KElement.createRoot("json", null);
+			}
 		}
 		KElement next = root;
 		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
@@ -265,7 +275,7 @@ public class JSONReader
 				walkSimple(key, val, root);
 			}
 		}
-		return next;
+		return root != null ? root : next;
 	}
 
 	KElement createRoot(final String key)

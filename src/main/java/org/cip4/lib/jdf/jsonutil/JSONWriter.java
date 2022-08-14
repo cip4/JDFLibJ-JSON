@@ -93,7 +93,7 @@ public class JSONWriter extends JSONObjHelper
 	public void setXJDF()
 	{
 		final JSONPrepWalker jsonPrepWalker = new JSONPrepWalker();
-		jsonPrepWalker.setExplicitAudit(true);
+		jsonPrepWalker.setExplicitAudit(false);
 		this.prepWalker = jsonPrepWalker;
 		setPrefix(eJSONPrefix.retain);
 		setKeyCase(eJSONCase.retain);
@@ -244,7 +244,7 @@ public class JSONWriter extends JSONObjHelper
 		return jsonRoot;
 	}
 
-	public void setJsonRoot(eJSONRoot jsonRoot)
+	public void setJsonRoot(final eJSONRoot jsonRoot)
 	{
 		this.jsonRoot = jsonRoot;
 	}
@@ -342,8 +342,8 @@ public class JSONWriter extends JSONObjHelper
 		if (va != null)
 		{
 			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList",
-					"IntegerRange", "LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
+					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			for (final KElement e : va)
 			{
 				final String type = getTypeFromSchemaAttribute(e);
@@ -468,29 +468,31 @@ public class JSONWriter extends JSONObjHelper
 	 * @param e
 	 * @return
 	 */
-	public JSONObject convert(final KElement e)
+	public JSONObject convert(final KElement e0)
 	{
 		final JSONObject j = new JSONObject();
+		KElement e = e0;
 		if (prepWalker != null)
 		{
+			e = e0.cloneNewDoc();
 			prepWalker.walkTree(e, null);
 		}
 		walk(e, j);
-		JSONObject j2 = updateRoot(j);
+		final JSONObject j2 = updateRoot(j);
 
 		setRoot(j2);
 		return j2;
 	}
 
-	JSONObject updateRoot(JSONObject j)
+	JSONObject updateRoot(final JSONObject j)
 	{
 		if (!eJSONRoot.retain.equals(getJsonRoot()))
 		{
-			Set keys = j.keySet();
+			final Set keys = j.keySet();
 			if (ContainerUtil.size(keys) == 1)
 			{
-				String key = (String) keys.iterator().next();
-				JSONObject first = (JSONObject) j.get(key);
+				final String key = (String) keys.iterator().next();
+				final JSONObject first = (JSONObject) j.get(key);
 				if (eJSONRoot.schema.equals(getJsonRoot()))
 				{
 					first.put(SCHEMA, key);
@@ -979,8 +981,8 @@ public class JSONWriter extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe="
-				+ isTypeSafe() + ", arrayNames=" + arrayNames + "]";
+		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe=" + isTypeSafe()
+				+ ", arrayNames=" + arrayNames + "]";
 	}
 
 	public eJSONCase getKeyCase()

@@ -132,8 +132,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 	public void testRootNoName()
 	{
 		final JSONReader r = new JSONReader();
-		final KElement a = r.getElement(
-				"{\"id\": 159877, 	\"product_id\": 107274, 	\"created_at\": \"2019-04-01T13:55:45.837Z\", 	\"updated_at\": \"2019-04-01T14:05:49.518Z\"}");
+		final KElement a = r.getElement("{\"id\": 159877, 	\"product_id\": 107274, 	\"created_at\": \"2019-04-01T13:55:45.837Z\", 	\"updated_at\": \"2019-04-01T14:05:49.518Z\"}");
 		assertNotNull(a);
 		assertEquals("json", a.getLocalName());
 		assertEquals("159877", a.getAttribute("id"));
@@ -405,9 +404,10 @@ public class JSONReaderTest extends JSONTestCaseBase
 	{
 		final XMLDoc d = new XMLDoc();
 		final JSONReader r = new JSONReader();
-		final KElement a = r.getElement("{\"Schema\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
+		final KElement root = r.getElement("{\"Schema\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
+		assertNotNull(root);
+		assertEquals("foo", root.getLocalName());
+		final KElement a = root.getElement("a");
 		assertNotNull(a.getElement("b"));
 		assertNull(a.getElement("b", null, 1));
 	}
@@ -506,8 +506,8 @@ public class JSONReaderTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
-		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")),
-				sm_dirTestDataTemp + "json/QualityControlColorSpectrum.json");
+		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
+				+ "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
 		final JSONReader r = new JSONReader();
 		final KElement e = r.getElement(o);

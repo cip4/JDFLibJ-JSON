@@ -184,6 +184,8 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printObject(final JSONObject o)
 	{
+		if (!o.isEmpty())
+			printLine();
 		indent += singleIndent;
 		ps.print(getBeginObj());
 	}
@@ -220,7 +222,10 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	protected void postWalk(final String rootKey, final JSONObject o)
 	{
 		indent -= singleIndent;
-		printLine();
+		if (!o.isEmpty())
+		{
+			printLine();
+		}
 		ps.print(getEndObj());
 		super.postWalk(rootKey, o);
 	}
@@ -237,6 +242,10 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	protected void postWalk(final String key, final JSONArray val)
 	{
 		indent -= singleIndent;
+		if (!val.isEmpty())
+		{
+			printLine();
+		}
 		ps.print(getEndArray());
 		super.postWalk(key, val);
 	}
