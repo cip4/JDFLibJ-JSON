@@ -44,6 +44,8 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
 
+import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
@@ -55,6 +57,8 @@ import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.resource.process.JDFAddress;
 import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
+import org.cip4.jdflib.resource.process.JDFMedia;
+import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -98,6 +102,30 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 		assertEquals("line 2", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[2]", null));
 		assertEquals("line 3", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[3]", null));
 
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testMediaLayers()
+	{
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final JDFMedia m = (JDFMedia) h.getCreateSet(ElementName.MEDIA, EnumUsage.Input).getCreatePartition(0, true).getResource();
+		m.setMediaType(EnumMediaType.SelfAdhesive);
+		final JDFMediaLayers mls = m.appendMediaLayers();
+		mls.appendMedia().setMediaType(EnumMediaType.Paper);
+		mls.appendElement(ElementName.GLUE).setAttribute(AttributeName.AREAGLUE, true, null);
+		mls.appendMedia().setMediaType(EnumMediaType.Paper);
+		h.cleanUp();
+
+		final JSONObject o = jsonWriter.convert(xjdf);
+		final JSONReader jr = getXJDFReader();
+		final KElement xjdf2 = jr.getElement(o);
+		xjdf2.write2File(sm_dirTestDataTemp + "medialayers.xjdf");
 	}
 
 	/**

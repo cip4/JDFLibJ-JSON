@@ -44,6 +44,7 @@ package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
@@ -58,6 +59,8 @@ import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.resource.process.JDFAddress;
 import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
+import org.cip4.jdflib.resource.process.JDFMedia;
+import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -194,6 +197,29 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 		jsonWriter.convert(xjdf);
 		final String output = "auditpool.json";
+		writeBothJson(xjdf, jsonWriter, output);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testMediaLayers()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final JDFMedia m = (JDFMedia) h.getCreateSet(ElementName.MEDIA, EnumUsage.Input).getCreatePartition(0, true).getResource();
+		m.setMediaType(EnumMediaType.SelfAdhesive);
+		final JDFMediaLayers mls = m.appendMediaLayers();
+		mls.appendMedia().setMediaType(EnumMediaType.Paper);
+		mls.appendElement(ElementName.GLUE).setAttribute(AttributeName.AREAGLUE, true, null);
+		mls.appendMedia().setMediaType(EnumMediaType.Paper);
+		h.cleanUp();
+
+		jsonWriter.convert(xjdf);
+		final String output = "medialayers.json";
 		writeBothJson(xjdf, jsonWriter, output);
 	}
 
