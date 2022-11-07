@@ -234,7 +234,12 @@ public class JSONWriter extends JSONObjHelper
 	final Set<String> arrayNames;
 	final Set<String> mixedElements;
 	final Set<String> alwaysString;
+	final Set<String> knownAtts;
+	final Set<String> knownElems;
 	final Set<String> stringArray;
+	final Set<String> numbers;
+	final Set<String> numList;
+	final Set<String> bool;
 	final Set<String> skipPool;
 	final Set<String> transferFunction;
 	private eJSONRoot jsonRoot;
@@ -271,52 +276,30 @@ public class JSONWriter extends JSONObjHelper
 	 */
 	public boolean addArray(final String element)
 	{
-		final String key = StringUtil.normalize(element, true, "_ -");
-		if (key != null)
-		{
-			return arrayNames.add(key);
-		}
-		return false;
+		return addList(element, arrayNames);
 	}
 
 	public boolean addSkipPool(final String element)
 	{
-		final String key = StringUtil.normalize(element, true, "_ -");
-		if (key != null)
-		{
-			return skipPool.add(key);
-		}
-		return false;
+		return addList(element, skipPool);
 	}
 
 	public boolean addString(final String attribute)
 	{
 		final String key = StringUtil.normalize(attribute, true, "_ -");
-		if (key != null)
-		{
-			return alwaysString.add(key);
-		}
-		return false;
+		if (knownAtts.contains(key))
+			return false;
+		return addList(attribute, alwaysString);
 	}
 
 	public boolean addMixed(final String element)
 	{
-		final String key = StringUtil.normalize(element, true, "_ -");
-		if (key != null)
-		{
-			return mixedElements.add(key);
-		}
-		return false;
+		return addList(element, mixedElements);
 	}
 
 	public boolean addStringArray(final String attribute)
 	{
-		final String key = StringUtil.normalize(attribute, true, "_ -");
-		if (key != null)
-		{
-			return stringArray.add(key);
-		}
-		return false;
+		return addList(attribute, stringArray);
 	}
 
 	/**
@@ -335,6 +318,7 @@ public class JSONWriter extends JSONObjHelper
 				{
 					fillArrayFromSchema(e);
 				}
+				knownElems.add(getNameFromSchema(e));
 			}
 		}
 
@@ -356,10 +340,20 @@ public class JSONWriter extends JSONObjHelper
 				{
 					addTransferFunction(name);
 				}
+				else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
+				{
+					addList(name, numbers);
+				}
+				else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
+						|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
+				{
+					addList(name, numList);
+				}
 				else if (!types.contains(type))
 				{
 					addString(name);
 				}
+				knownAtts.add(name);
 			}
 		}
 	}
@@ -375,6 +369,12 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	public void fillArrayFromSchema(final KElement e)
+	{
+		final String key = getNameFromSchema(e);
+		addArray(key);
+	}
+
+	public String getNameFromSchema(final KElement e)
 	{
 		final String name = e.getNonEmpty("ref");
 		KElement parentContent = getAncestor(e, "complexType");
@@ -392,15 +392,20 @@ public class JSONWriter extends JSONObjHelper
 			contentName = parentContent.getNonEmpty("ref");
 
 		final String key = contentName == null ? name : contentName + JDFConstants.SLASH + name;
-		addArray(key);
+		return key;
 	}
 
 	public boolean addTransferFunction(final String name)
 	{
+		return addList(name, transferFunction);
+	}
+
+	public boolean addList(final String name, Set<String> list)
+	{
 		final String key = StringUtil.normalize(name, true, "_ -");
 		if (key != null)
 		{
-			return transferFunction.add(key);
+			return list.add(key);
 		}
 		return false;
 	}
@@ -456,8 +461,13 @@ public class JSONWriter extends JSONObjHelper
 		alwaysString = new HashSet<>();
 		mixedElements = new HashSet<>();
 		stringArray = new HashSet<>();
+		numbers = new HashSet<>();
+		bool = new HashSet<>();
+		numList = new HashSet<>();
 		transferFunction = new HashSet<>();
 		skipPool = new HashSet<>();
+		knownAtts = new HashSet<>();
+		knownElems = new HashSet<>();
 		keyCase = valueCase = eJSONCase.retain;
 		mixedText = TEXT;
 		prefix = eJSONPrefix.retain;
@@ -665,6 +675,8 @@ public class JSONWriter extends JSONObjHelper
 	{
 		if (typeSafe && isTypesafeKey(key))
 		{
+			final String normalized = StringUtil.normalize(key, true, "_ -");
+
 			if (isArrayKey(key))
 			{
 				final StringArray a = StringArray.getVString(val, null);
@@ -682,39 +694,63 @@ public class JSONWriter extends JSONObjHelper
 					return ar;
 				}
 			}
-			else if (StringUtil.isNumber(val))
+			else if (numList.contains(normalized) && JDFNumberList.createNumberList(val) != null)
 			{
-				if (StringUtil.isInteger(val))
-				{
-					return Integer.valueOf(StringUtil.parseInt(val, 0));
-				}
-				else if (StringUtil.isLong(val))
-				{
-					return Long.valueOf(StringUtil.parseLong(val, 0));
-				}
-				else
-				{
-					return Double.valueOf(StringUtil.parseDouble(val, 0));
-				}
+				return getNumListArray(val);
 			}
-			else if (StringUtil.isBoolean(val))
+			else if (numbers.contains(normalized) && StringUtil.isNumber(val))
 			{
-				return Boolean.valueOf(val);
+				return getNumber(val);
+			}
+			else if (bool.contains(normalized) && StringUtil.isBoolean(val))
+			{
+				return Boolean.valueOf(StringUtil.parseBoolean(val, true));
 			}
 			else if (isTransferCurve(key))
 			{
 				return getTransferCurve(val);
 			}
+			else if (StringUtil.isNumber(val))
+			{
+				numbers.add(normalized);
+				return getNumber(val);
+			}
+			else if (StringUtil.isBoolean(val))
+			{
+				bool.add(normalized);
+				return Boolean.valueOf(val);
+			}
 			else if (JDFNumberList.createNumberList(val) != null)
 			{
+				numbers.remove(normalized);
+				numList.add(normalized);
 				return getNumListArray(val);
 			}
 			if (addString(key))
 			{
+				numbers.remove(normalized);
+				bool.remove(normalized);
+				numList.remove(normalized);
 				log.info("found new string type: " + key);
 			}
 		}
 		return updateCase(StringUtil.getNonEmpty(val), valueCase);
+	}
+
+	protected Object getNumber(final String val)
+	{
+		if (StringUtil.isInteger(val))
+		{
+			return Integer.valueOf(StringUtil.parseInt(val, 0));
+		}
+		else if (StringUtil.isLong(val))
+		{
+			return Long.valueOf(StringUtil.parseLong(val, 0));
+		}
+		else
+		{
+			return Double.valueOf(StringUtil.parseDouble(val, 0));
+		}
 	}
 
 	JSONArray getTransferCurve(final String val)
@@ -783,7 +819,8 @@ public class JSONWriter extends JSONObjHelper
 	{
 		final JDFNumberList nl = JDFNumberList.createNumberList(val);
 		final JSONArray a = new JSONArray();
-		for (int i = 0; i < nl.size(); i++)
+		int size = ContainerUtil.size(nl);
+		for (int i = 0; i < size; i++)
 		{
 			final double d = nl.doubleAt(i);
 			addNumber(a, d);

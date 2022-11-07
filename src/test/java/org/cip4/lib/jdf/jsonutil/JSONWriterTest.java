@@ -677,6 +677,50 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testNumFromSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		assertTrue(jsonWriter.numbers.contains("amount"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testNumListFromSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		assertTrue(jsonWriter.numList.contains("ctm"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testNumListRetainSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		assertTrue(jsonWriter.numList.contains("ctm"));
+		KElement xjdf = KElement.parseString("<XJDF CTM=\"foo\" />");
+		JSONObject o = jsonWriter.convert(xjdf);
+		assertEquals("foo", new JSONObjHelper(o).getPathObject("XJDF/CTM"));
+		assertTrue(jsonWriter.numList.contains("ctm"));
+		assertFalse(jsonWriter.alwaysString.contains("ctm"));
+		xjdf.setAttribute("CTM", "1");
+		JSONObject o2 = jsonWriter.convert(xjdf);
+		assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/CTM[0]"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testStringFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -748,8 +792,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())),
-					sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
+			assertNotNull(
+					FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
