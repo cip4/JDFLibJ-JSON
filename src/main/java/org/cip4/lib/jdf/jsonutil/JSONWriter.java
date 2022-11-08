@@ -318,7 +318,7 @@ public class JSONWriter extends JSONObjHelper
 				{
 					fillArrayFromSchema(e);
 				}
-				knownElems.add(getNameFromSchema(e));
+				addList(getNameFromSchema(e), knownElems);
 			}
 		}
 
@@ -927,7 +927,7 @@ public class JSONWriter extends JSONObjHelper
 			{
 				return getParent(null, key2 + JDFConstants.SLASH + key, n);
 			}
-			else if (n > 1)
+			else if (n > 1 && !knownElems.contains(key))
 			{
 				if (addArray(childName))
 				{

@@ -60,6 +60,7 @@ import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumDeviceDetails;
 import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumJobDetails;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
@@ -715,6 +716,25 @@ public class JSONWriterTest extends JSONTestCaseBase
 		xjdf.setAttribute("CTM", "1");
 		JSONObject o2 = jsonWriter.convert(xjdf);
 		assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/CTM[0]"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testArrayRetainSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		assertTrue(jsonWriter.arrayNames.contains("xjdf/resourceset"));
+		XJDFHelper xjdf = new XJDFHelper(EnumVersion.Version_2_0, "a");
+		xjdf.getCreateSet("Foo", null);
+		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
+		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
+		JSONObject o = jsonWriter.convert(xjdf.getRoot());
+		assertFalse(jsonWriter.arrayNames.contains("auditpool"));
+		assertFalse(jsonWriter.arrayNames.contains("xjdf/auditpool"));
 	}
 
 	/**
