@@ -633,6 +633,30 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testEmptyElements()
+	{
+		final KElement e = KElement.createRoot("a", null);
+		for (int i = 0; i < 3; i++)
+			e.appendElement("b");
+		e.appendElement("b").setAttribute("c", "d");
+		for (int i = 0; i < 3; i++)
+			e.appendElement("b");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		final JSONObject o = jsonWriter.convert(e);
+		final String jsonString = o.toJSONString();
+		JSONObject a = (JSONObject) o.get("a");
+		JSONArray b = (JSONArray) a.get("b");
+		assertEquals(7, b.size());
+		JSONObject b4 = (JSONObject) b.get(3);
+		assertEquals("d", b4.get("c"));
+
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testLearnArray()
 	{
 		final KElement e = KElement.createRoot("a", null);
