@@ -65,15 +65,14 @@ import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.elementwalker.ElementWalker;
+import org.cip4.jdflib.extensions.MessageResourceHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.extensions.xjdfwalker.jdftoxjdf.JDFToXJDF;
-import org.cip4.jdflib.jmf.JDFDeviceInfo;
 import org.cip4.jdflib.jmf.JDFJMF;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
-import org.cip4.jdflib.jmf.JDFSignal;
 import org.cip4.jdflib.jmf.JMFBuilderFactory;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ByteArrayIOStream.ByteArrayIOInputStream;
@@ -304,9 +303,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 	public void testConvertArray()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
-		final JDFSignal sig = jmf.getSignal(0);
-		final JDFDeviceInfo di = sig.getDeviceInfo(0);
-		sig.copyElement(di, null);
 
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
 		final JSONObject o = new JSONWriter().convert(xjmf);
@@ -469,6 +465,30 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONObjHelper oh = new JSONObjHelper(o);
 		assertTrue(oh.getBool("XJDF/ProductList/Product[0]/IsRoot", false));
 		assertEquals(123, oh.getInt("XJDF/ProductList/Product[0]/Amount", -1));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertSchemaArray()
+	{
+		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
+		MessageResourceHelper mh = (MessageResourceHelper) xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
+		SetHelper sh = mh.appendSet("foo");
+		xjmfHelper.cleanUp();
+		final KElement xjdf = xjmfHelper.getRoot();
+		xjdf.setXPathValue("Comment", "foo");
+
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"));
+		final JSONObject o = jsonWriter.convert(xjdf);
+		assertNotNull(o.toJSONString());
+		final String jsonString = o.toJSONString();
+		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		assertTrue(jsonString.indexOf("[") > 0);
+		log.info(jsonString);
 	}
 
 	/**
@@ -696,6 +716,24 @@ public class JSONWriterTest extends JSONTestCaseBase
 		assertFalse(jsonWriter.getArrayNames().contains("xjdf"));
 		assertFalse(jsonWriter.getArrayNames().contains("xjmf/header"));
 		assertFalse(jsonWriter.getArrayNames().contains("placedobject/markobject"));
+
+		assertTrue(jsonWriter.isArray("resource/part"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertArrayFromSchema()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setWantArray(false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+
+		KElement e = KElement.createRoot("XJDF", null);
+		e.appendElement("ResourceSet").appendElement("Resource").appendElement("Part");
+		JSONObject o = jsonWriter.convert(e);
+		assertTrue(o.toJSONString().indexOf("[") > 0);
 	}
 
 	/**
