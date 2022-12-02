@@ -376,7 +376,10 @@ public class JSONWriter extends JSONObjHelper
 
 	public String getNameFromSchema(final KElement e)
 	{
-		final String name = e.getNonEmpty("ref");
+		String name = e.getNonEmpty("ref");
+		if (StringUtil.isEmpty(name))
+			name = e.getNonEmpty("name");
+
 		KElement parentContent = getAncestor(e, "complexType");
 		String contentName = null;
 		if (parentContent == null || parentContent.getNonEmpty("name") == null)
@@ -797,7 +800,7 @@ public class JSONWriter extends JSONObjHelper
 		return normalized != null && transferFunction.contains(normalized);
 	}
 
-	boolean isTypesafeKey(final String key)
+	public boolean isTypesafeKey(final String key)
 	{
 		final String normalized = StringUtil.normalize(key, true, "_ -");
 		return normalized != null && !alwaysString.contains(normalized);

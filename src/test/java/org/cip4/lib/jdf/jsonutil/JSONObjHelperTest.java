@@ -77,6 +77,15 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testBlank()
+	{
+		final String root = "{\"a b c\":{\"b\":[{\"c\":\"d\"}]}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		assertEquals("a b c", r.getRootNames().get(0));
+		assertEquals("a b c", r.getRootName());
+	}
+
+	@Test
 	public void testAdd()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
