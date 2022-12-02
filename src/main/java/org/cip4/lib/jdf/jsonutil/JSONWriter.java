@@ -314,7 +314,18 @@ public class JSONWriter extends JSONObjHelper
 			for (final KElement e : ve)
 			{
 				final String maxOcc = e.getNonEmpty("maxOccurs");
-				if ("unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 0) > 1)
+				boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
+				if (!isMulti)
+				{
+					KElement parentSeq = e.getDeepParent("sequence", 0);
+					KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
+					if (parentSeq != null && !parentSeq.isAncestor(parentElement))
+					{
+						final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
+						isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
+					}
+				}
+				if (isMulti)
 				{
 					fillArrayFromSchema(e);
 				}
