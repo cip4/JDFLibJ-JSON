@@ -58,12 +58,17 @@ import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.core.VElement;
+import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.datatypes.JDFNumberList;
 import org.cip4.jdflib.elementwalker.ElementWalker;
+import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ContainerUtil;
+import org.cip4.jdflib.util.ListMap;
 import org.cip4.jdflib.util.StringUtil;
+import org.cip4.jdflib.util.UrlPart;
+import org.cip4.jdflib.util.UrlUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
@@ -76,6 +81,7 @@ public class JSONWriter extends JSONObjHelper
 
 	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
+	private static final String XJDF_SCHEMA_URL = "http://schema.cip4.org/jdfschema_2_1/xjdf.xsd";
 	boolean wantArray;
 	boolean learnArrays;
 	boolean typeSafe;
@@ -114,6 +120,16 @@ public class JSONWriter extends JSONObjHelper
 		setValueCase(eJSONCase.retain);
 		setMixedText(TEXT);
 		addMixed(ElementName.COMMENT);
+		UrlPart part = UrlUtil.writerToURL(XJDF_SCHEMA_URL, null, UrlUtil.GET, null, null);
+		if (UrlPart.isReturnCodeOK(part))
+		{
+			XMLDoc schema = part.getXMLDoc();
+			if (schema != null)
+			{
+				KElement root = schema.getRoot();
+				new SchemaFiller(root, splitXJMF).fillTypesFromSchema();
+			}
+		}
 	}
 
 	/**
@@ -316,111 +332,181 @@ public class JSONWriter extends JSONObjHelper
 		return addList(attribute, stringArray);
 	}
 
-	/**
-	 * @param schema
-	 */
-	public void fillTypesFromSchema(final KElement schema)
+	class SchemaFiller
 	{
+		private KElement schema;
+		private boolean splitXJMF;
+		final Collection<KElement> ve;
+		final ListMap<String, KElement> nameMap;
 
-		final Collection<KElement> ve = schema == null ? null : schema.getChildrenByTagName("element", XML_SCHEMA_NS, null, false, true, 0);
-		if (ve != null)
+		/**
+		 * @param schema
+		 */
+		SchemaFiller(final KElement schema, boolean splitXJMF)
 		{
+			this.schema = schema;
+			this.splitXJMF = splitXJMF;
+			ve = schema == null ? null : schema.getChildrenByTagName("element", XML_SCHEMA_NS, null, false, true, 0);
+			nameMap = new ListMap<>();
+			nameMap.setUnique(true);
 			for (final KElement e : ve)
 			{
-				final String maxOcc = e.getNonEmpty("maxOccurs");
-				boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
-				if (!isMulti)
-				{
-					KElement parentSeq = e.getDeepParent("sequence", 0);
-					KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
-					if (parentSeq != null && !parentSeq.isAncestor(parentElement))
-					{
-						final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
-						isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
-					}
-				}
-				if (isMulti)
-				{
-					fillArrayFromSchema(e);
-				}
-				addList(getNameFromSchema(e), knownElems);
+				String name = e.getNonEmpty("name");
+				if (name != null)
+					nameMap.putOne(name, e);
+				String sg = e.getNonEmpty("substitutionGroup");
+				if (sg != null)
+					nameMap.putOne(sg, e);
 			}
 		}
 
-		final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
-		if (va != null)
+		/**
+		 * @param schema
+		 * @param splitXJMF TODO
+		 */
+		public void fillTypesFromSchema()
 		{
-			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
-					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
-			for (final KElement e : va)
+
+			if (ve != null)
 			{
-				final String type = getTypeFromSchemaAttribute(e);
-				final String name = StringUtil.normalize(e.getNonEmpty("name"), true, "_:-");
-				if ("NMTOKENS".equals(type) || "IDREFS".equals(type))
+				for (final KElement e : ve)
 				{
-					addStringArray(name);
+					final String maxOcc = e.getNonEmpty("maxOccurs");
+					boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
+					if (!isMulti)
+					{
+						KElement parentSeq = e.getDeepParent("sequence", 0);
+						KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
+						if (parentSeq != null && !parentSeq.isAncestor(parentElement))
+						{
+							final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
+							isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
+						}
+					}
+					if (splitXJMF && isMulti && e.hasAttribute("substitutionGroup"))
+					{
+						isMulti = EnumFamily.getEnum(e.getAttribute("substitutionGroup")) == null;
+					}
+					if (isMulti)
+					{
+						fillArrayFromSchema(e);
+					}
+					for (String name : getNamesFromSchema(e))
+						addList(name, knownElems);
 				}
-				else if ("TransferFunction".equals(type))
+			}
+
+			final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
+			if (va != null)
+			{
+				final Set<String> types = new HashSet<>();
+				types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange",
+						"LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+				for (final KElement e : va)
 				{
-					addTransferFunction(name);
+					final String type = getTypeFromSchemaAttribute(e);
+					final String name = StringUtil.normalize(e.getNonEmpty("name"), true, "_:-");
+					if ("NMTOKENS".equals(type) || "IDREFS".equals(type))
+					{
+						addStringArray(name);
+					}
+					else if ("TransferFunction".equals(type))
+					{
+						addTransferFunction(name);
+					}
+					else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
+					{
+						addList(name, numbers);
+					}
+					else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
+							|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
+					{
+						addList(name, numList);
+					}
+					else if (!types.contains(type))
+					{
+						addString(name);
+					}
+					knownAtts.add(name);
 				}
-				else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
-				{
-					addList(name, numbers);
-				}
-				else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
-						|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
-				{
-					addList(name, numList);
-				}
-				else if (!types.contains(type))
-				{
-					addString(name);
-				}
-				knownAtts.add(name);
 			}
 		}
-	}
 
-	KElement getAncestor(final KElement e, final String name)
-	{
-		if (e == null)
-			return null;
-		final KElement parent = e.getParentNode_KElement();
-		if (parent != null && name.equals(parent.getLocalName()))
-			return parent;
-		return getAncestor(parent, name);
-	}
-
-	public void fillArrayFromSchema(final KElement e)
-	{
-		final String key = getNameFromSchema(e);
-		addArray(key);
-	}
-
-	public String getNameFromSchema(final KElement e)
-	{
-		String name = e.getNonEmpty("ref");
-		if (StringUtil.isEmpty(name))
-			name = e.getNonEmpty("name");
-
-		KElement parentContent = getAncestor(e, "complexType");
-		String contentName = null;
-		if (parentContent == null || parentContent.getNonEmpty("name") == null)
+		KElement getAncestor(final KElement e, final String name)
 		{
-			parentContent = getAncestor(e, "element");
-			contentName = parentContent == null || parentContent.equals(e) ? null : parentContent.getNonEmpty("name");
+			if (e == null)
+				return null;
+			final KElement parent = e.getParentNode_KElement();
+			if (parent != null && name.equals(parent.getLocalName()))
+				return parent;
+			return getAncestor(parent, name);
 		}
-		else
-		{
-			contentName = parentContent.getNonEmpty("name");
-		}
-		if (parentContent != null && contentName == null)
-			contentName = parentContent.getNonEmpty("ref");
 
-		final String key = contentName == null ? name : contentName + JDFConstants.SLASH + name;
-		return key;
+		void fillArrayFromSchema(final KElement e)
+		{
+			final List<String> keys = getNamesFromSchema(e);
+			for (String key : keys)
+				addArray(key);
+		}
+
+		List<String> getNamesFromSchema(final KElement e)
+		{
+			List<String> names = getNamesFromRef(e);
+			if (StringUtil.isEmpty(names))
+				names = new StringArray(e.getNonEmpty("name"));
+
+			KElement parentContent = getAncestor(e, "complexType");
+			String contentName = null;
+			if (parentContent == null || parentContent.getNonEmpty("name") == null)
+			{
+				parentContent = getAncestor(e, "element");
+				contentName = parentContent == null || parentContent.equals(e) ? null : parentContent.getNonEmpty("name");
+			}
+			else
+			{
+				contentName = parentContent.getNonEmpty("name");
+			}
+			if (parentContent != null && contentName == null)
+			{
+				List<String> contentNames = getNamesFromRef(parentContent);
+				contentName = ContainerUtil.get(contentNames, 0);
+			}
+			if (!StringUtil.isEmpty(contentName))
+			{
+				for (int i = 0; i < names.size(); i++)
+				{
+					names.set(i, contentName + JDFConstants.SLASH + names.get(i));
+				}
+			}
+			return names;
+		}
+
+		protected List<String> getNamesFromRef(final KElement e)
+		{
+			String nonEmpty = e.getNonEmpty("ref");
+			return getNamesFromRef(nonEmpty);
+		}
+
+		protected List<String> getNamesFromRef(String nonEmpty)
+		{
+			if (nonEmpty == null)
+				return null;
+			StringArray ret = new StringArray();
+			List<KElement> vv = nameMap.get(nonEmpty);
+			for (KElement e2 : vv)
+			{
+				if (nonEmpty.equals(e2.getNonEmpty("name")))
+				{
+					if (!StringUtil.parseBoolean("abstract", false))
+						ret.add(nonEmpty);
+				}
+				else if (nonEmpty.equals(e2.getNonEmpty("substitutionGroup")))
+				{
+					ContainerUtil.addAll(ret, getNamesFromRef(e2.getNonEmpty("name")));
+				}
+			}
+			return ret;
+		}
 	}
 
 	public boolean addTransferFunction(final String name)
@@ -982,7 +1068,7 @@ public class JSONWriter extends JSONObjHelper
 			}
 			else if (n > 1 && !knownElems.contains(key))
 			{
-				if (addArray(childName))
+				if (isLearnArrays() && addArray(childName))
 				{
 					log.info("found new array type: " + childName);
 				}
@@ -1204,6 +1290,12 @@ public class JSONWriter extends JSONObjHelper
 		if (wantArray != other.wantArray)
 			return false;
 		return true;
+	}
+
+	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean b)
+	{
+		new SchemaFiller(xjdfSchemaElement, b).fillTypesFromSchema();
+
 	}
 
 }

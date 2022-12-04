@@ -105,9 +105,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public static JSONWriter getXJDFWriter()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setXJDF(false, false);
-
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.setXJDF(true, false);
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), true);
 		return jsonWriter;
 	}
 
@@ -148,7 +147,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		c.setAuthor("Wyle E Coyote");
 		c.setPersonalID("p123");
 		h.cleanUp();
-		//		jsonWriter.convert(h.getRoot());
+		// jsonWriter.convert(h.getRoot());
 
 		writeBothJson(h.getRoot(), jsonWriter, "comment.json");
 	}

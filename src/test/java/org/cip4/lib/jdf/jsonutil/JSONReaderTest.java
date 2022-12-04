@@ -505,7 +505,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
-		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
+		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
 		FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(sm_dirTestData + "xjdf/QualityControlColorSpectrum.xjdf")), sm_dirTestDataTemp
 				+ "json/QualityControlColorSpectrum.json");
 		final JSONObject o = jsonWriter.getRoot();
