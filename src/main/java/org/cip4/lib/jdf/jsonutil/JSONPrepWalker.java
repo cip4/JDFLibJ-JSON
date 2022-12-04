@@ -46,10 +46,16 @@ import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
+import org.cip4.jdflib.core.VElement;
 import org.cip4.jdflib.core.VString;
+import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.elementwalker.BaseElementWalker;
 import org.cip4.jdflib.elementwalker.BaseWalker;
 import org.cip4.jdflib.elementwalker.BaseWalkerFactory;
+import org.cip4.jdflib.extensions.MessageHelper;
+import org.cip4.jdflib.extensions.XJDFConstants;
+import org.cip4.jdflib.extensions.XJMFHelper;
+import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.StringUtil;
 
 /**
@@ -58,6 +64,8 @@ import org.cip4.jdflib.util.StringUtil;
 public class JSONPrepWalker extends BaseElementWalker
 {
 
+	private boolean splitXJMF;
+
 	/**
 	 *
 	 */
@@ -65,6 +73,7 @@ public class JSONPrepWalker extends BaseElementWalker
 	{
 		super(new BaseWalkerFactory());
 		explicitAudit = false;
+		setSplitXJMF(false);
 	}
 
 	private boolean explicitAudit;
@@ -75,6 +84,58 @@ public class JSONPrepWalker extends BaseElementWalker
 	public boolean isExplicitAudit()
 	{
 		return explicitAudit;
+	}
+
+	public List<KElement> splitXML(KElement input)
+	{
+		List<KElement> split = split(input);
+		for (KElement e : split)
+		{
+			walkTree(e, null);
+		}
+		return split;
+	}
+
+	public List<KElement> split(KElement input)
+	{
+		XJMFHelper xh = splitXJMF ? XJMFHelper.getHelper(input) : null;
+		if (xh != null)
+		{
+			List<KElement> l = splitXJMF(xh);
+			return l;
+		}
+
+		VElement v = new VElement();
+		ContainerUtil.add(v, input);
+		return v;
+	}
+
+	List<KElement> splitXJMF(XJMFHelper xh)
+	{
+		List<MessageHelper> mhs = xh.getMessageHelpers();
+		VElement v = new VElement();
+		if (ContainerUtil.size(mhs) > 1)
+		{
+			KElement header = xh.getHeader();
+			header.removeAttribute(AttributeName.ID);
+			JDFAttributeMap xjmfMap = xh.getRoot().getAttributeMap();
+			for (MessageHelper mh : mhs)
+			{
+				XJMFHelper h = new XJMFHelper();
+				KElement root = h.getRoot();
+				root.removeChildren(XJDFConstants.Header, null);
+				root.setAttributes(xjmfMap);
+				root.copyElement(header, null);
+				h.copyHelper(mh);
+				h.cleanUp();
+				v.add(root);
+			}
+		}
+		else
+		{
+			ContainerUtil.add(v, xh.getRoot());
+		}
+		return v;
 	}
 
 	/**
@@ -322,12 +383,19 @@ public class JSONPrepWalker extends BaseElementWalker
 
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString()
 	{
-		return "JSONPrepWalker [explicitAudit=" + explicitAudit + "]";
+		return "JSONPrepWalker [splitXJMF=" + splitXJMF + ", explicitAudit=" + explicitAudit + "]";
+	}
+
+	public boolean isSplitXJMF()
+	{
+		return splitXJMF;
+	}
+
+	public void setSplitXJMF(boolean splitXJMF)
+	{
+		this.splitXJMF = splitXJMF;
 	}
 }

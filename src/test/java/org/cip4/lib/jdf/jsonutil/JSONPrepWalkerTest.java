@@ -43,8 +43,12 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -53,6 +57,9 @@ import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
+import org.cip4.jdflib.extensions.XJMFHelper;
+import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
+import org.cip4.jdflib.jmf.JDFMessage.EnumType;
 import org.cip4.jdflib.resource.process.JDFBoxFoldingParams;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
@@ -86,6 +93,62 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final JSONPrepWalker w = new JSONPrepWalker();
 		assertNotNull(w.toString());
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testIsSplitXJMF()
+	{
+		final JSONPrepWalker w = new JSONPrepWalker();
+		assertFalse(w.isSplitXJMF());
+		w.setSplitXJMF(true);
+		assertTrue(w.isSplitXJMF());
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSplitXJMF0()
+	{
+		final JSONPrepWalker w = new JSONPrepWalker();
+		w.setSplitXJMF(true);
+		XJMFHelper h0 = new XJMFHelper();
+		List<KElement> l = w.splitXML(h0.getRoot());
+		assertEquals(h0.getRoot(), l.get(0));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSplitXJMF1()
+	{
+		final JSONPrepWalker w = new JSONPrepWalker();
+		w.setSplitXJMF(true);
+		XJMFHelper h0 = new XJMFHelper();
+		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
+		List<KElement> l = w.splitXML(h0.getRoot());
+		assertEquals(h0.getRoot(), l.get(0));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSplitXJMF2()
+	{
+		final JSONPrepWalker w = new JSONPrepWalker();
+		w.setSplitXJMF(true);
+		XJMFHelper h0 = new XJMFHelper();
+		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
+		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
+		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
+		List<KElement> l = w.splitXML(h0.getRoot());
+		assertEquals(3, l.size());
+		assertEquals(1, l.get(0).numChildElements(XJDFConstants.Header, null));
 	}
 
 	/**

@@ -105,7 +105,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public static JSONWriter getXJDFWriter()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setXJDF();
+		jsonWriter.setXJDF(false, false);
 
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR));
 		return jsonWriter;

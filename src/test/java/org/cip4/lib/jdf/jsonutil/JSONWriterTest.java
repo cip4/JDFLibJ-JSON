@@ -632,6 +632,30 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testSplitXJMF()
+	{
+		final XJMFHelper xjmfHelper = new XJMFHelper();
+		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
+		xjmfHelper.appendMessage(EnumFamily.Signal, "Status");
+		xjmfHelper.cleanUp();
+		final KElement xjdf = xjmfHelper.getRoot();
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF(true, false);
+		final List<JSONObject> os = jsonWriter.splitConvert(xjdf);
+		assertEquals(2, os.size());
+		for (JSONObject o : os)
+		{
+			final String jsonString = o.toJSONString();
+			assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+			assertTrue(jsonString.indexOf("[") < 0);
+			log.info(jsonString);
+		}
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testNoArrayDouble()
 	{
 		final KElement e = KElement.createRoot("a", null);

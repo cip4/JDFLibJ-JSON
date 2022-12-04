@@ -43,6 +43,7 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
+import org.cip4.jdflib.core.VElement;
 import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.datatypes.JDFNumberList;
 import org.cip4.jdflib.elementwalker.ElementWalker;
@@ -92,8 +94,20 @@ public class JSONWriter extends JSONObjHelper
 	 */
 	public void setXJDF()
 	{
+		setXJDF(false, false);
+	}
+
+	/**
+	 * apply standard xjdf settings
+	 * 
+	 * @param splitXJMF TODO
+	 * @param explicitAudit TODO
+	 */
+	public void setXJDF(boolean splitXJMF, boolean explicitAudit)
+	{
 		final JSONPrepWalker jsonPrepWalker = new JSONPrepWalker();
 		jsonPrepWalker.setExplicitAudit(false);
+		jsonPrepWalker.setSplitXJMF(splitXJMF);
 		this.prepWalker = jsonPrepWalker;
 		setPrefix(eJSONPrefix.retain);
 		setKeyCase(eJSONCase.retain);
@@ -506,6 +520,31 @@ public class JSONWriter extends JSONObjHelper
 
 		setRoot(j2);
 		return j2;
+	}
+
+	/**
+	 * @param e
+	 * @return
+	 */
+	public List<JSONObject> splitConvert(final KElement e0)
+	{
+		List<KElement> l;
+		List<JSONObject> ret = new ArrayList<>();
+		if (prepWalker instanceof JSONPrepWalker)
+		{
+			l = ((JSONPrepWalker) prepWalker).split(e0);
+		}
+		else
+		{
+			l = new VElement();
+			ContainerUtil.add(l, e0);
+		}
+		for (KElement e : l)
+		{
+			JSONObject j = convert(e);
+			ContainerUtil.add(ret, j);
+		}
+		return ret;
 	}
 
 	JSONObject updateRoot(final JSONObject j)
