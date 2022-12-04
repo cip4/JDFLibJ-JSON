@@ -1292,6 +1292,16 @@ public class JSONWriter extends JSONObjHelper
 		return true;
 	}
 
+	/**
+	 * @deprecated use th 2 parameter version
+	 * @param xjdfSchemaElement
+	 */
+	@Deprecated
+	public void fillTypesFromSchema(KElement xjdfSchemaElement)
+	{
+		new SchemaFiller(xjdfSchemaElement, false).fillTypesFromSchema();
+	}
+
 	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean b)
 	{
 		new SchemaFiller(xjdfSchemaElement, b).fillTypesFromSchema();
