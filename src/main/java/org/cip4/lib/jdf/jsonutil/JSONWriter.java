@@ -1302,10 +1302,14 @@ public class JSONWriter extends JSONObjHelper
 		new SchemaFiller(xjdfSchemaElement, false).fillTypesFromSchema();
 	}
 
-	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean b)
+	/**
+	 * 
+	 * @param xjdfSchemaElement
+	 * @param splitXJMF if true, xjmf messages are singular
+	 */
+	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean splitXJMF)
 	{
-		new SchemaFiller(xjdfSchemaElement, b).fillTypesFromSchema();
-
+		new SchemaFiller(xjdfSchemaElement, splitXJMF).fillTypesFromSchema();
 	}
 
 }
