@@ -349,14 +349,17 @@ public class JSONWriter extends JSONObjHelper
 			ve = schema == null ? null : schema.getChildrenByTagName("element", XML_SCHEMA_NS, null, false, true, 0);
 			nameMap = new ListMap<>();
 			nameMap.setUnique(true);
-			for (final KElement e : ve)
+			if (ve != null)
 			{
-				String name = e.getNonEmpty("name");
-				if (name != null)
-					nameMap.putOne(name, e);
-				String sg = e.getNonEmpty("substitutionGroup");
-				if (sg != null)
-					nameMap.putOne(sg, e);
+				for (final KElement e : ve)
+				{
+					String name = e.getNonEmpty("name");
+					if (name != null)
+						nameMap.putOne(name, e);
+					String sg = e.getNonEmpty("substitutionGroup");
+					if (sg != null)
+						nameMap.putOne(sg, e);
+				}
 			}
 		}
 
