@@ -47,6 +47,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -191,6 +192,26 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		r.remove(0);
+	}
+
+	@Test
+	public void testGetObjectsArray()
+	{
+		JSONArrayHelper a = new JSONArrayHelper("[0,1,2,3,4]");
+		List<Object> inheritedObjects = a.getObjects();
+		for (int i = 0; i < 5; i++)
+			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		assertEquals(5, inheritedObjects.size());
+	}
+
+	@Test
+	public void testGetInheritedObjectsArray()
+	{
+		JSONArrayHelper a = new JSONArrayHelper("[0,1,2,[3,4]]");
+		List<Object> inheritedObjects = a.getObjects();
+		for (int i = 0; i < 5; i++)
+			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		assertEquals(5, inheritedObjects.size());
 	}
 
 }

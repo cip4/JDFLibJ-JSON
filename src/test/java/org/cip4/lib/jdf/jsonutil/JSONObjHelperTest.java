@@ -50,6 +50,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
@@ -343,6 +344,55 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		assertEquals(4, r.getDouble("a/b[0]/c", 0), 0);
+	}
+
+	@Test
+	public void testGetInheritedObject()
+	{
+		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		r.getObject("a").put("c2", "test");
+		assertEquals("test", r.getInheritedObject("a/b/c2", true));
+		assertEquals(null, r.getInheritedObject("a/b/c3", true));
+		assertEquals(null, r.getInheritedObject("a/c/c2", true));
+	}
+
+	@Test
+	public void testGetInheritedObjects()
+	{
+		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		r.getObject("a").put("c2", "test");
+		assertEquals("test", r.getInheritedObjects("a/b/c2").get(0));
+		assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
+		assertTrue(r.getInheritedObjects("").isEmpty());
+	}
+
+	@Test
+	public void testGetInheritedObjectsArray()
+	{
+		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		r.getObject("a").put("c2", new JSONArrayHelper("[0,1,2,3,4]").getArray());
+		List<Object> inheritedObjects = r.getInheritedObjects("a/b/c2");
+		for (int i = 0; i < 5; i++)
+			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		assertEquals(5, inheritedObjects.size());
+		assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
+		assertTrue(r.getInheritedObjects("").isEmpty());
+	}
+
+	@Test
+	public void testGetInherited()
+	{
+		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
+		final JSONObjHelper r = new JSONObjHelper(root);
+		r.getObject("a").put("c2", "test");
+		assertEquals("test", r.getInheritedObject("a/b/c2"));
+		assertEquals(null, r.getInheritedObject("a/b/c3"));
+		assertEquals(null, r.getInheritedObject("a/c/c2"));
+		assertEquals(null, r.getInheritedObject(null));
+		assertEquals(null, r.getInheritedObject(""));
 	}
 
 	@Test

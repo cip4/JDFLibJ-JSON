@@ -50,6 +50,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -243,7 +245,40 @@ public class JSONObjHelper implements IStreamWriter
 		}
 	}
 
-	public static JSONObjHelper getHelper(final InputStream is)
+	public static JSONObjHelper getHelper(final Object o)
+	{
+		final JSONObjHelper h;
+		if (o instanceof InputStream)
+		{
+			InputStream is = (InputStream) o;
+			try
+			{
+				if (is == null || is.available() == 0)
+				{
+					return null;
+				}
+			}
+			catch (final IOException e)
+			{
+				return null;
+			}
+			JSONObjHelper h2 = new JSONObjHelper(is);
+			StreamUtil.close(is);
+			h = h2.getRoot() == null ? null : h2;
+		}
+		else if (o instanceof JSONObject)
+		{
+			h = new JSONObjHelper((JSONObject) o);
+		}
+		else
+		{
+			h = null;
+		}
+		return h.getRoot() == null ? null : h;
+
+	}
+
+	static JSONObjHelper getHelperFro(final InputStream is)
 	{
 		try
 		{
@@ -357,7 +392,17 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public String getString(final String path)
 	{
-		final Object base = getPathObject(path);
+		return getString(path, false);
+	}
+
+	/**
+	 * @param path
+	 * @param def
+	 * @return
+	 */
+	public String getString(final String path, boolean inherited)
+	{
+		final Object base = getPathObject(path, inherited);
 		if (base instanceof String)
 		{
 			return (String) base;
@@ -375,7 +420,17 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONArray getArray(final String path)
 	{
-		final Object base = getPathObject(path);
+		return getArray(path, false);
+	}
+
+	/**
+	 * @param path
+	 * @param inherited TODO
+	 * @return
+	 */
+	public JSONArray getArray(final String path, boolean inherited)
+	{
+		final Object base = getPathObject(path, inherited);
 		if (base instanceof JSONArray)
 		{
 			return (JSONArray) base;
@@ -389,7 +444,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONArrayHelper getArrayHelper(final String path)
 	{
-		final JSONArray a = getArray(path);
+		final JSONArray a = getArray(path, false);
 		return a == null ? null : new JSONArrayHelper(a);
 	}
 
@@ -464,6 +519,15 @@ public class JSONObjHelper implements IStreamWriter
 	 * @param key xpath-like but 0 based
 	 * @return
 	 */
+	public Object getPathObject(final String path, boolean inherited)
+	{
+		return inherited ? getInheritedObject(path) : getPathObject(path);
+	}
+
+	/**
+	 * @param key xpath-like but 0 based
+	 * @return
+	 */
 	public Object getPathObject(final String path)
 	{
 		if (obj == null || StringUtil.isEmpty(path))
@@ -479,9 +543,77 @@ public class JSONObjHelper implements IStreamWriter
 		else
 		{
 			final Object newNext = getFirstObject(first);
-
 			return (newNext instanceof JSONObject) ? new JSONObjHelper((JSONObject) newNext).getPathObject(next) : null;
 		}
+	}
+
+	/**
+	 * @param key xpath-like but 0 based
+	 * @return
+	 */
+	public Object getInheritedObject(final String path)
+	{
+		return getInheritedObject(path, true);
+	}
+
+	/**
+	 * @param key xpath-like but 0 based
+	 * @return
+	 */
+	Object getInheritedObject(final String path, boolean checkParent)
+	{
+		Object o = getPathObject(path);
+		if (o == null)
+		{
+			if (checkParent)
+			{
+				String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
+				if (getPathObject(parent) == null)
+					return null;
+			}
+			String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
+			return removeToken == null || removeToken.equals(path) ? null : getInheritedObject(removeToken, false);
+		}
+		return o;
+
+	}
+
+	/**
+	 * @param key xpath-like but 0 based
+	 * @return
+	 */
+	public List<Object> getInheritedObjects(final String path)
+	{
+		return getInheritedObjects(path, true);
+	}
+
+	/**
+	 * @param key xpath-like but 0 based
+	 * @return
+	 */
+	List<Object> getInheritedObjects(final String path, boolean checkParent)
+	{
+		List<Object> c = new ArrayList<>();
+		Object o = getPathObject(path);
+		if (o instanceof JSONArray)
+		{
+			c.addAll(JSONArrayHelper.getHelper(o).getObjects());
+		}
+		else
+		{
+			ContainerUtil.add(c, o);
+		}
+		if (o == null && checkParent)
+		{
+			String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
+			if (getPathObject(parent) == null)
+				return c;
+		}
+		String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
+		if (!path.equals(removeToken))
+			c.addAll(getInheritedObjects(removeToken, false));
+		return c;
+
 	}
 
 	/**

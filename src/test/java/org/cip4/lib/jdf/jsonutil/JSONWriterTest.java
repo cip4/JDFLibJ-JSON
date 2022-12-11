@@ -232,19 +232,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void testPrefix3()
-	{
-		final JSONWriter w = new JSONWriter();
-		final KElement e = KElement.createRoot("a:b", "a.com");
-		for (final String n : eJSONPrefix.getNames())
-		{
-			final eJSONPrefix enum1 = eJSONPrefix.getEnum(n);
-			assertNotNull(enum1);
-			assertNotNull(w.getNodeName(e));
-		}
-	}
-
-	@Test
 	public void testCase()
 	{
 		for (final String n : eJSONCase.getNames())
@@ -320,7 +307,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = new JSONWriter().convert(e);
 		assertNotNull(o.toJSONString());
 		log.info(o.toJSONString());
-		assertEquals(4, new JSONObjHelper(o).getArray("e/a").size());
+		assertEquals(4, new JSONObjHelper(o).getArray("e/a", false).size());
 	}
 
 	/**
@@ -669,7 +656,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		assertEquals(1, os.size());
 		for (JSONObject o : os)
 		{
-			assertNull(new JSONObjHelper(o).getArray("XJMF/SignalResource"));
+			assertNull(new JSONObjHelper(o).getArray("XJMF/SignalResource", false));
 			assertNotNull(new JSONObjHelper(o).getHelper("XJMF/SignalResource"));
 		}
 	}

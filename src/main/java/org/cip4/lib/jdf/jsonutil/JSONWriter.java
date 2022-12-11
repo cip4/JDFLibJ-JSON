@@ -47,12 +47,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
@@ -158,7 +156,7 @@ public class JSONWriter extends JSONObjHelper
 		this.prefix = prefix;
 	}
 
-	private String mixedText;
+	String mixedText;
 
 	public enum eJSONCase
 	{
@@ -212,7 +210,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public enum eJSONPrefix
 	{
-		retain, underscore, none;
+		retain, context, underscore, none;
 
 		public static List<String> getNames()
 		{
@@ -272,16 +270,16 @@ public class JSONWriter extends JSONObjHelper
 	final Set<String> bool;
 	final Set<String> skipPool;
 	final Set<String> transferFunction;
-	private eJSONRoot jsonRoot;
+	private eJSONRoot rootType;
 
 	public eJSONRoot getJsonRoot()
 	{
-		return jsonRoot;
+		return rootType;
 	}
 
 	public void setJsonRoot(final eJSONRoot jsonRoot)
 	{
-		this.jsonRoot = jsonRoot;
+		this.rootType = jsonRoot;
 	}
 
 	/**
@@ -588,27 +586,7 @@ public class JSONWriter extends JSONObjHelper
 		keyCase = valueCase = eJSONCase.retain;
 		mixedText = TEXT;
 		prefix = eJSONPrefix.retain;
-		jsonRoot = eJSONRoot.retain;
-	}
-
-	/**
-	 * @param e
-	 * @return
-	 */
-	public JSONObject convert(final KElement e0)
-	{
-		final JSONObject j = new JSONObject();
-		KElement e = e0;
-		if (prepWalker != null)
-		{
-			e = e0.cloneNewDoc();
-			prepWalker.walkTree(e, null);
-		}
-		walk(e, j);
-		final JSONObject j2 = updateRoot(j);
-
-		setRoot(j2);
-		return j2;
+		rootType = eJSONRoot.retain;
 	}
 
 	/**
@@ -634,30 +612,6 @@ public class JSONWriter extends JSONObjHelper
 			ContainerUtil.add(ret, j);
 		}
 		return ret;
-	}
-
-	JSONObject updateRoot(final JSONObject j)
-	{
-		if (!eJSONRoot.retain.equals(getJsonRoot()))
-		{
-			final Set keys = j.keySet();
-			if (ContainerUtil.size(keys) == 1)
-			{
-				final String key = (String) keys.iterator().next();
-				final JSONObject first = (JSONObject) j.get(key);
-				if (eJSONRoot.schema.equals(getJsonRoot()))
-				{
-					first.put(SCHEMA, key);
-				}
-				return first;
-			}
-			else
-			{
-				log.warn("Not modifying multi-root object");
-			}
-		}
-		return j;
-
 	}
 
 	/**
@@ -696,78 +650,16 @@ public class JSONWriter extends JSONObjHelper
 		return b == null ? null : new ByteArrayIOStream(b).getInputStream();
 	}
 
-	/**
-	 * @param e
-	 * @param parent
-	 * @return
-	 */
-	public boolean walk(final KElement e, final JSONAware parent)
-	{
-		final String nodeName = getNodeName(e);
-		final JDFAttributeMap map = getAttributes(e);
-		boolean hasContent = false;
-		hasContent = !JDFAttributeMap.isEmpty(map);
-		String txt = StringUtil.normalize(e.getText(), false);
-		if (mixedText != null && txt != null && mixedElements.contains(getCheckName(e)))
-		{
-			map.put(mixedText, txt);
-			txt = null;
-		}
-		final JSONObject me = createJSonFromAttributes(map);
-		final boolean hasChildren = processChildren(e, me);
-		if (txt != null)
-		{
-			if (hasContent || hasChildren)
-			{
-				final JSONArray a = new JSONArray();
-				a.add(me);
-				a.add(getObjectFromVal(nodeName, txt));
-				addToParent(parent, nodeName, a);
-			}
-			else
-			{
-				addToParent(parent, nodeName, getObjectFromVal(nodeName, txt));
-			}
-		}
-		else
-		{
-			addToParent(parent, nodeName, me);
-		}
-		return true;
-	}
-
 	public String getCheckName(final KElement e)
 	{
 		return StringUtil.normalize(e.getLocalName(), true, "_ -");
 	}
 
-	String getNodeName(final KElement e)
-	{
-		if (eJSONPrefix.underscore.equals(prefix))
-		{
-			return StringUtil.replaceChar(e.getNodeName(), ':', JDFConstants.UNDERSCORE, 0);
-		}
-		else if (eJSONPrefix.none.equals(prefix))
-		{
-			return e.getLocalName();
-		}
-		return e.getNodeName();
-	}
-
 	public JSONObject createJSonFromAttributes(final JDFAttributeMap map)
 	{
-		final JSONObject me = new JSONObject();
-		if (!JDFAttributeMap.isEmpty(map))
-		{
-			for (final Entry<String, String> entry : map.entrySet())
-			{
-				final String val = entry.getValue();
-				final String key = entry.getKey();
-				final Object jVal = getObjectFromVal(key, val);
-				putNonEmpty(me, key, jVal);
-			}
-		}
-		return me;
+		JSONRootWalker jsonRootWalker = new JSONRootWalker(this, null);
+		jsonRootWalker.createJSonFromAttributes(map);
+		return jsonRootWalker.getRoot();
 	}
 
 	String getKey(String key, final eJSONCase jCase)
@@ -970,115 +862,9 @@ public class JSONWriter extends JSONObjHelper
 		return a;
 	}
 
-	/**
-	 * @param parentElem
-	 * @param me
-	 * @return
-	 */
-	boolean processChildren(final KElement parentElem, final JSONObject me)
-	{
-		boolean hasContent = false;
-		final String parentName = getNodeName(parentElem);
-		final boolean isArray = isArray(parentName);
-		final JSONArray parentArray = new JSONArray();
-		final Collection<KElement> v = parentElem.getChildArray(null, null);
-		if (!ContainerUtil.isEmpty(v))
-		{
-			final HashSet<String> processedNames = new HashSet<>();
-			for (final KElement e : v)
-			{
-				if (isSkipKey(getNodeName(e)))
-				{
-					hasContent = processChildren(e, me) || hasContent;
-				}
-				else if (isArray)
-				{
-					final JSONObject o = new JSONObject();
-					walk(e, o);
-					parentArray.add(o);
-					hasContent = true;
-				}
-				else
-				{
-					hasContent = processChild(parentElem, me, hasContent, processedNames, e);
-				}
-			}
-		}
-		if (isArray)
-		{
-			me.put(parentName, parentArray);
-		}
-
-		return hasContent;
-	}
-
 	boolean isArray(final String nodeName)
 	{
 		return wantArray || arrayNames.contains(nodeName);
-	}
-
-	boolean processChild(final KElement parentElem, final JSONObject me, boolean hasContent, final HashSet<String> names, final KElement e)
-	{
-		final String childName = getNodeName(e);
-		final String parentName = getNodeName(parentElem);
-		if (!names.contains(childName))
-		{
-			final Collection<KElement> v1 = parentElem.getChildArray(e.getLocalName(), null);
-			names.add(childName);
-			final int size = v1.size();
-			if (size > 0)
-			{
-				final JSONAware a = getParent(parentName, childName, size);
-				boolean hasChild = false;
-				for (final KElement cc : v1)
-				{
-					final boolean hc2 = walk(cc, a == null ? me : a);
-					hasChild = hasChild || hc2;
-				}
-				if (hasChild)
-				{
-					hasContent = true;
-					putNonEmpty(me, childName, a);
-				}
-			}
-			else
-			{
-				final boolean hasChild = walk(e, me);
-				hasContent = hasChild || hasContent;
-			}
-		}
-		return hasContent;
-	}
-
-	JSONArray getParent(final String parentName, final String childName, final int n)
-	{
-		final String key = StringUtil.normalize(childName, true, "_ -");
-
-		if (skipPool.contains(key))
-		{
-			return null;
-		}
-		else if (wantArray || arrayNames.contains(key))
-		{
-			return new JSONArray();
-		}
-		else
-		{
-			final String key2 = StringUtil.normalize(parentName, true, "_ -");
-			if (key2 != null)
-			{
-				return getParent(null, key2 + JDFConstants.SLASH + key, n);
-			}
-			else if (n > 1 && !knownElems.contains(key))
-			{
-				if (isLearnArrays() && addArray(childName))
-				{
-					log.info("found new array type: " + childName);
-				}
-				return new JSONArray();
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -1096,50 +882,6 @@ public class JSONWriter extends JSONObjHelper
 		{
 			((JSONObject) parent).put(nodeName, me);
 		}
-	}
-
-	/**
-	 * @param parent
-	 * @param nodeName
-	 * @param obj
-	 */
-	public void addToParent(final JSONAware parent, final String nodeName, final Object obj)
-	{
-		if (parent instanceof JSONArray)
-		{
-			((JSONArray) parent).add(obj);
-		}
-		else if (parent instanceof JSONObject)
-		{
-			putNonEmpty(parent, nodeName, obj);
-		}
-	}
-
-	Object putNonEmpty(final JSONAware parent, final String nodeName, final Object obj)
-	{
-		final String key = obj == null ? null : getKey(nodeName, keyCase);
-		return key == null ? null : ((JSONObject) parent).put(key, obj);
-	}
-
-	/**
-	 * @param e never null
-	 */
-	JDFAttributeMap getAttributes(final KElement e)
-	{
-		final JDFAttributeMap atts = e.getAttributeMap();
-		atts.remove(AttributeName.XSITYPE);
-		final List<String> keyList = ContainerUtil.getKeyList(atts);
-		if (keyList != null)
-		{
-			for (final String key : keyList)
-			{
-				if (AttributeName.XMLNS.equalsIgnoreCase(StringUtil.token(key, 0, JDFConstants.COLON)))
-				{
-					atts.remove(key);
-				}
-			}
-		}
-		return atts;
 	}
 
 	public void clearArray()
@@ -1313,6 +1055,18 @@ public class JSONWriter extends JSONObjHelper
 	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean splitXJMF)
 	{
 		new SchemaFiller(xjdfSchemaElement, splitXJMF).fillTypesFromSchema();
+	}
+
+	public JSONObject convert(KElement xjdf)
+	{
+		return convertHelper(xjdf).getRoot();
+	}
+
+	public JSONObjHelper convertHelper(KElement xjdf)
+	{
+		JSONRootWalker jsonRootWalker = new JSONRootWalker(this, xjdf);
+		jsonRootWalker.convert();
+		return jsonRootWalker;
 	}
 
 }

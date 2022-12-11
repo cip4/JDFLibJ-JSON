@@ -178,6 +178,25 @@ public class JSONArrayHelper
 		return l;
 	}
 
+	/**
+	 * @param arrayIndex
+	 * @return
+	 */
+	public List<Object> getObjects()
+	{
+		final List<Object> l = new ArrayList<>(array.size());
+		for (final Object o : array)
+		{
+			if (o instanceof JSONArray)
+			{
+				l.addAll(JSONArrayHelper.getHelper(o).getObjects());
+			}
+			else
+				l.add(o);
+		}
+		return l;
+	}
+
 	public Object get(final int arrayIndex)
 	{
 		return ContainerUtil.get(array, arrayIndex);
@@ -203,9 +222,9 @@ public class JSONArrayHelper
 	 * @param jsonArray
 	 * @return
 	 */
-	public static JSONArrayHelper getHelper(final JSONArray jsonArray)
+	public static JSONArrayHelper getHelper(final Object jsonArray)
 	{
-		return jsonArray == null ? null : new JSONArrayHelper(jsonArray);
+		return (jsonArray instanceof JSONArray) ? new JSONArrayHelper((JSONArray) jsonArray) : null;
 	}
 
 	/**
