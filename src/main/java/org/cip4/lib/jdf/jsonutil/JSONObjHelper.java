@@ -274,7 +274,7 @@ public class JSONObjHelper implements IStreamWriter
 		{
 			h = null;
 		}
-		return h.getRoot() == null ? null : h;
+		return h != null && h.getRoot() == null ? null : h;
 
 	}
 
