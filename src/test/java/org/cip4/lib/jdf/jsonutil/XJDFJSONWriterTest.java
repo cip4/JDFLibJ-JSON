@@ -106,6 +106,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
+
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), true);
 		return jsonWriter;
 	}
@@ -172,6 +173,22 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 
 		writeBothJson(c, jsonWriter, "orgunit.json");
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testForeign()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
+		set.getRoot().appendElement("Foo:FooBar", "www.foo.com");
+
+		writeBothJson(xjdf, jsonWriter, "foreign.json");
 	}
 
 	/**

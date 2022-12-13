@@ -113,7 +113,7 @@ public class JSONWriter extends JSONObjHelper
 		jsonPrepWalker.setExplicitAudit(false);
 		jsonPrepWalker.setSplitXJMF(splitXJMF);
 		this.prepWalker = jsonPrepWalker;
-		setPrefix(eJSONPrefix.retain);
+		setPrefix(eJSONPrefix.context);
 		setKeyCase(eJSONCase.retain);
 		setValueCase(eJSONCase.retain);
 		setMixedText(TEXT);
@@ -1067,6 +1067,20 @@ public class JSONWriter extends JSONObjHelper
 		JSONRootWalker jsonRootWalker = new JSONRootWalker(this, xjdf);
 		jsonRootWalker.convert();
 		return jsonRootWalker;
+	}
+
+	/**
+	 * @param e
+	 * @param parent
+	 * @return
+	 * @deprecated use convert
+	 */
+	@Deprecated
+	public boolean walk(final KElement e, final JSONAware parent)
+	{
+		JSONObject o = convert(e);
+		setRoot(o);
+		return true;
 	}
 
 }
