@@ -113,19 +113,28 @@ public class JSONReader
 		String prefix = KElement.xmlnsPrefix(key);
 		if (prefix != null)
 		{
-			String namespaceURIFromPrefix = root.getNamespaceURIFromPrefix(prefix);
-			if (namespaceURIFromPrefix == null)
+			if (root != null)
 			{
-				if (object instanceof JSONObject)
+				String namespaceURIFromPrefix = root.getNamespaceURIFromPrefix(prefix);
+				if (namespaceURIFromPrefix == null)
 				{
-					processContext(((JSONObject) object).get("@context"), root);
+					if (object instanceof JSONObject)
+					{
+						Object context = ((JSONObject) object).get("@context");
+						if (context != null)
+						{
+							processContext(context, root);
+							return key;
+						}
+					}
 				}
 				else
 				{
-					log.warn("Missing context for prefix: " + key);
-					return KElement.xmlnsLocalName(key);
+					return key;
 				}
 			}
+			log.warn("Missing context for prefix: " + key);
+			return KElement.xmlnsLocalName(key);
 		}
 		return key;
 	}
