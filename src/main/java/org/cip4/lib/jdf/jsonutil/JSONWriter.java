@@ -128,6 +128,8 @@ public class JSONWriter extends JSONObjHelper
 				new SchemaFiller(root, splitXJMF).fillTypesFromSchema();
 			}
 		}
+		addArray(ElementName.AUDITPOOL);
+		addArray(ElementName.MEDIALAYERS);
 	}
 
 	/**

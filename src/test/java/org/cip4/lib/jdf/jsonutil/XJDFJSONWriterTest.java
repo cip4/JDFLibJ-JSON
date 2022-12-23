@@ -48,19 +48,23 @@ import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
-import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.AuditHelper;
 import org.cip4.jdflib.extensions.AuditHelper.eAudit;
 import org.cip4.jdflib.extensions.AuditPoolHelper;
+import org.cip4.jdflib.extensions.ResourceHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
+import org.cip4.jdflib.jmf.JDFDeviceInfo;
+import org.cip4.jdflib.resource.JDFProcessRun;
 import org.cip4.jdflib.resource.process.JDFAddress;
 import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
+import org.cip4.jdflib.util.JDFDate;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -119,8 +123,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
 		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
 		final JDFContact c = (JDFContact) cs.getCreatePartition(0, true).getResource();
 		final JDFAddress add = c.appendAddress();
@@ -130,7 +133,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		jsonWriter.convert(add);
 
-		writeBothJson(add, jsonWriter, "addressline.json");
+		writeBothJson(add, jsonWriter, "addressline.json", true);
 	}
 
 	/**
@@ -140,9 +143,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testComment()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
-
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
 		final JDFComment c = (JDFComment) h.appendElement(ElementName.COMMENT);
 		c.setText("line 1 \nline 2");
 		c.setAuthor("Wyle E Coyote");
@@ -150,7 +151,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		// jsonWriter.convert(h.getRoot());
 
-		writeBothJson(h.getRoot(), jsonWriter, "comment.json");
+		writeBothJson(h.getRoot(), jsonWriter, "comment.json", false);
 	}
 
 	/**
@@ -161,8 +162,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
 		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
 		final JDFContact c = (JDFContact) cs.getCreatePartition(0, true).getResource();
 		final JDFCompany cm = c.appendCompany();
@@ -172,7 +172,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		cm.appendOrganizationalUnit("ACME Unit 3");
 		h.cleanUp();
 
-		writeBothJson(c, jsonWriter, "orgunit.json");
+		writeBothJson(c, jsonWriter, "orgunit.json", true);
 	}
 
 	/**
@@ -183,12 +183,45 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
 		SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
-		set.getRoot().appendElement("Foo:FooBar", "www.foo.com");
+		ResourceHelper rh = set.getCreatePartition(0, false);
+		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
+		h.cleanUp();
+		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false);
+	}
 
-		writeBothJson(xjdf, jsonWriter, "foreign.json");
+	/**
+	 *
+	 */
+	@Test
+	public void testForeignAttribute()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final XJDFHelper h = getBaseXJDF();
+		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
+		ResourceHelper rh = set.getCreatePartition(0, true);
+		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
+		h.cleanUp();
+		writeBothJson(h.getRoot(), jsonWriter, "foreignatt.json", false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testMultiForeignAttribute()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final XJDFHelper h = getBaseXJDF();
+		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
+		ResourceHelper rh = set.getCreatePartition(0, true);
+		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
+		rh.getResource().setAttribute("bar2:foo2", "abc", "www.bar2.com");
+		h.cleanUp();
+		writeBothJson(h.getRoot(), jsonWriter, "foreignatt.json", false);
 	}
 
 	/**
@@ -199,21 +232,34 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
+		KElement xjdf = h.getRoot();
 		final AuditPoolHelper ap = h.getCreateAuditPool();
 		ap.appendAudit(eAudit.Created);
-		ap.appendAudit(eAudit.Status).appendElement(ElementName.DEVICEINFO);
-		ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
-		ap.appendAudit(eAudit.Status).appendElement(ElementName.DEVICEINFO).setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
-		ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
-		ap.appendAudit(eAudit.Notification);
-		ap.appendAudit(eAudit.ProcessRun);
+		AuditHelper status = ap.appendAudit(eAudit.Status);
+		JDFDeviceInfo di = (JDFDeviceInfo) status.appendElement(ElementName.DEVICEINFO);
+		di.setAttribute("Status", "Production");
+
+		KElement ri0 = ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
+		ri0.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
+		AuditHelper status2 = ap.appendAudit(eAudit.Status);
+		JDFDeviceInfo di2 = (JDFDeviceInfo) status2.appendElement(ElementName.DEVICEINFO);
+		di2.setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
+		di2.setAttribute("Status", "Production");
+		AuditHelper rah = ap.appendAudit(eAudit.Resource);
+		KElement ri = rah.appendElement(ElementName.RESOURCEINFO);
+		ri.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
+
+		ap.appendAudit(eAudit.Notification).appendElement(ElementName.NOTIFICATION).setAttribute("Class", "Warning");
+		JDFProcessRun pr = (JDFProcessRun) ap.appendAudit(eAudit.ProcessRun).appendElement(ElementName.PROCESSRUN);
+		pr.setAttribute("Start", new JDFDate().getDateTimeISO());
+		pr.setAttribute("End", new JDFDate().getDateTimeISO());
+		pr.setAttribute("EndStatus", "Completed");
 		h.cleanUp();
 
 		jsonWriter.convert(xjdf);
 		final String output = "auditpool.json";
-		writeBothJson(xjdf, jsonWriter, output);
+		writeBothJson(xjdf, jsonWriter, output, true);
 	}
 
 	/**
@@ -224,8 +270,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
-		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
-		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final XJDFHelper h = getBaseXJDF();
+		KElement xjdf = h.getRoot();
 		final JDFMedia m = (JDFMedia) h.getCreateSet(ElementName.MEDIA, EnumUsage.Input).getCreatePartition(0, true).getResource();
 		m.setMediaType(EnumMediaType.SelfAdhesive);
 		final JDFMediaLayers mls = m.appendMediaLayers();
@@ -236,7 +282,15 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 		jsonWriter.convert(xjdf);
 		final String output = "medialayers.json";
-		writeBothJson(xjdf, jsonWriter, output);
+		writeBothJson(xjdf, jsonWriter, output, true);
+	}
+
+	XJDFHelper getBaseXJDF()
+	{
+		final XJDFHelper h = new XJDFHelper("J1", null);
+		h.setTypes("Product");
+		h.removeSet(ElementName.NODEINFO);
+		return h;
 	}
 
 }

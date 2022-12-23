@@ -37,6 +37,7 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -53,6 +54,7 @@ import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFParser;
 import org.cip4.jdflib.core.JDFParserFactory;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.extensions.BaseXJDFHelper;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.util.FileUtil;
@@ -60,6 +62,7 @@ import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Comment;
@@ -181,17 +184,53 @@ public abstract class JSONTestCaseBase
 		setSnippet(h.getSet(ElementName.NODEINFO, 0), false);
 	}
 
-	public void writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
+	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
+	{
+		return writeBothJson(e, jsonWriter, output, true);
+	}
+
+	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals)
 	{
 		setSnippet(e, true);
-		e.getOwnerDocument_KElement().write2File(new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml")), 2, false);
+		File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
+		e.write2File(xmlFile);
+		final JDFParser jdfparser = getSchemaParser();
+		final JDFDoc docJDF = jdfparser.parseFile(xmlFile);
+		final XMLDoc dVal0 = docJDF.getValidationResult();
+		final String valResult0 = dVal0.getRoot().getAttribute("ValidationResult");
+		if (!VALID.equals(valResult0))
+		{
+			dVal0.write2File(xmlFile.getPath() + ".xjdf.val.xml", 2, false);
+		}
+		assertEquals(valResult0, VALID);
 
-		jsonWriter.convert(e);
+		JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
+
+		JSONReader reader = new JSONReader();
+		reader.setXJDF();
+		KElement roundtrip = reader.getElement(jo);
+		BaseXJDFHelper bh = BaseXJDFHelper.getBaseHelper(roundtrip);
+		if (bh != null)
+			bh.cleanUp();
+		File roundtripFile = new File(sm_dirTestDataTemp + "xjdf/xjdfroundtrip", UrlUtil.newExtension(output, "xml"));
+		roundtrip.write2File(roundtripFile);
+		final JDFDoc docRound = jdfparser.parseFile(roundtripFile);
+		final XMLDoc dVal1 = docRound.getValidationResult();
+		final String valResult1 = dVal1.getRoot().getAttribute("ValidationResult");
+		if (!VALID.equals(valResult1))
+		{
+			dVal0.write2File(roundtripFile.getPath() + ".xjdf.val.xml", 2, false);
+		}
+		assertEquals(valResult1, VALID);
+		if (equals)
+			assertTrue(e.isEqual(roundtrip));
+		return roundtrip;
 	}
 
 	final protected static int MINOR = 1;
+	private static final String VALID = "Valid";
 
 	static protected final String sm_dirTestData = getTestDataDir();
 	static protected final String sm_dirTestDataTemp = sm_dirTestData + "temp" + File.separator;
@@ -244,18 +283,21 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @return
 	 */
-	protected static JDFParser getSchemaParser(final EnumVersion version)
+	protected static JDFParser getSchemaParser()
 	{
-		int minor = 6;
-		if (EnumVersion.Version_2_1.equals(version) || EnumVersion.Version_1_7.equals(version))
-			minor = 7;
-		else if (EnumVersion.Version_2_2.equals(version) || EnumVersion.Version_1_8.equals(version))
-			minor = 8;
 		final JDFParser parser = JDFParserFactory.getFactory().get();
-		final File jdfxsd = new File(sm_dirTestSchemaBase + "1_" + minor + File.separator + "JDF.xsd");
-		assertTrue(jdfxsd.canRead());
-		parser.setJDFSchemaLocation(jdfxsd);
+		parser.setSchemaLocation(JDFElement.getSchemaURL(2, 0), getXJDFSchema(2, 1));
 		return parser;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public static String getXJDFSchema(final int major, final int minor)
+	{
+		final String file = StringUtil.replaceToken(sm_dirTestSchema, -1, File.separator, "Version_" + major + "_" + minor) + "/xjdf.xsd";
+		return UrlUtil.normalize(file);
 	}
 
 }

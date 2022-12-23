@@ -54,10 +54,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.elementwalker.ElementWalker;
+import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.util.StringUtil;
 import org.json.simple.JSONArray;
@@ -106,9 +108,66 @@ public class JSONReader
 		return wantAttributes;
 	}
 
-	String getKey(final String key)
+	String getKey(final String key, Object object, KElement root)
 	{
-		return KElement.xmlnsLocalName(key);
+		String prefix = KElement.xmlnsPrefix(key);
+		if (prefix != null)
+		{
+			String namespaceURIFromPrefix = root.getNamespaceURIFromPrefix(prefix);
+			if (namespaceURIFromPrefix == null)
+			{
+				if (object instanceof JSONObject)
+				{
+					processContext(((JSONObject) object).get("@context"), root);
+				}
+				else
+				{
+					log.warn("Missing context for prefix: " + key);
+					return KElement.xmlnsLocalName(key);
+				}
+			}
+		}
+		return key;
+	}
+
+	void processContext(Object object, KElement root)
+	{
+		if (object instanceof JSONArray)
+		{
+			JSONArray array = (JSONArray) object;
+			if (array != null)
+			{
+				for (Object next : array)
+				{
+					processSingleNS(next, root);
+				}
+			}
+		}
+		else
+		{
+			processSingleNS(object, root);
+		}
+	}
+
+	void processSingleNS(Object context, KElement root)
+	{
+		if (context instanceof String)
+		{
+			log.info("found default namespace in context: " + context);
+			root.addNameSpace("", (String) context);
+		}
+		else if (context instanceof JSONObject)
+		{
+			JSONObjHelper oh = JSONObjHelper.getHelper(context);
+			for (Object newNSo : oh.getRoot().keySet())
+			{
+				String newNs = (String) newNSo;
+				String uri = oh.getString(newNs);
+				log.info("found new namespace in context: " + newNs + "=" + uri);
+				root.addNameSpace(newNs, uri);
+			}
+		}
+
 	}
 
 	public void setWantAttributes(final boolean wantAttributes)
@@ -169,6 +228,7 @@ public class JSONReader
 		{
 			postWalker.walkTree(walkTree, null);
 		}
+		walkTree.setNamespaceURI(XJDF20.getSchemaURL());
 		return walkTree;
 	}
 
@@ -243,12 +303,22 @@ public class JSONReader
 				root = KElement.createRoot("json", null);
 			}
 		}
+		else
+		{
+			new JDFDoc(root.getOwnerDocument()).setInitOnCreate(false);
+		}
 		KElement next = root;
+		Object context = o.get("@context");
+		processContext(context, root);
 		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
 		{
-			final String key = getKey(kid.getKey());
+			final String key = getKey(kid.getKey(), kid.getValue(), root);
 			final Object val = kid.getValue();
-			if (val instanceof JSONObject)
+			if ("@context".equals(key))
+			{
+				// skip
+			}
+			else if (val instanceof JSONObject)
 			{
 				next = root == null ? createRoot(key) : root.appendElement(key);
 				walkTree((JSONObject) val, next);
