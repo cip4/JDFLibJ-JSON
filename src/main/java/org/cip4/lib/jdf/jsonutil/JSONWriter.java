@@ -317,7 +317,7 @@ public class JSONWriter extends JSONObjHelper
 	public boolean addString(final String attribute)
 	{
 		final String key = StringUtil.normalize(attribute, true, "_ -");
-		if (knownAtts.contains(key))
+		if (knownAtts.contains(key) || knownElems.contains(key))
 			return false;
 		return addList(attribute, alwaysString);
 	}
@@ -370,69 +370,87 @@ public class JSONWriter extends JSONObjHelper
 		public void fillTypesFromSchema()
 		{
 
+			final Set<String> types = new HashSet<>();
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
+					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			if (ve != null)
 			{
 				for (final KElement e : ve)
 				{
-					final String maxOcc = e.getNonEmpty("maxOccurs");
-					boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
-					if (!isMulti)
+					fillTypeFromSchema(e);
+					if ("string".equals(getTypeFromSchemaAttribute(e)))
 					{
-						KElement parentSeq = e.getDeepParent("sequence", 0);
-						KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
-						if (parentSeq != null && !parentSeq.isAncestor(parentElement))
-						{
-							final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
-							isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
-						}
+						fillAttributeFromSchema(e, types);
 					}
-					if (splitXJMF && isMulti && e.hasAttribute("substitutionGroup"))
-					{
-						isMulti = EnumFamily.getEnum(e.getAttribute("substitutionGroup")) == null;
-					}
-					if (isMulti)
-					{
-						fillArrayFromSchema(e);
-					}
-					for (String name : getNamesFromSchema(e))
-						addList(name, knownElems);
 				}
 			}
 
 			final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
 			if (va != null)
 			{
-				final Set<String> types = new HashSet<>();
-				types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange",
-						"LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 				for (final KElement e : va)
 				{
-					final String type = getTypeFromSchemaAttribute(e);
-					final String name = StringUtil.normalize(e.getNonEmpty("name"), true, "_:-");
-					if ("NMTOKENS".equals(type) || "IDREFS".equals(type))
-					{
-						addStringArray(name);
-					}
-					else if ("TransferFunction".equals(type))
-					{
-						addTransferFunction(name);
-					}
-					else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
-					{
-						addList(name, numbers);
-					}
-					else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
-							|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
-					{
-						addList(name, numList);
-					}
-					else if (!types.contains(type))
-					{
-						addString(name);
-					}
+					String name = fillAttributeFromSchema(e, types);
 					knownAtts.add(name);
 				}
 			}
+		}
+
+		String fillAttributeFromSchema(final KElement e, final Set<String> types)
+		{
+			final String type = getTypeFromSchemaAttribute(e);
+			final String name = StringUtil.normalize(e.getNonEmpty("name"), true, "_:-");
+			if ("NMTOKENS".equals(type) || "IDREFS".equals(type))
+			{
+				addStringArray(name);
+			}
+			else if ("TransferFunction".equals(type))
+			{
+				addTransferFunction(name);
+			}
+			else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
+			{
+				addList(name, numbers);
+			}
+			else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
+					|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
+			{
+				addList(name, numList);
+			}
+			else if (!types.contains(type))
+			{
+				addString(name);
+			}
+			return name;
+		}
+
+		void fillTypeFromSchema(final KElement e)
+		{
+			final String maxOcc = e.getNonEmpty("maxOccurs");
+			boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
+			if (!isMulti)
+			{
+				KElement parentSeq = e.getDeepParent("sequence", 0);
+				KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
+				if (parentSeq != null && !parentSeq.isAncestor(parentElement))
+				{
+					final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
+					isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
+				}
+			}
+			if (splitXJMF && isMulti && e.hasAttribute("substitutionGroup"))
+			{
+				isMulti = EnumFamily.getEnum(e.getAttribute("substitutionGroup")) == null;
+			}
+			if (isMulti)
+			{
+				fillArrayFromSchema(e);
+			}
+			for (String name : getNamesFromSchema(e))
+				addList(name, knownElems);
+
+			final String type = getTypeFromSchemaAttribute(e);
+
 		}
 
 		KElement getAncestor(final KElement e, final String name)
@@ -522,13 +540,17 @@ public class JSONWriter extends JSONObjHelper
 		final String key = StringUtil.normalize(name, true, "_ -");
 		if (key != null)
 		{
-			return list.add(key);
+			boolean add = list.add(key);
+			return add;
 		}
 		return false;
 	}
 
 	String getTypeFromSchemaAttribute(final KElement e)
 	{
+		boolean abst = StringUtil.parseBoolean(e.getAttribute("abstract"), false);
+		if (abst)
+			return null;
 		String type = e.getAttribute("type");
 		if (StringUtil.isEmpty(type))
 		{
@@ -537,6 +559,10 @@ public class JSONWriter extends JSONObjHelper
 		if (StringUtil.isEmpty(type))
 		{
 			type = e.getXPathAttribute("xs:simpleType/xs:restriction/@base", null);
+		}
+		if (StringUtil.isEmpty(type))
+		{
+			type = e.getXPathAttribute("xs:complexType/xs:simpleContent/xs:extension/@base", null);
 		}
 		if (StringUtil.isEmpty(type) && e.getXPathElement("xs:simpleType/xs:list") != null)
 		{
