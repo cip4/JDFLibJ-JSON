@@ -107,7 +107,7 @@ public class JSONPostWalker extends BaseElementWalker
 			final String name = e.getNonEmpty(AttributeName.NAME);
 			if (name != null)
 			{
-				e.renameElement(ElementName.AUDIT + name, null);
+				e.renameElement(getName(name), null);
 				e.removeAttribute(AttributeName.NAME);
 				final KElement pool = ensureRealPool(e, ElementName.AUDITPOOL);
 				pool.moveElement(e, null);
@@ -123,6 +123,11 @@ public class JSONPostWalker extends BaseElementWalker
 		{
 			return new VString(ElementName.AUDITPOOL);
 		}
+	}
+
+	String getName(final String name)
+	{
+		return name.startsWith(ElementName.AUDIT) ? name : ElementName.AUDIT + name;
 	}
 
 	/**
@@ -143,9 +148,8 @@ public class JSONPostWalker extends BaseElementWalker
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
 			final String name = e.getAttribute(AttributeName.NAME);
-			e.renameElement(ElementName.AUDIT + name, null);
+			e.renameElement(getName(name), null);
 			e.removeAttribute(AttributeName.NAME);
-			// trackElem.moveElement(e, null);
 			return super.walk(e, trackElem);
 		}
 

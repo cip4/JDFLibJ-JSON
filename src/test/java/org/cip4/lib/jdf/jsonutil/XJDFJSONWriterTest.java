@@ -204,7 +204,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ResourceHelper rh = set.getCreatePartition(0, true);
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		h.cleanUp();
-		writeBothJson(h.getRoot(), jsonWriter, "foreignatt.json", false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		rh.getResource().setAttribute("bar2:foo2", "abc", "www.bar2.com");
 		h.cleanUp();
-		writeBothJson(h.getRoot(), jsonWriter, "foreignatt.json", false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattributes.json", false);
 	}
 
 	/**

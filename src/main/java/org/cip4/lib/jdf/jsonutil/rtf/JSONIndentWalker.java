@@ -77,6 +77,7 @@ import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWalker;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
 public class JSONIndentWalker extends JSONWalker implements IStreamWriter
@@ -242,12 +243,22 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	protected void postWalk(final String key, final JSONArray val)
 	{
 		indent -= singleIndent;
-		if (!val.isEmpty())
+		if (needsLine(val))
 		{
 			printLine();
 		}
 		ps.print(getEndArray());
 		super.postWalk(key, val);
+	}
+
+	boolean needsLine(final JSONArray val)
+	{
+		for (Object o : val)
+		{
+			if (o instanceof JSONAware)
+				return true;
+		}
+		return false;
 	}
 
 	protected String getEndArray()

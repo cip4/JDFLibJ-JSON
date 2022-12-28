@@ -189,15 +189,17 @@ public class JSONPrepWalker extends BaseElementWalker
 		public KElement walk(final KElement e, final KElement xjdf)
 		{
 			final List<KElement> elems = e.getChildArray_KElement(null, null, null, true, 0);
-			final KElement m = e.getParentNode_KElement();
+			KElement parent = e.getParentNode_KElement();
+			if (parent == null)
+			{
+				parent = e;
+			}
 			for (final KElement elem : elems)
 			{
 				if (auditnames.contains(elem.getLocalName()))
 				{
-
-					m.moveElement(elem, e);
-					elem.setAttribute(AttributeName.NAME, StringUtil.rightStr(elem.getLocalName(), -5));
-					elem.renameElement(ElementName.AUDITPOOL, null);
+					parent.moveElement(elem, e);
+					walkTree(elem, xjdf);
 				}
 			}
 			e.deleteNode();
@@ -241,7 +243,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
 			e.setAttribute(AttributeName.NAME, StringUtil.rightStr(e.getLocalName(), -5));
-			e.renameElement(ElementName.AUDIT, null);
+			e.renameElement(explicitAudit ? ElementName.AUDIT : ElementName.AUDITPOOL, null);
 			return super.walk(e, trackElem);
 		}
 
@@ -249,15 +251,6 @@ public class JSONPrepWalker extends BaseElementWalker
 		public VString getElementNames()
 		{
 			return VString.getVString("AuditCreated AuditNotification AuditProcessRun AuditResource AuditStatus", null);
-		}
-
-		/**
-		 * @see org.cip4.jdflib.elementwalker.BaseWalker#matches(org.cip4.jdflib.core.KElement)
-		 */
-		@Override
-		public boolean matches(final KElement e)
-		{
-			return explicitAudit;
 		}
 
 	}
