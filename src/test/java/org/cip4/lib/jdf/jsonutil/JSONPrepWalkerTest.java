@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -182,10 +182,10 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(h.getRoot(), null);
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@Name", null));
-		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@Name", null));
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@Name", null));
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@Name", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@LayerType", null));
+		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@LayerType", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@LayerType", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@LayerType", null));
 	}
 
 	/**
