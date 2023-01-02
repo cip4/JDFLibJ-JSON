@@ -109,7 +109,7 @@ public class JSONPostWalker extends BaseElementWalker
 			{
 				e.renameElement(getName(name), null);
 				e.removeAttribute(AttributeName.NAME);
-				final KElement pool = ensureRealPool(e, ElementName.AUDITPOOL);
+				final KElement pool = ensureRealPool(e, ElementName.AUDITPOOL, AttributeName.NAME);
 				pool.moveElement(e, null);
 			}
 			return super.walk(e, trackElem);
@@ -178,11 +178,12 @@ public class JSONPostWalker extends BaseElementWalker
 		@Override
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			final String name = e.getNonEmpty(AttributeName.NAME);
+			String lt = "LayerType";
+			final String name = e.getNonEmpty(lt);
 			if (name != null)
 			{
 				e.renameElement(name, null);
-				e.removeAttribute(AttributeName.NAME);
+				e.removeAttribute(lt);
 				final KElement eml = ensureRealMediaLayers(e);
 				eml.moveElement(e, null);
 			}
@@ -191,7 +192,7 @@ public class JSONPostWalker extends BaseElementWalker
 
 		KElement ensureRealMediaLayers(final KElement e)
 		{
-			return ensureRealPool(e, ElementName.MEDIALAYERS);
+			return ensureRealPool(e, ElementName.MEDIALAYERS, "LayerType");
 		}
 
 		@Override
@@ -202,13 +203,13 @@ public class JSONPostWalker extends BaseElementWalker
 
 	}
 
-	KElement ensureRealPool(final KElement e, final String pool)
+	KElement ensureRealPool(final KElement e, final String pool, String check)
 	{
 		final KElement m = e.getParentNode_KElement();
 		final Collection<KElement> v = m.getChildArray(pool, null);
 		for (final KElement ml : v)
 		{
-			if (!ml.hasNonEmpty(AttributeName.NAME))
+			if (!ml.hasNonEmpty(check))
 				return ml;
 		}
 		KElement newPool = m.appendElement(pool);

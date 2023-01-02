@@ -48,8 +48,10 @@ import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
+import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.extensions.AuditHelper;
 import org.cip4.jdflib.extensions.AuditHelper.eAudit;
 import org.cip4.jdflib.extensions.AuditPoolHelper;
@@ -131,9 +133,28 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		add.appendAddressLine().setText("line 2");
 		add.appendAddressLine().setText("line 3");
 		h.cleanUp();
-		jsonWriter.convert(add);
 
 		writeBothJson(add, jsonWriter, "addressline.json", true);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testResourceSet()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		final XJDFHelper h = new XJDFHelper("J1", null);
+		h.setTypes("Product");
+		ResourceHelper p = h.getSet(ElementName.NODEINFO, null).getCreatePartition(0, true);
+		p.setDescriptiveName("my node");
+		p.setPartMap(new JDFAttributeMap("SheetName", "Sheet1"));
+		JDFNodeInfo ni = (JDFNodeInfo) p.getResource();
+		ni.setAttribute(AttributeName.STATUS, "Waiting");
+		ni.setStart(new JDFDate());
+
+		h.cleanUp();
+		writeBothJson(h.getRoot(), jsonWriter, "nodeinfo.json", true);
 	}
 
 	/**
@@ -279,10 +300,10 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		mls.appendElement(ElementName.GLUE).setAttribute(AttributeName.AREAGLUE, true, null);
 		mls.appendMedia().setMediaType(EnumMediaType.Paper);
 		h.cleanUp();
+		SetHelper sh = h.getSet(ElementName.MEDIA, null);
 
-		jsonWriter.convert(xjdf);
 		final String output = "medialayers.json";
-		writeBothJson(xjdf, jsonWriter, output, true);
+		writeBothJson(sh.getSet(), jsonWriter, output, true);
 	}
 
 	XJDFHelper getBaseXJDF()

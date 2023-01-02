@@ -51,7 +51,7 @@ class JSONRootWalker extends JSONObjHelper
 		if (this.jsonWriter.prepWalker != null)
 		{
 			e = xmlRoot.cloneNewDoc();
-			this.jsonWriter.prepWalker.walkTree(e, null);
+			jsonWriter.prepWalker.walkTree(e, null);
 		}
 		walk(e, getRoot());
 		final JSONObject j2 = updateRoot();

@@ -313,7 +313,8 @@ public class JSONPrepWalker extends BaseElementWalker
 				if (ElementName.GLUE.equals(elem.getLocalName()) || ElementName.MEDIA.equals(elem.getLocalName()))
 				{
 					m.moveElement(elem, null);
-					elem.setAttribute(AttributeName.NAME, elem.getLocalName());
+					// elem.setAttribute(XJDFConstants.LayerType, elem.getLocalName());
+					elem.setAttribute("LayerType", elem.getLocalName());
 					elem.renameElement(ElementName.MEDIALAYERS, null);
 				}
 			}

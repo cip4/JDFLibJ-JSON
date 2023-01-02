@@ -378,7 +378,7 @@ public class JSONWriter extends JSONObjHelper
 				for (final KElement e : ve)
 				{
 					fillTypeFromSchema(e);
-					if ("string".equals(getTypeFromSchemaAttribute(e)))
+					if ("textElement".equals(getTypeFromSchemaAttribute(e)))
 					{
 						fillAttributeFromSchema(e, types);
 					}
@@ -448,8 +448,6 @@ public class JSONWriter extends JSONObjHelper
 			}
 			for (String name : getNamesFromSchema(e))
 				addList(name, knownElems);
-
-			final String type = getTypeFromSchemaAttribute(e);
 
 		}
 
@@ -559,10 +557,10 @@ public class JSONWriter extends JSONObjHelper
 		if (StringUtil.isEmpty(type))
 		{
 			type = e.getXPathAttribute("xs:simpleType/xs:restriction/@base", null);
-		}
-		if (StringUtil.isEmpty(type))
-		{
-			type = e.getXPathAttribute("xs:complexType/xs:simpleContent/xs:extension/@base", null);
+			if (StringUtil.isEmpty(type))
+			{
+				type = e.getXPathAttribute("xs:complexType/xs:simpleContent/xs:extension/@base", null);
+			}
 		}
 		if (StringUtil.isEmpty(type) && e.getXPathElement("xs:simpleType/xs:list") != null)
 		{
