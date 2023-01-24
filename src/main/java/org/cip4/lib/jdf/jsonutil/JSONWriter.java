@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -307,6 +307,24 @@ public class JSONWriter extends JSONObjHelper
 	public boolean addArray(final String element)
 	{
 		return addList(element, arrayNames);
+	}
+
+	/**
+	 * @param element
+	 * @return
+	 */
+	public boolean addKnownElem(final String element)
+	{
+		return addList(element, knownElems);
+	}
+
+	/**
+	 * @param element
+	 * @return
+	 */
+	public boolean addKnownAttribute(final String element)
+	{
+		return addList(element, knownAtts);
 	}
 
 	public boolean addSkipPool(final String element)

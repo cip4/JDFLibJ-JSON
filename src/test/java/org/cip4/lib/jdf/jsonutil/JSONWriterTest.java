@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -363,6 +363,32 @@ public class JSONWriterTest extends JSONTestCaseBase
 		assertFalse(jsonWriter.addArray(null));
 		assertFalse(jsonWriter.addMixed(null));
 		assertFalse(jsonWriter.addStringArray(null));
+		assertFalse(jsonWriter.addKnownAttribute(null));
+		assertFalse(jsonWriter.addKnownElem(null));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testAddNotNull()
+	{
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.addSkipPool("b");
+		jsonWriter.setWantArray(false);
+		assertTrue(jsonWriter.addSkipPool("a"));
+		assertTrue(jsonWriter.addArray("a"));
+		assertTrue(jsonWriter.addMixed("a"));
+		assertTrue(jsonWriter.addStringArray("a"));
+		assertTrue(jsonWriter.addKnownAttribute("a"));
+		assertTrue(jsonWriter.addKnownElem("a"));
+
+		assertFalse(jsonWriter.addSkipPool("a"));
+		assertFalse(jsonWriter.addArray("a"));
+		assertFalse(jsonWriter.addMixed("a"));
+		assertFalse(jsonWriter.addStringArray("a"));
+		assertFalse(jsonWriter.addKnownAttribute("a"));
+		assertFalse(jsonWriter.addKnownElem("a"));
 	}
 
 	/**
