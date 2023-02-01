@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are
@@ -96,6 +96,18 @@ public class JSONWalkerTest extends JSONTestCaseBase
 	public void testWalkNull()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
+		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
+		w.setRetainNull(true);
+		assertTrue(w.isRetainNull());
+		JSONObjHelper walk = w.walk();
+		String s = walk.toJSONString();
+		assertEquals(s0, s);
+	}
+
+	@Test
+	public void testWalkNullArray()
+	{
+		String s0 = "{\"a\":{\"b\":[{\"c\":[]}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(true);
 		assertTrue(w.isRetainNull());
