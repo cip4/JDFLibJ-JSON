@@ -148,7 +148,7 @@ public abstract class JSONWalker
 			}
 		}
 		postWalk(rootKey, o);
-		return o.isEmpty() ? null : o;
+		return !retainNull && o.isEmpty() ? null : o;
 	}
 
 	protected void postWalk(final String rootKey, final JSONObject o)

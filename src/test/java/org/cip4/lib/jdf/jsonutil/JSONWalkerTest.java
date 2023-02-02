@@ -117,6 +117,18 @@ public class JSONWalkerTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testWalkEmptyArray()
+	{
+		String s0 = "{\"a\":{\"b\":[{\"c\":[{},{},{}]}]}}";
+		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
+		w.setRetainNull(true);
+		assertTrue(w.isRetainNull());
+		JSONObjHelper walk = w.walk();
+		String s = walk.toJSONString();
+		assertEquals(s0, s);
+	}
+
+	@Test
 	public void testWalkNullZapp()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
