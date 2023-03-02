@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -61,7 +61,7 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
 		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
-		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b/c"));
+		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b/c"));
 	}
 
 	@Test
