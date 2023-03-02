@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -42,6 +42,7 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
@@ -77,6 +78,21 @@ import org.junit.Test;
  */
 public class XJDFJSONWriterTest extends JSONTestCaseBase
 {
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertBoolean()
+	{
+		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
+		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONObject o = jsonWriter.convert(xjdf);
+
+		assertNotNull(o.toJSONString());
+		JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
+		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("XJDF/ProductList/Product/IsRoot"));
+	}
 
 	/**
 	 *

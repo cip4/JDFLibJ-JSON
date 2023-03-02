@@ -65,7 +65,7 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r = new JSONObjHelper(root);
 		assertEquals("d", r.getPathObject("a/b[0]/c"));
 		assertEquals(null, r.getPathObject("a/b[1]/c"));
-		assertEquals(null, r.getPathObject("a/b/c"));
+		assertEquals("d", r.getPathObject("a/b/c"));
 	}
 
 	@Test

@@ -98,7 +98,7 @@ public class JSONWriter extends JSONObjHelper
 	 */
 	public void setXJDF()
 	{
-		setXJDF(false, false);
+		setXJDF(true, false);
 	}
 
 	/**
@@ -408,16 +408,26 @@ public class JSONWriter extends JSONObjHelper
 			{
 				for (final KElement e : va)
 				{
-					String name = fillAttributeFromSchema(e, types);
-					knownAtts.add(name);
+					fillAttributeFromSchema(e, types);
 				}
 			}
 		}
 
-		String fillAttributeFromSchema(final KElement e, final Set<String> types)
+		void fillAttributeFromSchema(final KElement e, final Set<String> types)
 		{
+			List<String> l = getNamesFromSchema(e);
 			final String type = getTypeFromSchemaAttribute(e);
-			final String name = StringUtil.normalize(e.getNonEmpty("name"), true, "_:-");
+			final String name = e.getNonEmpty("name");
+			ContainerUtil.appendUnique(l, name);
+			for (String complet : l)
+			{
+				String normalize = StringUtil.normalize(complet, true, "_:-");
+				addSingleAttribute(types, type, normalize);
+			}
+		}
+
+		protected void addSingleAttribute(final Set<String> types, final String type, final String name)
+		{
 			if ("NMTOKENS".equals(type) || "IDREFS".equals(type))
 			{
 				addStringArray(name);
@@ -425,6 +435,10 @@ public class JSONWriter extends JSONObjHelper
 			else if ("TransferFunction".equals(type))
 			{
 				addTransferFunction(name);
+			}
+			else if ("boolean".equals(type))
+			{
+				addList(name, bool);
 			}
 			else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
 			{
@@ -439,7 +453,8 @@ public class JSONWriter extends JSONObjHelper
 			{
 				addString(name);
 			}
-			return name;
+			knownAtts.add(name);
+
 		}
 
 		void fillTypeFromSchema(final KElement e)

@@ -382,6 +382,10 @@ public class JSONObjHelper implements IStreamWriter
 		{
 			return ((Boolean) base).booleanValue();
 		}
+		else if (base instanceof String)
+		{
+			return (StringUtil.parseBoolean((String) base, def));
+		}
 		return def;
 	}
 
@@ -542,7 +546,13 @@ public class JSONObjHelper implements IStreamWriter
 		}
 		else
 		{
-			final Object newNext = getFirstObject(first);
+			Object newNext = getFirstObject(first);
+			String nextString = first;
+			while (newNext instanceof JSONArray)
+			{
+				nextString += "[0]";
+				newNext = getFirstObject(nextString);
+			}
 			return (newNext instanceof JSONObject) ? new JSONObjHelper((JSONObject) newNext).getPathObject(next) : null;
 		}
 	}
@@ -664,8 +674,8 @@ public class JSONObjHelper implements IStreamWriter
 		Object r0 = a0;
 		for (int i = 1; i < tokens.size(); i++)
 		{
-			final int arrayIndex = StringUtil.parseInt(tokens.get(i), Integer.MAX_VALUE);
-			if (a0 instanceof JSONArray && arrayIndex != Integer.MAX_VALUE)
+			final int arrayIndex = StringUtil.parseInt(tokens.get(i), 0);
+			if (a0 instanceof JSONArray)
 			{
 				r0 = new JSONArrayHelper((JSONArray) a0).get(arrayIndex);
 				if (r0 instanceof JSONArray)
@@ -676,6 +686,10 @@ public class JSONObjHelper implements IStreamWriter
 				{
 					a0 = null;
 				}
+			}
+			else if (arrayIndex == 0)
+			{
+				r0 = a0;
 			}
 			else
 			{

@@ -645,6 +645,22 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testConvertXJMFFromFile()
+	{
+		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF();
+		final JSONObject o = jsonWriter.convert(xjmf);
+		final String jsonString = o.toJSONString();
+		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
+		log.info(jsonString);
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testSplitXJMF()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();
@@ -834,9 +850,9 @@ public class JSONWriterTest extends JSONTestCaseBase
 		assertEquals("foo", new JSONObjHelper(o).getPathObject("XJDF/CTM"));
 		assertTrue(jsonWriter.numList.contains("ctm"));
 		assertFalse(jsonWriter.alwaysString.contains("ctm"));
-		xjdf.setAttribute("CTM", "1");
+		xjdf.appendElement("PlacedObject").setAttribute("CTM", "1");
 		JSONObject o2 = jsonWriter.convert(xjdf);
-		assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/CTM[0]"));
+		assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/PlacedObject/CTM[0]"));
 	}
 
 	/**
@@ -900,11 +916,11 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
-		final KElement xjdf = KElement.createRoot("XJDF", null);
+		final KElement xjdf = KElement.createRoot("ColorantControl", null);
 		xjdf.setAttribute(ElementName.COLORANTORDER, "C M Y K");
 		final String fileName = sm_dirTestDataTemp + "co.json";
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertEquals("Y", new JSONObjHelper(o).getPathObject("XJDF/ColorantOrder[2]"));
+		assertEquals("Y", new JSONObjHelper(o).getPathObject("ColorantControl/ColorantOrder[2]"));
 
 	}
 
