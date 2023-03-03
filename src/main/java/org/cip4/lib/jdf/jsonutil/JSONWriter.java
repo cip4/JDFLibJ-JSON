@@ -774,8 +774,9 @@ public class JSONWriter extends JSONObjHelper
 		if (typeSafe && isTypesafeKey(key))
 		{
 			final String normalized = StringUtil.normalize(key, true, "_ -");
+			final String normalized2 = StringUtil.token(normalized, 1, "/");
 
-			if (isArrayKey(key))
+			if (isArrayKey(key) || isArrayKey(normalized2))
 			{
 				final StringArray a = StringArray.getVString(val, null);
 				if (a != null)
@@ -792,19 +793,19 @@ public class JSONWriter extends JSONObjHelper
 					return ar;
 				}
 			}
-			else if (numList.contains(normalized) && JDFNumberList.createNumberList(val) != null)
+			else if ((numList.contains(normalized) || numList.contains(normalized2)) && JDFNumberList.createNumberList(val) != null)
 			{
 				return getNumListArray(val);
 			}
-			else if (numbers.contains(normalized) && StringUtil.isNumber(val))
+			else if ((numbers.contains(normalized) || numbers.contains(normalized2)) && StringUtil.isNumber(val))
 			{
 				return getNumber(val);
 			}
-			else if (bool.contains(normalized) && StringUtil.isBoolean(val))
+			else if ((bool.contains(normalized) || bool.contains(normalized2)) && StringUtil.isBoolean(val))
 			{
 				return Boolean.valueOf(StringUtil.parseBoolean(val, true));
 			}
-			else if (isTransferCurve(key))
+			else if (isTransferCurve(key) || isTransferCurve(normalized2))
 			{
 				return getTransferCurve(val);
 			}
