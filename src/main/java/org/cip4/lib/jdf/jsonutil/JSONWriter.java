@@ -347,6 +347,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public boolean addStringArray(final String attribute)
 	{
+		alwaysString.remove(attribute);
 		return addList(attribute, stringArray);
 	}
 
@@ -438,15 +439,18 @@ public class JSONWriter extends JSONObjHelper
 			}
 			else if ("boolean".equals(type))
 			{
+				alwaysString.remove(name);
 				addList(name, bool);
 			}
 			else if ("float".equals(type) || "double".equals(type) || "int".equals(type) || "integer".equals(type) || "long".equals(type))
 			{
+				alwaysString.remove(name);
 				addList(name, numbers);
 			}
 			else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
 					|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
 			{
+				alwaysString.remove(name);
 				addList(name, numList);
 			}
 			else if (!types.contains(type))
@@ -563,6 +567,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public boolean addTransferFunction(final String name)
 	{
+		alwaysString.remove(name);
 		return addList(name, transferFunction);
 	}
 
