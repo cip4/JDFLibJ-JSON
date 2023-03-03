@@ -771,66 +771,69 @@ public class JSONWriter extends JSONObjHelper
 
 	Object getObjectFromVal(final String key, final String val)
 	{
-		if (typeSafe && isTypesafeKey(key))
+		if (typeSafe)
 		{
 			final String normalized = StringUtil.normalize(key, true, "_ -");
 			final String normalized2 = StringUtil.token(normalized, 1, "/");
+			if (isTypesafeKey(normalized) && isTypesafeKey(normalized2))
+			{
 
-			if (isArrayKey(key) || isArrayKey(normalized2))
-			{
-				final StringArray a = StringArray.getVString(val, null);
-				if (a != null)
+				if (isArrayKey(key) || isArrayKey(normalized2))
 				{
-					final JSONArray ar = new JSONArray();
-					for (final String s : a)
+					final StringArray a = StringArray.getVString(val, null);
+					if (a != null)
 					{
-						final String k2 = getKey(s, valueCase);
-						if (k2 != null)
+						final JSONArray ar = new JSONArray();
+						for (final String s : a)
 						{
-							ar.add(k2);
+							final String k2 = getKey(s, valueCase);
+							if (k2 != null)
+							{
+								ar.add(k2);
+							}
 						}
+						return ar;
 					}
-					return ar;
 				}
-			}
-			else if ((numList.contains(normalized) || numList.contains(normalized2)) && JDFNumberList.createNumberList(val) != null)
-			{
-				return getNumListArray(val);
-			}
-			else if ((numbers.contains(normalized) || numbers.contains(normalized2)) && StringUtil.isNumber(val))
-			{
-				return getNumber(val);
-			}
-			else if ((bool.contains(normalized) || bool.contains(normalized2)) && StringUtil.isBoolean(val))
-			{
-				return Boolean.valueOf(StringUtil.parseBoolean(val, true));
-			}
-			else if (isTransferCurve(key) || isTransferCurve(normalized2))
-			{
-				return getTransferCurve(val);
-			}
-			else if (StringUtil.isNumber(val))
-			{
-				numbers.add(normalized);
-				return getNumber(val);
-			}
-			else if (StringUtil.isBoolean(val))
-			{
-				bool.add(normalized);
-				return Boolean.valueOf(val);
-			}
-			else if (JDFNumberList.createNumberList(val) != null)
-			{
-				numbers.remove(normalized);
-				numList.add(normalized);
-				return getNumListArray(val);
-			}
-			if (addString(key))
-			{
-				numbers.remove(normalized);
-				bool.remove(normalized);
-				numList.remove(normalized);
-				log.info("found new string type: " + key);
+				else if ((numList.contains(normalized) || numList.contains(normalized2)) && JDFNumberList.createNumberList(val) != null)
+				{
+					return getNumListArray(val);
+				}
+				else if ((numbers.contains(normalized) || numbers.contains(normalized2)) && StringUtil.isNumber(val))
+				{
+					return getNumber(val);
+				}
+				else if ((bool.contains(normalized) || bool.contains(normalized2)) && StringUtil.isBoolean(val))
+				{
+					return Boolean.valueOf(StringUtil.parseBoolean(val, true));
+				}
+				else if (isTransferCurve(key) || isTransferCurve(normalized2))
+				{
+					return getTransferCurve(val);
+				}
+				else if (StringUtil.isNumber(val))
+				{
+					numbers.add(normalized);
+					return getNumber(val);
+				}
+				else if (StringUtil.isBoolean(val))
+				{
+					bool.add(normalized);
+					return Boolean.valueOf(val);
+				}
+				else if (JDFNumberList.createNumberList(val) != null)
+				{
+					numbers.remove(normalized);
+					numList.add(normalized);
+					return getNumListArray(val);
+				}
+				if (addString(key))
+				{
+					numbers.remove(normalized);
+					bool.remove(normalized);
+					numList.remove(normalized);
+					log.info("found new string type: " + key);
+				}
 			}
 		}
 		return updateCase(StringUtil.getNonEmpty(val), valueCase);
@@ -899,7 +902,7 @@ public class JSONWriter extends JSONObjHelper
 	public boolean isTypesafeKey(final String key)
 	{
 		final String normalized = StringUtil.normalize(key, true, "_ -");
-		return normalized != null && !alwaysString.contains(normalized);
+		return normalized == null || !alwaysString.contains(normalized);
 	}
 
 	boolean isArrayKey(final String key)
