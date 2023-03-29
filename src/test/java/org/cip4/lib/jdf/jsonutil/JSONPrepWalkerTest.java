@@ -182,10 +182,10 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.walkTree(h.getRoot(), null);
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@LayerType", null));
-		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@LayerType", null));
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@LayerType", null));
-		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@LayerType", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[1]/@Name", null));
+		assertEquals("Media", m.getXPathAttribute("MediaLayers[2]/@Name", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[3]/@Name", null));
+		assertEquals("Glue", m.getXPathAttribute("MediaLayers[4]/@Name", null));
 	}
 
 	/**

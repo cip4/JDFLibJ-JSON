@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2021 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -47,6 +47,7 @@ import java.net.URL;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement;
@@ -54,8 +55,10 @@ import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFParser;
 import org.cip4.jdflib.core.JDFParserFactory;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.core.VElement;
 import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.extensions.BaseXJDFHelper;
+import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
@@ -92,6 +95,8 @@ public abstract class JSONTestCaseBase
 		final JDFDoc xParsed = p.parseString(written);
 		return xParsed.isSchemaValid();
 	}
+
+	protected static EnumVersion exampleVersion = EnumVersion.Version_2_2;
 
 	/**
 	 *
@@ -174,26 +179,45 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @param h
 	 */
-	protected void cleanSnippets(final XJDFHelper h)
+	protected void cleanSnippets(final BaseXJDFHelper h, boolean removeBase)
 	{
 		if (h == null || h.getRoot() == null)
 			return;
-		h.cleanUp();
+		BaseXJDFHelper h2 = BaseXJDFHelper.getBaseHelper(h.getRoot().getDocRoot());
+		if (h2 == null)
+			h2 = h;
+
+		h2.cleanUp();
 		setSnippet(h, true);
-		setSnippet(h.getAuditPool(), false);
-		setSnippet(h.getSet(ElementName.NODEINFO, 0), false);
+		if (h2 instanceof XJDFHelper && removeBase)
+		{
+			setSnippet(((XJDFHelper) h).getAuditPool(), false);
+			setSnippet(((XJDFHelper) h).getSet(ElementName.NODEINFO, 0), false);
+		}
+		VElement headers = h.getRoot().getChildrenByTagName(XJDFConstants.Header, null, null, false, false, 0);
+		for (KElement header : headers)
+		{
+			header.removeAttribute(AttributeName.AGENTNAME);
+			header.removeAttribute(AttributeName.AGENTVERSION);
+		}
 	}
 
 	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
 	{
-		return writeBothJson(e, jsonWriter, output, true);
+		return writeBothJson(e, jsonWriter, output, true, false);
 	}
 
 	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals)
 	{
+		return writeBothJson(e, jsonWriter, output, equals, false);
+	}
+
+	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals, boolean cleansnippets)
+	{
 		setSnippet(e, true);
 		File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
-		e.write2File(xmlFile);
+		cleanSnippets(BaseXJDFHelper.getBaseHelper(e), cleansnippets);
+		e.getDocRoot().write2File(xmlFile);
 		final JDFParser jdfparser = getSchemaParser();
 		final JDFDoc docJDF = jdfparser.parseFile(xmlFile);
 		final XMLDoc dVal0 = docJDF.getValidationResult();
@@ -212,8 +236,9 @@ public abstract class JSONTestCaseBase
 		reader.setXJDF();
 		KElement roundtrip = reader.getElement(jo);
 		BaseXJDFHelper bh = BaseXJDFHelper.getBaseHelper(roundtrip);
-		if (bh != null)
-			bh.cleanUp();
+		if (bh == null)
+			bh = new XJDFHelper(roundtrip);
+		cleanSnippets(bh, cleansnippets);
 		File roundtripFile = new File(sm_dirTestDataTemp + "xjdf/xjdfroundtrip", UrlUtil.newExtension(output, "xml"));
 		roundtrip.write2File(roundtripFile);
 		final JDFDoc docRound = jdfparser.parseFile(roundtripFile);
@@ -224,17 +249,18 @@ public abstract class JSONTestCaseBase
 			dVal0.write2File(roundtripFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
 		assertEquals(valResult1, VALID);
+
 		if (equals)
 			assertTrue(e.isEqual(roundtrip));
 		return roundtrip;
 	}
 
-	final protected static int MINOR = 1;
+	final protected static int MINOR = 2;
 	private static final String VALID = "Valid";
 
 	static protected final String sm_dirTestData = getTestDataDir();
 	static protected final String sm_dirTestDataTemp = sm_dirTestData + "temp" + File.separator;
-	static protected final String sm_dirTestSchemaBase = sm_dirTestDataTemp + "schema" + File.separator + "Version_";
+	static protected final String sm_dirTestSchemaBase = sm_dirTestData + "schema" + File.separator + "Version_";
 	static protected final String sm_dirTestSchema = sm_dirTestSchemaBase;
 
 	private static String getTestDataDir()
@@ -286,7 +312,7 @@ public abstract class JSONTestCaseBase
 	protected static JDFParser getSchemaParser()
 	{
 		final JDFParser parser = JDFParserFactory.getFactory().get();
-		parser.setSchemaLocation(JDFElement.getSchemaURL(2, 0), getXJDFSchema(2, 1));
+		parser.setSchemaLocation(JDFElement.getSchemaURL(2, 0), getXJDFSchema(2, JDFElement.getDefaultJDFVersion().getMinorVersion()));
 		return parser;
 	}
 

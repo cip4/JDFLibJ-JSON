@@ -320,7 +320,7 @@ class JSONRootWalker extends JSONObjHelper
 	 */
 	JDFAttributeMap getAttributes(final KElement e)
 	{
-		final JDFAttributeMap atts = e.getAttributeMap();
+		final JDFAttributeMap atts = e.getAttributeMap_KElement();
 		atts.remove(AttributeName.XSITYPE);
 		final List<String> keyList = ContainerUtil.getKeyList(atts);
 		boolean needXmlns = eJSONPrefix.context.equals(jsonWriter.prefix);

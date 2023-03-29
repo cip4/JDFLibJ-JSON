@@ -46,13 +46,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
+import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaUnit;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
+import org.cip4.jdflib.core.JDFConstants;
+import org.cip4.jdflib.core.JDFElement;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.datatypes.JDFAttributeMap;
+import org.cip4.jdflib.datatypes.JDFXYPair;
 import org.cip4.jdflib.extensions.AuditHelper;
 import org.cip4.jdflib.extensions.AuditHelper.eAudit;
 import org.cip4.jdflib.extensions.AuditPoolHelper;
@@ -67,6 +72,7 @@ import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
+import org.cip4.jdflib.resource.process.postpress.JDFGlue;
 import org.cip4.jdflib.util.JDFDate;
 import org.json.simple.JSONObject;
 import org.junit.Ignore;
@@ -150,7 +156,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		add.appendAddressLine().setText("line 3");
 		h.cleanUp();
 
-		writeBothJson(add, jsonWriter, "addressline.json", true);
+		writeBothJson(add, jsonWriter, "addressline.json", true, false);
 	}
 
 	/**
@@ -160,9 +166,9 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
-		final XJDFHelper h = new XJDFHelper("J1", null);
+		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "J1");
 		h.setTypes("Product");
-		ResourceHelper p = h.getSet(ElementName.NODEINFO, null).getCreatePartition(0, true);
+		ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
 		p.setDescriptiveName("my node");
 		p.setPartMap(new JDFAttributeMap("SheetName", "Sheet1"));
 		JDFNodeInfo ni = (JDFNodeInfo) p.getResource();
@@ -170,7 +176,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ni.setStart(new JDFDate());
 
 		h.cleanUp();
-		writeBothJson(h.getRoot(), jsonWriter, "nodeinfo.json", true);
+		writeBothJson(h.getRoot(), jsonWriter, "nodeinfo.json", true, false);
 	}
 
 	/**
@@ -188,7 +194,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		// jsonWriter.convert(h.getRoot());
 
-		writeBothJson(h.getRoot(), jsonWriter, "comment.json", false);
+		writeBothJson(h.getRoot(), jsonWriter, "comment.json", false, false);
 	}
 
 	/**
@@ -209,7 +215,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		cm.appendOrganizationalUnit("ACME Unit 3");
 		h.cleanUp();
 
-		writeBothJson(c, jsonWriter, "orgunit.json", true);
+		writeBothJson(c, jsonWriter, "orgunit.json", true, false);
 	}
 
 	/**
@@ -225,7 +231,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ResourceHelper rh = set.getCreatePartition(0, false);
 		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
 		h.cleanUp();
-		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false);
+		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false);
 	}
 
 	/**
@@ -241,7 +247,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		ResourceHelper rh = set.getCreatePartition(0, true);
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		h.cleanUp();
-		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false, false);
 	}
 
 	/**
@@ -258,7 +264,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		rh.getResource().setAttribute("bar2:foo2", "abc", "www.bar2.com");
 		h.cleanUp();
-		writeBothJson(rh.getRoot(), jsonWriter, "foreignattributes.json", false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattributes.json", false, false);
 	}
 
 	/**
@@ -272,31 +278,55 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final XJDFHelper h = getBaseXJDF();
 		KElement xjdf = h.getRoot();
 		final AuditPoolHelper ap = h.getCreateAuditPool();
-		ap.appendAudit(eAudit.Created);
 		AuditHelper status = ap.appendAudit(eAudit.Status);
 		JDFDeviceInfo di = (JDFDeviceInfo) status.appendElement(ElementName.DEVICEINFO);
 		di.setAttribute("Status", "Production");
 
 		KElement ri0 = ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
 		ri0.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
-		AuditHelper status2 = ap.appendAudit(eAudit.Status);
-		JDFDeviceInfo di2 = (JDFDeviceInfo) status2.appendElement(ElementName.DEVICEINFO);
-		di2.setAttribute(AttributeName.TOTALPRODUCTIONCOUNTER, "424242");
-		di2.setAttribute("Status", "Production");
-		AuditHelper rah = ap.appendAudit(eAudit.Resource);
-		KElement ri = rah.appendElement(ElementName.RESOURCEINFO);
-		ri.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
 
 		ap.appendAudit(eAudit.Notification).appendElement(ElementName.NOTIFICATION).setAttribute("Class", "Warning");
+
 		JDFProcessRun pr = (JDFProcessRun) ap.appendAudit(eAudit.ProcessRun).appendElement(ElementName.PROCESSRUN);
 		pr.setAttribute("Start", new JDFDate().getDateTimeISO());
 		pr.setAttribute("End", new JDFDate().getDateTimeISO());
 		pr.setAttribute("EndStatus", "Completed");
 		h.cleanUp();
 
-		jsonWriter.convert(xjdf);
 		final String output = "auditpool.json";
-		writeBothJson(xjdf, jsonWriter, output, true);
+		writeBothJson(xjdf, jsonWriter, output, true, false);
+		// writeBothJson(ap.getRoot(), jsonWriter, output, false, false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testAdhesive()
+	{
+		final XJDFHelper xjdfHelper = new XJDFHelper("Converting", "Corrugated", null);
+		xjdfHelper.setTypes(JDFConstants.CONVENTIONALPRINTING);
+		final SetHelper shMedia = xjdfHelper.getCreateSet(XJDFConstants.Resource, ElementName.MEDIA, EnumUsage.Input);
+		final ResourceHelper rh = shMedia.appendPartition(null, true);
+		final JDFMedia m = (JDFMedia) rh.getResource();
+		m.setMediaType(EnumMediaType.SelfAdhesive);
+		m.setDimensionCM(new JDFXYPair(42, 0));
+		m.setMediaUnit(EnumMediaUnit.Roll);
+		m.setThickness(900);
+		final JDFMediaLayers ml = m.appendMediaLayers();
+		JDFMedia m2 = ml.appendMedia();
+		m2.setMediaType(EnumMediaType.Paper);
+		m2.setWeight(90);
+		final JDFGlue g = (JDFGlue) ml.appendElement(ElementName.GLUE);
+		g.setAttribute(AttributeName.AREAGLUE, "" + true);
+		g.setAttribute(AttributeName.GLUETYPE, "Removable");
+		m2 = ml.appendMedia();
+		m2.setMediaType(EnumMediaType.Paper);
+		m2.setWeight(60);
+		final String output = "resources/MediaSelfAdhesive.json";
+		final JSONWriter jsonWriter = getXJDFWriter();
+		writeBothJson(shMedia.getSet(), jsonWriter, output, true, false);
+
 	}
 
 	/**
@@ -305,7 +335,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testMediaLayers()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
 
 		final XJDFHelper h = getBaseXJDF();
 		KElement xjdf = h.getRoot();
@@ -316,10 +345,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		mls.appendElement(ElementName.GLUE).setAttribute(AttributeName.AREAGLUE, true, null);
 		mls.appendMedia().setMediaType(EnumMediaType.Paper);
 		h.cleanUp();
-		SetHelper sh = h.getSet(ElementName.MEDIA, null);
 
-		final String output = "medialayers.json";
-		writeBothJson(sh.getSet(), jsonWriter, output, true);
 	}
 
 	XJDFHelper getBaseXJDF()
@@ -328,6 +354,13 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.setTypes("Product");
 		h.removeSet(ElementName.NODEINFO);
 		return h;
+	}
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		JDFElement.setDefaultJDFVersion(exampleVersion);
 	}
 
 }
