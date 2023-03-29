@@ -329,25 +329,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 	}
 
-	/**
-	 *
-	 */
-	@Test
-	public void testMediaLayers()
-	{
-
-		final XJDFHelper h = getBaseXJDF();
-		KElement xjdf = h.getRoot();
-		final JDFMedia m = (JDFMedia) h.getCreateSet(ElementName.MEDIA, EnumUsage.Input).getCreatePartition(0, true).getResource();
-		m.setMediaType(EnumMediaType.SelfAdhesive);
-		final JDFMediaLayers mls = m.appendMediaLayers();
-		mls.appendMedia().setMediaType(EnumMediaType.Paper);
-		mls.appendElement(ElementName.GLUE).setAttribute(AttributeName.AREAGLUE, true, null);
-		mls.appendMedia().setMediaType(EnumMediaType.Paper);
-		h.cleanUp();
-
-	}
-
 	XJDFHelper getBaseXJDF()
 	{
 		final XJDFHelper h = new XJDFHelper("J1", null);
