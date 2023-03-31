@@ -92,7 +92,7 @@ class JSONRootWalker extends JSONObjHelper
 		}
 		walk(e, getRoot());
 		final JSONObject j2 = updateRoot();
-
+		this.setRoot(j2);
 		this.jsonWriter.setRoot(j2);
 	}
 
