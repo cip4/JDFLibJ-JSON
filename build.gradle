@@ -125,7 +125,7 @@ dependencies {
     implementation ('org.cip4.lib.jdf:JDFLibJ:2.1.7.+'){
   		 exclude group: 'xml-apis'
 	}
-    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    implementation ('com.googlecode.json-simple:json-simple:1.1.1'){transitive=false}
 
     testCompile 'junit:junit:4.13'
 }
