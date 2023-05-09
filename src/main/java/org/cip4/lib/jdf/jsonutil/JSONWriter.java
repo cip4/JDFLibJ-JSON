@@ -43,6 +43,7 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.core.VElement;
@@ -60,6 +62,7 @@ import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.datatypes.JDFNumberList;
 import org.cip4.jdflib.elementwalker.ElementWalker;
+import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ContainerUtil;
@@ -80,6 +83,8 @@ public class JSONWriter extends JSONObjHelper
 	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
 	private static final String XJDF_SCHEMA_URL = "http://schema.cip4.org/jdfschema_2_1/xjdf.xsd";
+	private static final String XJDF_SCHEMA_Base = "http://schema.cip4.org/jdfschema_2_";
+	private static final String XJDF_SCHEMA_XSD = "/xjdf.xsd";
 	boolean wantArray;
 	boolean learnArrays;
 	boolean typeSafe;
@@ -109,6 +114,19 @@ public class JSONWriter extends JSONObjHelper
 	 */
 	public void setXJDF(boolean splitXJMF, boolean explicitAudit)
 	{
+		setXJDF(splitXJMF, explicitAudit, null);
+	}
+
+	/**
+	 * apply standard xjdf settings
+	 * 
+	 * @param splitXJMF TODO
+	 * @param explicitAudit TODO
+	 */
+	public void setXJDF(boolean splitXJMF, boolean explicitAudit, EnumVersion version)
+	{
+		if (version == null)
+			version = XJDF20.getDefaultVersion();
 		final JSONPrepWalker jsonPrepWalker = new JSONPrepWalker();
 		jsonPrepWalker.setExplicitAudit(false);
 		jsonPrepWalker.setSplitXJMF(splitXJMF);
@@ -118,7 +136,10 @@ public class JSONWriter extends JSONObjHelper
 		setValueCase(eJSONCase.retain);
 		setMixedText(TEXT);
 		addMixed(ElementName.COMMENT);
-		UrlPart part = UrlUtil.writerToURL(XJDF_SCHEMA_URL, null, UrlUtil.GET, null, null);
+		String schemaURL = getSchemaURL(version, true);
+		if (schemaURL == null)
+			schemaURL = getSchemaURL(version, false);
+		UrlPart part = UrlUtil.writerToURL(schemaURL, null, UrlUtil.GET, null, null);
 		if (UrlPart.isReturnCodeOK(part))
 		{
 			XMLDoc schema = part.getXMLDoc();
@@ -130,6 +151,21 @@ public class JSONWriter extends JSONObjHelper
 		}
 		addArray(ElementName.AUDITPOOL);
 		addArray(ElementName.MEDIALAYERS);
+	}
+
+	String getSchemaURL(EnumVersion version, boolean local)
+	{
+		int minor = version.getMinorVersion();
+		if (local)
+		{
+			final URL url = ClassLoader.getSystemResource("/schema/Version2_" + minor + XJDF_SCHEMA_XSD);
+			return UrlUtil.urlToString(url);
+		}
+		else
+		{
+			String sMinor = (minor >= ((EnumVersion) ContainerUtil.get(EnumVersion.getEnumList(), -1)).getMinorVersion() ? "x" : "" + minor);
+			return XJDF_SCHEMA_Base + sMinor + XJDF_SCHEMA_XSD;
+		}
 	}
 
 	/**
@@ -795,7 +831,7 @@ public class JSONWriter extends JSONObjHelper
 						return ar;
 					}
 				}
-				else if ((numList.contains(normalized) || numList.contains(normalized2)) && JDFNumberList.createNumberList(val) != null)
+				else if ((numList.contains(normalized) || numList.contains(normalized2)) && !numbers.contains(normalized) && JDFNumberList.createNumberList(val) != null)
 				{
 					return getNumListArray(val);
 				}

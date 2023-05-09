@@ -60,6 +60,7 @@ import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumDeviceDetails;
 import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumJobDetails;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
@@ -74,6 +75,9 @@ import org.cip4.jdflib.extensions.xjdfwalker.jdftoxjdf.JDFToXJDF;
 import org.cip4.jdflib.jmf.JDFJMF;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JMFBuilderFactory;
+import org.cip4.jdflib.node.JDFNode;
+import org.cip4.jdflib.node.JDFNode.EnumType;
+import org.cip4.jdflib.resource.intent.JDFLayoutIntent;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ByteArrayIOStream.ByteArrayIOInputStream;
 import org.cip4.jdflib.util.FileUtil;
@@ -610,6 +614,42 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testArrayFilespec()
+	{
+		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
+		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
+		final JDFNodeInfo ni = (JDFNodeInfo) sh.getCreatePartition(0, true).getResource();
+		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF(true, false, EnumVersion.Version_2_2);
+		// jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "schema/Version_2_2/xjdf.xsd"), false);
+		assertTrue(jsonWriter.arrayNames.contains("shapedef/filespec"));
+		assertTrue(jsonWriter.arrayNames.contains("shapetemplate/filespec"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testLayoutIntentPages()
+	{
+		final JDFNode n = new JDFDoc(ElementName.JDF).getJDFRoot();
+		n.setType(EnumType.Product);
+		JDFLayoutIntent li = (JDFLayoutIntent) n.addResource(ElementName.LAYOUTINTENT, EnumUsage.Input);
+		li.appendPages().setActual(3);
+		final JDFToXJDF conv = new JDFToXJDF();
+		final KElement xjdf = conv.convert(n);
+		assertEquals("3", xjdf.getXPathAttribute("ProductList/Product/Intent/LayoutIntent/@Pages", null));
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF(true, false, EnumVersion.Version_2_1);
+		final JSONObject o = jsonWriter.convert(xjdf);
+		assertEquals(3, new JSONObjHelper(o).getPathObject("XJDF/ProductList/Product/Intent/LayoutIntent/Pages"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testFillTotalDuration()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
@@ -618,6 +658,21 @@ public class JSONWriterTest extends JSONTestCaseBase
 		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
+		assertTrue(jsonWriter.alwaysString.contains("totalduration"));
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testFillTotalDuration2()
+	{
+		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
+		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
+		final JDFNodeInfo ni = (JDFNodeInfo) sh.getCreatePartition(0, true).getResource();
+		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF(true, false);
 		assertTrue(jsonWriter.alwaysString.contains("totalduration"));
 	}
 
