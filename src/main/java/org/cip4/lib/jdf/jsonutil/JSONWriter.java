@@ -82,7 +82,6 @@ public class JSONWriter extends JSONObjHelper
 
 	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
-	private static final String XJDF_SCHEMA_URL = "http://schema.cip4.org/jdfschema_2_1/xjdf.xsd";
 	private static final String XJDF_SCHEMA_Base = "http://schema.cip4.org/jdfschema_2_";
 	private static final String XJDF_SCHEMA_XSD = "/xjdf.xsd";
 	boolean wantArray;
@@ -140,15 +139,17 @@ public class JSONWriter extends JSONObjHelper
 		if (schemaURL == null)
 			schemaURL = getSchemaURL(version, false);
 		UrlPart part = UrlUtil.writerToURL(schemaURL, null, UrlUtil.GET, null, null);
-		if (UrlPart.isReturnCodeOK(part))
+		XMLDoc schema = UrlPart.isReturnCodeOK(part) ? part.getXMLDoc() : null;
+		if (schema == null)
 		{
-			XMLDoc schema = part.getXMLDoc();
-			if (schema != null)
-			{
-				KElement root = schema.getRoot();
-				new SchemaFiller(root, splitXJMF).fillTypesFromSchema();
-			}
+			schema = XMLDoc.parseStream(getClass().getResourceAsStream(XJDF_SCHEMA_XSD));
 		}
+		if (schema != null)
+		{
+			KElement root = schema.getRoot();
+			new SchemaFiller(root, splitXJMF).fillTypesFromSchema();
+		}
+
 		addArray(ElementName.AUDITPOOL);
 		addArray(ElementName.MEDIALAYERS);
 	}
