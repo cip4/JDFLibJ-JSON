@@ -223,6 +223,13 @@ public class JSONObjHelper implements IStreamWriter
 		this(getFileReader(f));
 	}
 
+	/**
+	 * 
+	 * @param toConvert
+	 * @return
+	 * @deprecated use StringUtil.underToCamel
+	 */
+	@Deprecated
 	public static String undertocamel(final String toConvert)
 	{
 		final StringArray v = StringArray.getVString(toConvert, JDFConstants.UNDERSCORE);
