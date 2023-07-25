@@ -76,6 +76,7 @@ public class JSONReader
 	private boolean wantAttributes;
 	private final Set<String> text;
 	ElementWalker postWalker;
+	private boolean xjdf;
 
 	public boolean addText(final String attribute)
 	{
@@ -205,6 +206,7 @@ public class JSONReader
 		wantAttributes = true;
 		addText(ElementName.ADDRESSLINE);
 		addText(ElementName.ORGANIZATIONALUNIT);
+		xjdf = true;
 	}
 
 	public JSONReader()
@@ -213,6 +215,7 @@ public class JSONReader
 		wantAttributes = true;
 		text = new HashSet<>();
 		postWalker = null;
+		xjdf = false;
 	}
 
 	public KElement getElement(final String s)
@@ -237,8 +240,15 @@ public class JSONReader
 		{
 			postWalker.walkTree(walkTree, null);
 		}
-		walkTree.setNamespaceURI(XJDF20.getSchemaURL());
-		return walkTree;
+		if (xjdf)
+		{
+			walkTree.setNamespaceURI(XJDF20.getSchemaURL());
+			return new JDFDoc(walkTree.getOwnerDocument()).getRoot();
+		}
+		else
+		{
+			return walkTree;
+		}
 	}
 
 	/**
@@ -301,13 +311,17 @@ public class JSONReader
 
 		if (root == null)
 		{
-			if (o.get("Schema") != null)
+			for (String name : new String[] { "Schema", "Name" })
 			{
-				final JSONObjHelper h = new JSONObjHelper(o);
-				root = KElement.createRoot(h.getString("Schema"), null);
-				o.remove("Schema");
+				if (o.get(name) != null)
+				{
+					final JSONObjHelper h = new JSONObjHelper(o);
+					root = KElement.createRoot(h.getString(name), null);
+					o.remove(name);
+					break;
+				}
 			}
-			else if (o.size() > 1)
+			if (root == null && o.size() > 1)
 			{
 				root = KElement.createRoot("json", null);
 			}

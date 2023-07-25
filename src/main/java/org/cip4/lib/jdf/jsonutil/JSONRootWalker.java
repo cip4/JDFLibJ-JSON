@@ -238,16 +238,20 @@ class JSONRootWalker extends JSONObjHelper
 	@SuppressWarnings("unchecked")
 	JSONObject updateRoot()
 	{
-		if (!eJSONRoot.retain.equals(this.jsonWriter.getJsonRoot()))
+		if (!eJSONRoot.retain.equals(jsonWriter.getJsonRoot()))
 		{
 			final Set<String> keys = getRoot().keySet();
 			if (ContainerUtil.size(keys) == 1)
 			{
 				final String key = keys.iterator().next();
 				final JSONObject first = (JSONObject) getRoot().get(key);
-				if (eJSONRoot.schema.equals(this.jsonWriter.getJsonRoot()))
+				if (eJSONRoot.schema.equals(jsonWriter.getJsonRoot()))
 				{
 					first.put(JSONWriter.SCHEMA, key);
+				}
+				else if (eJSONRoot.xmlname.equals(jsonWriter.getJsonRoot()))
+				{
+					first.put(AttributeName.NAME, key);
 				}
 				return first;
 			}

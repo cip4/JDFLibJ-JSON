@@ -75,7 +75,6 @@ import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.cip4.jdflib.resource.process.postpress.JDFGlue;
 import org.cip4.jdflib.util.JDFDate;
 import org.json.simple.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -97,14 +96,13 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 		assertNotNull(o.toJSONString());
 		JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
-		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("XJDF/ProductList/Product/IsRoot"));
+		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	@Ignore
 	public void testConvertSkipProductList()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
@@ -119,7 +117,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
 	public void testConvertSkipProductListBroc()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
@@ -271,6 +268,19 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testMinimal()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().removeChild(null, null, 0);
+		writeBothJson(h.getRoot(), jsonWriter, "minimal.json", true, false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testAuditPool()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
@@ -323,7 +333,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		m2 = ml.appendMedia();
 		m2.setMediaType(EnumMediaType.Paper);
 		m2.setWeight(60);
-		final String output = "resources/MediaSelfAdhesive.json";
+		final String output = "MediaSelfAdhesive.json";
 		final JSONWriter jsonWriter = getXJDFWriter();
 		writeBothJson(shMedia.getSet(), jsonWriter, output, true, false);
 

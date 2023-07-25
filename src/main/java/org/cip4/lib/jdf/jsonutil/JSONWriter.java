@@ -134,6 +134,7 @@ public class JSONWriter extends JSONObjHelper
 		setKeyCase(eJSONCase.retain);
 		setValueCase(eJSONCase.retain);
 		setMixedText(TEXT);
+		setJsonRoot(eJSONRoot.xmlname);
 		addMixed(ElementName.COMMENT);
 		String schemaURL = getSchemaURL(version, true);
 		if (schemaURL == null)
@@ -224,7 +225,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public enum eJSONRoot
 	{
-		retain, none, schema;
+		retain, none, schema, xmlname;
 
 		public static List<String> getNames()
 		{
