@@ -643,7 +643,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false, EnumVersion.Version_2_1);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertEquals(3, new JSONObjHelper(o).getPathObject("XJDF/ProductList/Product/Intent/LayoutIntent/Pages"));
+		assertEquals(3, new JSONObjHelper(o).getPathObject("ProductList/Product/Intent/LayoutIntent/Pages"));
 	}
 
 	/**
