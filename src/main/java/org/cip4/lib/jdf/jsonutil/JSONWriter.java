@@ -136,6 +136,7 @@ public class JSONWriter extends JSONObjHelper
 		setMixedText(TEXT);
 		setJsonRoot(eJSONRoot.xmlname);
 		addMixed(ElementName.COMMENT);
+		addString("Comment/Text");
 		String schemaURL = getSchemaURL(version, true);
 		if (schemaURL == null)
 			schemaURL = getSchemaURL(version, false);
@@ -380,6 +381,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public boolean addMixed(final String element)
 	{
+
 		return addList(element, mixedElements);
 	}
 

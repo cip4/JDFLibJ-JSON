@@ -45,6 +45,7 @@ package org.cip4.lib.jdf.jsonutil;
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
@@ -81,6 +82,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	MessageHelper getBaseXJMF(EnumFamily family, EnumType typ)
 	{
 		final XJMFHelper h = new XJMFHelper();
+		h.setVersion(EnumVersion.Version_2_2);
 		return h.appendMessage(family, typ);
 	}
 

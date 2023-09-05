@@ -198,6 +198,23 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testCommentString()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		final XJDFHelper h = getBaseXJDF();
+		final JDFComment c = (JDFComment) h.appendElement(ElementName.COMMENT);
+		c.setText("1");
+		h.cleanUp();
+		h.getRoot().removeChild(ElementName.AUDITPOOL, null, 0);
+		JSONObjHelper o = jsonWriter.convertHelper(h.getRoot());
+		assertEquals("1", o.getPathObject("Comment/Text"));
+
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
@@ -342,6 +359,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	XJDFHelper getBaseXJDF()
 	{
 		final XJDFHelper h = new XJDFHelper("J1", null);
+		h.setVersion(EnumVersion.Version_2_2);
 		h.setTypes("Product");
 		h.removeSet(ElementName.NODEINFO);
 		return h;
