@@ -74,6 +74,7 @@ import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.cip4.jdflib.resource.process.postpress.JDFGlue;
 import org.cip4.jdflib.util.JDFDate;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -91,7 +92,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testConvertBoolean()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final JSONObject o = jsonWriter.convert(xjdf);
 
 		assertNotNull(o.toJSONString());
@@ -106,7 +107,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testConvertSkipProductList()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		assertNotNull(o.toJSONString());
@@ -120,7 +121,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testConvertSkipProductListBroc()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		assertNotNull(o.toJSONString());
@@ -129,9 +130,15 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 	public static JSONWriter getXJDFWriter()
 	{
+		return getXJDFWriter(false);
+	}
+
+	public static JSONWriter getXJDFWriter(boolean isRoot)
+	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
-
+		if (!isRoot)
+			jsonWriter.setJsonRoot(eJSONRoot.retain);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), true);
 		return jsonWriter;
 	}
@@ -142,7 +149,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testAddressLine()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
@@ -162,7 +169,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testResourceSet()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "J1");
 		h.setTypes("Product");
 		ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
@@ -182,7 +189,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testComment()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 		final XJDFHelper h = getBaseXJDF();
 		final JDFComment c = (JDFComment) h.appendElement(ElementName.COMMENT);
 		c.setText("line 1 \nline 2");
@@ -191,7 +198,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		// jsonWriter.convert(h.getRoot());
 
-		writeBothJson(h.getRoot(), jsonWriter, "comment.json", false, false);
+		writeBothJson(c, jsonWriter, "comment.json", false, false);
 	}
 
 	/**
@@ -200,7 +207,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testCommentString()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = getBaseXJDF();
 		final JDFComment c = (JDFComment) h.appendElement(ElementName.COMMENT);
 		c.setText("1");
@@ -217,7 +224,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testOrgUnit()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		final SetHelper cs = h.appendSet(ElementName.CONTACT, EnumUsage.Input);
@@ -238,7 +245,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testForeign()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
@@ -254,7 +261,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testForeignAttribute()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
@@ -270,7 +277,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testMultiForeignAttribute()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
@@ -287,7 +294,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testMinimal()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		h.getRoot().removeChild(null, null, 0);
@@ -300,7 +307,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testAuditPool()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
 		KElement xjdf = h.getRoot();
@@ -351,7 +358,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		m2.setMediaType(EnumMediaType.Paper);
 		m2.setWeight(60);
 		final String output = "MediaSelfAdhesive.json";
-		final JSONWriter jsonWriter = getXJDFWriter();
+		final JSONWriter jsonWriter = getXJDFWriter(false);
 		writeBothJson(shMedia.getSet(), jsonWriter, output, true, false);
 
 	}

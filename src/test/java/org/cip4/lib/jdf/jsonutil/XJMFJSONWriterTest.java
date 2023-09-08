@@ -62,7 +62,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 
 	public static JSONWriter getXJDFWriter()
 	{
-		return XJDFJSONWriterTest.getXJDFWriter();
+		return XJDFJSONWriterTest.getXJDFWriter(true);
 	}
 
 	/**

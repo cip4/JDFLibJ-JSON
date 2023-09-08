@@ -110,7 +110,10 @@ class JSONRootWalker extends JSONObjHelper
 		final JDFAttributeMap map = getAttributes(e);
 		boolean hasContent = false;
 		hasContent = !JDFAttributeMap.isEmpty(map);
-		String txt = StringUtil.normalize(e.getText(), false);
+		String text = e.getText();
+		String txt = StringUtil.replaceChar(text, '\n', "\\n", 0);
+		txt = StringUtil.normalize(text, false);
+		txt = StringUtil.replaceString(text, "\\n", "\n");
 		if (this.jsonWriter.mixedText != null && txt != null && this.jsonWriter.mixedElements.contains(this.jsonWriter.getCheckName(e)))
 		{
 			map.put(this.jsonWriter.mixedText, txt);

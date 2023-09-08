@@ -214,9 +214,16 @@ public abstract class JSONTestCaseBase
 
 	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals, boolean cleansnippets)
 	{
-		setSnippet(e, true);
 		File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
-		cleanSnippets(BaseXJDFHelper.getBaseHelper(e), cleansnippets);
+		BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
+		if (cleansnippets || e.equals(baseHelper.getRoot()))
+		{
+			cleanSnippets(baseHelper, cleansnippets);
+		}
+		else
+		{
+			setSnippet(e, true);
+		}
 		e.getDocRoot().write2File(xmlFile);
 		final JDFParser jdfparser = getSchemaParser();
 		final JDFDoc docJDF = jdfparser.parseFile(xmlFile);

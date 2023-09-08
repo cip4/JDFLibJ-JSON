@@ -82,7 +82,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	@Test
 	public void testAddressLine()
 	{
-		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -110,7 +110,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	@Test
 	public void testMediaLayers()
 	{
-		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -134,7 +134,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	@Test
 	public void testOrgUnit()
 	{
-		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
@@ -162,7 +162,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	@Test
 	public void testAuditPool()
 	{
-		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter();
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
 		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
