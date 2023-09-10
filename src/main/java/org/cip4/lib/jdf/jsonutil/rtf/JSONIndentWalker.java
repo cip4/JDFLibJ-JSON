@@ -92,6 +92,18 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		return singleIndent;
 	}
 
+	boolean condensed;
+
+	public boolean isCondensed()
+	{
+		return condensed;
+	}
+
+	public void setCondensed(boolean condensed)
+	{
+		this.condensed = condensed;
+	}
+
 	/**
 	 * @param singleIndent the singleIndent to set
 	 */
@@ -108,6 +120,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		super(root);
 		ps = null;
 		indent = 0;
+		condensed = false;
 		setKeyInArray(false);
 	}
 
@@ -185,8 +198,10 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printObject(final JSONObject o)
 	{
-		if (!o.isEmpty())
+		if (!o.isEmpty() && !condensed)
+		{
 			printLine();
+		}
 		indent += singleIndent;
 		ps.print(getBeginObj());
 	}

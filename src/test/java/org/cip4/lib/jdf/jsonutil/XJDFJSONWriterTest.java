@@ -45,6 +45,8 @@ package org.cip4.lib.jdf.jsonutil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaUnit;
 import org.cip4.jdflib.core.AttributeName;
@@ -73,8 +75,10 @@ import org.cip4.jdflib.resource.process.JDFContact;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.cip4.jdflib.resource.process.postpress.JDFGlue;
+import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
+import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -294,7 +298,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testMinimal()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter(false);
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
 		h.getRoot().removeChild(null, null, 0);
@@ -307,7 +311,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testAuditPool()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter(false);
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
 		KElement xjdf = h.getRoot();
@@ -328,7 +332,18 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 
 		final String output = "auditpool.json";
-		writeBothJson(xjdf, jsonWriter, output, true, false);
+		JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false);
+		for (String key : jo.getKeys())
+		{
+			if (!ElementName.AUDITPOOL.equals(key))
+			{
+				jo.getRoot().remove(key);
+			}
+		}
+
+		FileUtil.writeFile(jo, new File(sm_dirTestDataTemp + "xjdf/json", output));
+		FileUtil.writeFile(new JSONRtfWalker(jo), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
+
 		// writeBothJson(ap.getRoot(), jsonWriter, output, false, false);
 	}
 

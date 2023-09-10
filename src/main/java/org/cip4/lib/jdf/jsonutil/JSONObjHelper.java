@@ -149,6 +149,18 @@ public class JSONObjHelper implements IStreamWriter
 		return obj == null ? true : obj.isEmpty();
 	}
 
+	public List<String> getKeys()
+	{
+		if (obj == null)
+			return null;
+		StringArray sa = new StringArray();
+		for (Object o : obj.keySet())
+		{
+			sa.add((String) o);
+		}
+		return sa;
+	}
+
 	/**
 	 * @param base
 	 */

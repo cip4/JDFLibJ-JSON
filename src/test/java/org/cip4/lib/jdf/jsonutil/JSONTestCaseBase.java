@@ -202,17 +202,17 @@ public abstract class JSONTestCaseBase
 		}
 	}
 
-	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
 	{
 		return writeBothJson(e, jsonWriter, output, true, false);
 	}
 
-	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals)
 	{
 		return writeBothJson(e, jsonWriter, output, equals, false);
 	}
 
-	public KElement writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals, boolean cleansnippets)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals, boolean cleansnippets)
 	{
 		File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
 		BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
@@ -259,7 +259,7 @@ public abstract class JSONTestCaseBase
 
 		if (equals)
 			assertTrue(e.isEqual(roundtrip));
-		return roundtrip;
+		return JSONObjHelper.getHelper(jo);
 	}
 
 	final protected static int MINOR = 2;

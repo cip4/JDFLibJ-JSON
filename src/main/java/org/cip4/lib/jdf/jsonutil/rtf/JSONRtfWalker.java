@@ -77,6 +77,7 @@ public class JSONRtfWalker extends JSONIndentWalker
 	public JSONRtfWalker(final JSONObjHelper root)
 	{
 		super(root);
+		setCondensed(true);
 	}
 
 	@Override
