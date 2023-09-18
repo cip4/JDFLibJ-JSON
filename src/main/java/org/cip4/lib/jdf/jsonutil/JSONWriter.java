@@ -395,6 +395,15 @@ public class JSONWriter extends JSONObjHelper
 
 	class SchemaFiller
 	{
+		private static final String SEQUENCE = "sequence";
+		private static final String UNBOUNDED = "unbounded";
+		private static final String MAX_OCCURS = "maxOccurs";
+		private static final String ELEMENT = "element";
+		private static final String COMPLEX_TYPE = "complexType";
+		private static final String REF = "ref";
+		private static final String ABSTRACT = "abstract";
+		private static final String NAME = "name";
+		private static final String SUBSTITUTION_GROUP = "substitutionGroup";
 		private KElement schema;
 		private boolean splitXJMF;
 		final Collection<KElement> ve;
@@ -407,17 +416,17 @@ public class JSONWriter extends JSONObjHelper
 		{
 			this.schema = schema;
 			this.splitXJMF = splitXJMF;
-			ve = schema == null ? null : schema.getChildrenByTagName("element", XML_SCHEMA_NS, null, false, true, 0);
+			ve = schema == null ? null : schema.getChildrenByTagName(ELEMENT, XML_SCHEMA_NS, null, false, true, 0);
 			nameMap = new ListMap<>();
 			nameMap.setUnique(true);
 			if (ve != null)
 			{
 				for (final KElement e : ve)
 				{
-					String name = e.getNonEmpty("name");
+					String name = e.getNonEmpty(NAME);
 					if (name != null)
 						nameMap.putOne(name, e);
-					String sg = e.getNonEmpty("substitutionGroup");
+					String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
 					if (sg != null)
 						nameMap.putOne(sg, e);
 				}
@@ -460,7 +469,7 @@ public class JSONWriter extends JSONObjHelper
 		{
 			List<String> l = getNamesFromSchema(e);
 			final String type = getTypeFromSchemaAttribute(e);
-			final String name = e.getNonEmpty("name");
+			final String name = e.getNonEmpty(NAME);
 			ContainerUtil.appendUnique(l, name);
 			for (String complet : l)
 			{
@@ -505,27 +514,40 @@ public class JSONWriter extends JSONObjHelper
 
 		void fillTypeFromSchema(final KElement e)
 		{
-			final String maxOcc = e.getNonEmpty("maxOccurs");
-			boolean isMulti = "unbounded".equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
+			final String maxOcc = e.getNonEmpty(MAX_OCCURS);
+			boolean isMulti = UNBOUNDED.equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
 			if (!isMulti)
 			{
-				KElement parentSeq = e.getDeepParent("sequence", 0);
-				KElement parentElement = e.getParentNode_KElement().getDeepParent("element", 0);
+				KElement parentSeq = e.getDeepParent(SEQUENCE, 0);
+				KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
 				if (parentSeq != null && !parentSeq.isAncestor(parentElement))
 				{
-					final String maxOccSeq = parentSeq.getNonEmpty("maxOccurs");
-					isMulti = "unbounded".equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
+					final String maxOccSeq = parentSeq.getNonEmpty(MAX_OCCURS);
+					isMulti = UNBOUNDED.equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
 				}
 			}
-			if (splitXJMF && isMulti && e.hasAttribute("substitutionGroup"))
+			if (!isMulti)
 			{
-				isMulti = EnumFamily.getEnum(e.getAttribute("substitutionGroup")) == null;
+				KElement parentChoice = e.getDeepParent("choice", 0);
+				KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
+				if (parentChoice != null && !parentChoice.isAncestor(parentElement))
+				{
+					final String maxOccSeq = parentChoice.getNonEmpty(MAX_OCCURS);
+					isMulti = UNBOUNDED.equals(maxOccSeq) || StringUtil.parseInt(maxOccSeq, 1) > 1;
+				}
+
 			}
+			if (splitXJMF && isMulti && e.hasAttribute(SUBSTITUTION_GROUP))
+			{
+				isMulti = EnumFamily.getEnum(e.getAttribute(SUBSTITUTION_GROUP)) == null;
+			}
+			isMulti = isMulti && !(splitXJMF && ElementName.MESSAGE.equals(e.getAttribute(REF)));
 			if (isMulti)
 			{
 				fillArrayFromSchema(e);
 			}
-			for (String name : getNamesFromSchema(e))
+			List<String> namesFromSchema = getNamesFromSchema(e);
+			for (String name : namesFromSchema)
 				addList(name, knownElems);
 
 		}
@@ -551,18 +573,18 @@ public class JSONWriter extends JSONObjHelper
 		{
 			List<String> names = getNamesFromRef(e);
 			if (StringUtil.isEmpty(names))
-				names = new StringArray(e.getNonEmpty("name"));
+				names = new StringArray(e.getNonEmpty(NAME));
 
-			KElement parentContent = getAncestor(e, "complexType");
+			KElement parentContent = getAncestor(e, COMPLEX_TYPE);
 			String contentName = null;
-			if (parentContent == null || parentContent.getNonEmpty("name") == null)
+			if (parentContent == null || parentContent.getNonEmpty(NAME) == null)
 			{
-				parentContent = getAncestor(e, "element");
-				contentName = parentContent == null || parentContent.equals(e) ? null : parentContent.getNonEmpty("name");
+				parentContent = getAncestor(e, ELEMENT);
+				contentName = parentContent == null || parentContent.equals(e) ? null : parentContent.getNonEmpty(NAME);
 			}
 			else
 			{
-				contentName = parentContent.getNonEmpty("name");
+				contentName = parentContent.getNonEmpty(NAME);
 			}
 			if (parentContent != null && contentName == null)
 			{
@@ -581,7 +603,13 @@ public class JSONWriter extends JSONObjHelper
 
 		protected List<String> getNamesFromRef(final KElement e)
 		{
-			String nonEmpty = e.getNonEmpty("ref");
+			String nonEmpty = e.getNonEmpty(REF);
+			return getNamesFromRef(nonEmpty);
+		}
+
+		protected List<String> getNamesFromSubstitution(final KElement e)
+		{
+			String nonEmpty = e.getNonEmpty(SUBSTITUTION_GROUP);
 			return getNamesFromRef(nonEmpty);
 		}
 
@@ -593,14 +621,14 @@ public class JSONWriter extends JSONObjHelper
 			List<KElement> vv = nameMap.get(nonEmpty);
 			for (KElement e2 : vv)
 			{
-				if (nonEmpty.equals(e2.getNonEmpty("name")))
+				if (nonEmpty.equals(e2.getNonEmpty(NAME)))
 				{
-					if (!StringUtil.parseBoolean("abstract", false))
+					if (!StringUtil.parseBoolean(ABSTRACT, false))
 						ret.add(nonEmpty);
 				}
-				else if (nonEmpty.equals(e2.getNonEmpty("substitutionGroup")))
+				else if (nonEmpty.equals(e2.getNonEmpty(SUBSTITUTION_GROUP)))
 				{
-					ContainerUtil.addAll(ret, getNamesFromRef(e2.getNonEmpty("name")));
+					ContainerUtil.addAll(ret, getNamesFromRef(e2.getNonEmpty(NAME)));
 				}
 			}
 			return ret;
