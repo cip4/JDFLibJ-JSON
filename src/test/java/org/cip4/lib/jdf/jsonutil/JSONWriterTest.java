@@ -700,40 +700,6 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJMFFromFile()
-	{
-		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
-		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setXJDF();
-		final JSONObject o = jsonWriter.convert(xjmf);
-		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("\"SignalStatus\":{") > 0);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
-		log.info(jsonString);
-	}
-
-	/**
-	 *
-	 */
-	@Test
-	public void testConvertXJMFFromFileNoSplit()
-	{
-		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
-		final JSONWriter jsonWriter = new JSONWriter();
-		jsonWriter.setXJDF(false, false);
-		final JSONObject o = jsonWriter.convert(xjmf);
-		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("\"SignalStatus\":[{") > 0);
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
-		log.info(jsonString);
-	}
-
-	/**
-	 *
-	 */
-	@Test
 	public void testSplitXJMF()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();

@@ -42,15 +42,19 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.Assert.assertTrue;
+
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
+import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JDFMessage.EnumType;
 import org.cip4.jdflib.resource.JDFNotification;
+import org.json.simple.JSONObject;
 import org.junit.Test;
 
 /**
@@ -63,6 +67,40 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	public static JSONWriter getXJDFWriter()
 	{
 		return XJDFJSONWriterTest.getXJDFWriter(true);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertXJMFFromFile()
+	{
+		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF();
+		final JSONObject o = jsonWriter.convert(xjmf);
+		final String jsonString = o.toJSONString();
+		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		assertTrue(jsonString.indexOf("\"SignalStatus\":{") > 0);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
+		log.info(jsonString);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testConvertXJMFFromFileNoSplit()
+	{
+		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setXJDF(false, false);
+		final JSONObject o = jsonWriter.convert(xjmf);
+		final String jsonString = o.toJSONString();
+		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		assertTrue(jsonString.indexOf("\"SignalStatus\":[{") > 0);
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
+		log.info(jsonString);
 	}
 
 	/**
