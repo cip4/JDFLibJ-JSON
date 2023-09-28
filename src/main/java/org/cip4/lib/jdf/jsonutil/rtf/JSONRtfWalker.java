@@ -108,7 +108,8 @@ public class JSONRtfWalker extends JSONIndentWalker
 	@Override
 	protected void printString(final String a)
 	{
-		ps.print("\\cs4{\"" + a + "\"}");
+		String b = StringUtil.replaceChar(a, '\n', "\\\\n", 0);
+		ps.print("\\cs4{\"" + b + "\"}");
 	}
 
 	@Override
