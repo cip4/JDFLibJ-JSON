@@ -45,15 +45,27 @@ package org.cip4.lib.jdf.jsonutil;
 import static org.junit.Assert.assertTrue;
 
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFElement;
+import org.cip4.jdflib.core.JDFElement.EnumNodeStatus;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
+import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.extensions.MessageHelper;
+import org.cip4.jdflib.extensions.ResourceHelper;
+import org.cip4.jdflib.extensions.SetHelper;
+import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJMFHelper;
+import org.cip4.jdflib.jmf.JDFDeviceInfo;
+import org.cip4.jdflib.jmf.JDFJobPhase;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JDFMessage.EnumType;
+import org.cip4.jdflib.jmf.JDFResourceInfo;
+import org.cip4.jdflib.jmf.JMFBuilderFactory;
 import org.cip4.jdflib.resource.JDFNotification;
+import org.cip4.jdflib.util.JDFDate;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -68,6 +80,8 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	{
 		return XJDFJSONWriterTest.getXJDFWriter(true);
 	}
+
+	private long totalProductionCounter = 0;
 
 	/**
 	 *
@@ -129,6 +143,135 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	{
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
+		totalProductionCounter = System.currentTimeMillis() % 1000000;
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSignalStatus()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+
+		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
+		XJMFHelper xjmfHelper = new XJMFHelper();
+		xjmfHelper.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(16, 30, 0).getDateTimeISO());
+		MessageHelper s = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Status);
+		s.getHeader().setID("S1");
+		s.getHeader().setAttribute(AttributeName.REFID, "SubStatus");
+		s.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(16, 30, 0).getDateTimeISO());
+		JDFDeviceInfo di = (JDFDeviceInfo) s.getRoot().appendElement(ElementName.DEVICEINFO);
+		di.setAttribute(AttributeName.STATUS, "Setup");
+		JDFJobPhase p = addJobPhase(di, "j1", "sheet1", "ws1", 0, 100);
+		p.setStatus(EnumNodeStatus.Setup);
+		p.setStartTime(new JDFDate().setTime(16, 20, 0));
+		p.setEndTime(new JDFDate().setTime(16, 30, 0));
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignalSetup.json", true, false);
+
+		xjmfHelper = new XJMFHelper();
+		xjmfHelper.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(17, 00, 0).getDateTimeISO());
+		s = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Status);
+		s.getHeader().setID("S2");
+		s.getHeader().setAttribute(AttributeName.REFID, "SubStatus");
+		s.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(17, 0, 0).getDateTimeISO());
+		di = (JDFDeviceInfo) s.getRoot().appendElement(ElementName.DEVICEINFO);
+		di.setAttribute(AttributeName.STATUS, "Production");
+		p = addJobPhase(di, "j1", "sheet1", "ws1", 2000, 0);
+		p.setStatus(EnumNodeStatus.InProgress);
+		p.setStartTime(new JDFDate().setTime(16, 30, 0));
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignal.json", true, false);
+
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSignalPaper()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
+		final XJMFHelper xjmfHelper = new XJMFHelper();
+		final MessageHelper q = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Resource);
+		q.getHeader().setID("S1");
+		q.getHeader().setAttribute(AttributeName.REFID, "Sub1");
+		final JDFResourceInfo ri = (JDFResourceInfo) q.appendElement(ElementName.RESOURCEINFO);
+		ri.setAttribute(AttributeName.SCOPE, "Job");
+		ri.setAttribute(AttributeName.JOBID, "Job1");
+		ri.setAttribute(AttributeName.JOBPARTID, "Printing");
+		final SetHelper sh = new SetHelper(ri.appendElement(XJDFConstants.ResourceSet));
+		sh.setUsage(EnumUsage.Input);
+		sh.setName(ElementName.MEDIA);
+		final ResourceHelper rh = sh.appendPartition(new JDFAttributeMap(AttributeName.SHEETNAME, "S1"), false);
+		rh.setExternalID("MIS-ID");
+		rh.setAmount(4500, new JDFAttributeMap(AttributeName.LOTID, "Lot1"), true);
+		rh.setAmount(66, new JDFAttributeMap(AttributeName.LOTID, "Lot1"), false);
+		rh.setAmount(2200, new JDFAttributeMap(AttributeName.LOTID, "Lot2"), true);
+		rh.setAmount(22, new JDFAttributeMap(AttributeName.LOTID, "Lot2"), false);
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperLotResourceSignal.json", true, false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	public void testSignalSimplePaper()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
+		final XJMFHelper xjmfHelper = new XJMFHelper();
+		final MessageHelper q = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Resource);
+		q.getHeader().setID("S1");
+		q.getHeader().setAttribute(AttributeName.REFID, "Sub1");
+		final JDFResourceInfo ri = (JDFResourceInfo) q.appendElement(ElementName.RESOURCEINFO);
+		ri.setAttribute(AttributeName.SCOPE, "Job");
+		ri.setAttribute(AttributeName.JOBID, "Job1");
+		ri.setAttribute(AttributeName.JOBPARTID, "Printing");
+		final SetHelper sh = new SetHelper(ri.appendElement(XJDFConstants.ResourceSet));
+		sh.setUsage(EnumUsage.Input);
+		sh.setName(ElementName.MEDIA);
+		final ResourceHelper rh = sh.appendPartition(new JDFAttributeMap(AttributeName.SHEETNAME, "S1"), false);
+		rh.setExternalID("MIS-ID");
+		rh.setAmount(4500, null, true);
+		rh.setAmount(66, null, false);
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperResourceSignal.json", true, false);
+	}
+
+	JDFJobPhase addJobPhase(JDFDeviceInfo di, String jobID, String sheetName, int good, int waste)
+	{
+		return addJobPhase(di, jobID, sheetName, "ws1", good, waste);
+	}
+
+	JDFJobPhase addJobPhase(JDFDeviceInfo di, String jobID, String sheetName, String wsid, int good, int waste)
+	{
+		JDFJobPhase p = di.appendJobPhase();
+		p.setJobID(jobID);
+		p.setJobPartID("p1");
+		p.setPartMap(new JDFAttributeMap(AttributeName.SHEETNAME, sheetName));
+		p.setAttribute(AttributeName.WORKSTEPID, wsid);
+		if (good > 0)
+		{
+			p.setAmount(good);
+			totalProductionCounter += good;
+		}
+		if (waste > 0)
+		{
+			totalProductionCounter += waste;
+			p.setWaste(waste);
+		}
+		if (good + waste > 0)
+			di.setTotalProductionCounter(totalProductionCounter);
+
+		return p;
 	}
 
 }
