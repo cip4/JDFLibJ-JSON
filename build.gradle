@@ -125,7 +125,12 @@ dependencies {
     implementation ('org.cip4.lib.jdf:JDFLibJ:2.1.7.+'){
   		 exclude group: 'xml-apis'
 	}
+	implementation ('xerces:xercesImpl:2.12.2'){transitive=false}
+	
     implementation ('com.googlecode.json-simple:json-simple:1.1.1'){transitive=false}
+    implementation ('commons-logging:commons-logging:1.2'){transitive=false}
+    implementation ('commons-lang:commons-lang:2.6'){transitive=false}
+    implementation ('commons-io:commons-io:2.15.0'){transitive=false}
 
     testCompile 'junit:junit:4.13'
 }
