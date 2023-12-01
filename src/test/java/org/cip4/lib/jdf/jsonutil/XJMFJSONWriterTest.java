@@ -185,7 +185,6 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
 		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignal.json", true, false);
-
 	}
 
 	/**
