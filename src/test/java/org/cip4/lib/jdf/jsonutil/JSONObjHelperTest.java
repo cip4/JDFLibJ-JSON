@@ -267,6 +267,15 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
+	public void testBadInputStream() throws IOException
+	{
+		assertNull(JSONObjHelper.getHelper((InputStream) null));
+		final String root = "<html/>";
+		final JSONObjHelper r = JSONObjHelper.getHelper(new ByteArrayInputStream(root.getBytes()));
+		assertNull(r);
+	}
+
+	@Test
 	public void testInputStream() throws IOException
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";

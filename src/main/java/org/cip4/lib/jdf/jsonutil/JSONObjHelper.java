@@ -183,6 +183,11 @@ public class JSONObjHelper implements IStreamWriter
 
 	public JSONObjHelper(final Reader reader)
 	{
+		this(reader, false);
+	}
+
+	public JSONObjHelper(final Reader reader, boolean logBad)
+	{
 		this();
 		if (reader == null)
 		{
@@ -206,7 +211,10 @@ public class JSONObjHelper implements IStreamWriter
 		}
 		catch (final Exception e)
 		{
-			log.error("cannot parse stream", e);
+			if (logBad)
+			{
+				log.error("cannot parse stream", e);
+			}
 			obj = null;
 		}
 	}
@@ -216,7 +224,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONObjHelper(final String s)
 	{
-		this(s == null ? null : new StringReader(s));
+		this(s == null ? null : new StringReader(s), false);
 	}
 
 	/**
@@ -224,7 +232,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONObjHelper(final byte[] s)
 	{
-		this(s == null ? null : new StringReader(new String(s, StandardCharsets.UTF_8)));
+		this(s == null ? null : new StringReader(new String(s, StandardCharsets.UTF_8)), false);
 	}
 
 	/**
@@ -232,7 +240,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONObjHelper(final File f)
 	{
-		this(getFileReader(f));
+		this(getFileReader(f), false);
 	}
 
 	/**
@@ -270,20 +278,7 @@ public class JSONObjHelper implements IStreamWriter
 		if (o instanceof InputStream)
 		{
 			InputStream is = (InputStream) o;
-			try
-			{
-				if (is == null || is.available() == 0)
-				{
-					return null;
-				}
-			}
-			catch (final IOException e)
-			{
-				return null;
-			}
-			JSONObjHelper h2 = new JSONObjHelper(is);
-			StreamUtil.close(is);
-			h = h2.getRoot() == null ? null : h2;
+			return getHelperFromStream(is, false);
 		}
 		else if (o instanceof JSONObject)
 		{
@@ -297,7 +292,7 @@ public class JSONObjHelper implements IStreamWriter
 
 	}
 
-	static JSONObjHelper getHelperFro(final InputStream is)
+	public static JSONObjHelper getHelperFromStream(final InputStream is, boolean logBad)
 	{
 		try
 		{
@@ -310,9 +305,10 @@ public class JSONObjHelper implements IStreamWriter
 		{
 			return null;
 		}
-		final JSONObjHelper h = new JSONObjHelper(is);
+		final JSONObjHelper h = new JSONObjHelper(new InputStreamReader(is), logBad);
 		StreamUtil.close(is);
 		return h.getRoot() == null ? null : h;
+
 	}
 
 	/**
@@ -320,7 +316,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONObjHelper(final InputStream is)
 	{
-		this(new InputStreamReader(is));
+		this(new InputStreamReader(is), true);
 	}
 
 	static FileReader getFileReader(final File f)
