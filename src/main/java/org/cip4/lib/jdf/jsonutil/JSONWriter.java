@@ -81,7 +81,7 @@ import org.json.simple.JSONObject;
  */
 public class JSONWriter extends JSONObjHelper
 {
-
+	private static final String ABSTRACT = "abstract";
 	private static final String XML_SCHEMA_NS = "http://www.w3.org/2001/XMLSchema";
 	static final String TEXT = "Text";
 	private static final String XJDF_SCHEMA_Base = "http://schema.cip4.org/jdfschema_2_";
@@ -420,7 +420,6 @@ public class JSONWriter extends JSONObjHelper
 		private static final String ELEMENT = "element";
 		private static final String COMPLEX_TYPE = "complexType";
 		private static final String REF = "ref";
-		private static final String ABSTRACT = "abstract";
 		private static final String NAME = "name";
 		private static final String SUBSTITUTION_GROUP = "substitutionGroup";
 		private final KElement schema;
@@ -673,7 +672,7 @@ public class JSONWriter extends JSONObjHelper
 
 	String getTypeFromSchemaAttribute(final KElement e)
 	{
-		final boolean abst = StringUtil.parseBoolean(e.getAttribute("abstract"), false);
+		final boolean abst = StringUtil.parseBoolean(e.getAttribute(ABSTRACT), false);
 		if (abst)
 			return null;
 		String type = e.getAttribute("type");
