@@ -43,6 +43,7 @@
 package org.cip4.lib.jdf.jsonutil;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.core.AttributeName;
@@ -180,6 +181,27 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
 		final JSONReader jr = getXJDFReader();
 		final KElement xjdf2 = jr.getElement(o);
+		xjdf2.write2File(sm_dirTestDataTemp + "auditpool2.xjdf");
+	}
+
+	/**
+	*
+	*/
+	@Test
+	public void testDollar()
+	{
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
+
+		final KElement xjdf = JDFElement.createRoot(XJDFConstants.XJDF);
+		final XJDFHelper h = XJDFHelper.getHelper(xjdf);
+		final AuditPoolHelper ap = h.getCreateAuditPool();
+
+		final JSONObject o = jsonWriter.convert(xjdf);
+		o.put("$schema", "url");
+		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
+		final JSONReader jr = getXJDFReader();
+		final KElement xjdf2 = jr.getElement(o);
+		assertNotNull(xjdf2);
 		xjdf2.write2File(sm_dirTestDataTemp + "auditpool2.xjdf");
 	}
 

@@ -69,7 +69,7 @@ class JSONRootWalker extends JSONObjHelper
 	 */
 	private final JSONWriter jsonWriter;
 
-	JSONRootWalker(JSONWriter jsonWriter, KElement root)
+	JSONRootWalker(final JSONWriter jsonWriter, final KElement root)
 	{
 		super(new JSONObject());
 		this.jsonWriter = jsonWriter;
@@ -105,12 +105,12 @@ class JSONRootWalker extends JSONObjHelper
 	 */
 	public boolean walk(final KElement e, final JSONAware parent)
 	{
-		int contextSize = contextStack.size();
+		final int contextSize = contextStack.size();
 		final String nodeName = getNodeName(e);
 		final JDFAttributeMap map = getAttributes(e);
 		boolean hasContent = false;
 		hasContent = !JDFAttributeMap.isEmpty(map);
-		String text = e.getText();
+		final String text = e.getText();
 		String txt = StringUtil.replaceChar(text, '\n', "\\n", 0);
 		txt = StringUtil.normalize(text, false);
 		txt = StringUtil.replaceString(text, "\\n", "\n");
@@ -119,7 +119,7 @@ class JSONRootWalker extends JSONObjHelper
 			map.put(this.jsonWriter.mixedText, txt);
 			txt = null;
 		}
-		for (String key : map.getKeyList())
+		for (final String key : map.getKeyList())
 		{
 			map.renameKey(key, nodeName + '/' + key);
 		}
@@ -147,31 +147,31 @@ class JSONRootWalker extends JSONObjHelper
 		return true;
 	}
 
-	void updateContext(int contextSize, final JSONObject me, KElement e)
+	void updateContext(final int contextSize, final JSONObject me, final KElement e)
 	{
 		if (eJSONPrefix.context.equals(jsonWriter.prefix))
 		{
 			if (!StringUtil.isEmpty(e.getPrefix()))
 			{
-				String newPrefix = JDFConstants.XMLNS + JDFConstants.COLON + e.getPrefix();
+				final String newPrefix = JDFConstants.XMLNS + JDFConstants.COLON + e.getPrefix();
 				if (!contextStack.contains(newPrefix))
 					contextStack.add(newPrefix);
 			}
 			if (contextStack.size() > contextSize)
 			{
-				JSONObjHelper h = new JSONObjHelper(me);
+				final JSONObjHelper h = new JSONObjHelper(me);
 				if (contextSize == contextStack.size() - 1)
 				{
-					Object c = updateSingleContext(h, e);
+					final Object c = updateSingleContext(h, e);
 					if (c != null)
 						me.put("@context", c);
 				}
 				else
 				{
-					JSONArray a = new JSONArray();
+					final JSONArray a = new JSONArray();
 					while (contextSize < contextStack.size())
 					{
-						Object c = updateSingleContext(h, e);
+						final Object c = updateSingleContext(h, e);
 						ContainerUtil.add(a, c);
 					}
 					if (!a.isEmpty())
@@ -181,16 +181,16 @@ class JSONRootWalker extends JSONObjHelper
 		}
 	}
 
-	Object updateSingleContext(JSONObjHelper h, KElement e)
+	Object updateSingleContext(final JSONObjHelper h, final KElement e)
 	{
-		String xmlns = contextStack.remove(contextStack.size() - 1);
-		String prefix = StringUtil.token(xmlns, 1, JDFConstants.COLON);
-		String url = e.getNamespaceURIFromPrefix(prefix);
+		final String xmlns = contextStack.remove(contextStack.size() - 1);
+		final String prefix = StringUtil.token(xmlns, 1, JDFConstants.COLON);
+		final String url = e.getNamespaceURIFromPrefix(prefix);
 		if ("xsi".equals(prefix))
 			return null;
 		if (prefix != null)
 		{
-			JSONObject o = new JSONObject();
+			final JSONObject o = new JSONObject();
 			o.put(prefix, url);
 			return o;
 		}
@@ -248,11 +248,7 @@ class JSONRootWalker extends JSONObjHelper
 			{
 				final String key = keys.iterator().next();
 				final JSONObject first = (JSONObject) getRoot().get(key);
-				if (eJSONRoot.schema.equals(jsonWriter.getJsonRoot()))
-				{
-					first.put(JSONWriter.SCHEMA, key);
-				}
-				else if (eJSONRoot.xmlname.equals(jsonWriter.getJsonRoot()))
+				if (eJSONRoot.schema.equals(jsonWriter.getJsonRoot()) || eJSONRoot.xmlname.equals(jsonWriter.getJsonRoot()))
 				{
 					first.put(AttributeName.NAME, key);
 				}
@@ -330,12 +326,12 @@ class JSONRootWalker extends JSONObjHelper
 		final JDFAttributeMap atts = e.getAttributeMap_KElement();
 		atts.remove(AttributeName.XSITYPE);
 		final List<String> keyList = ContainerUtil.getKeyList(atts);
-		boolean needXmlns = eJSONPrefix.context.equals(jsonWriter.prefix);
+		final boolean needXmlns = eJSONPrefix.context.equals(jsonWriter.prefix);
 		if (keyList != null)
 		{
 			for (final String key : keyList)
 			{
-				String prefix = StringUtil.token(key, 0, JDFConstants.COLON);
+				final String prefix = StringUtil.token(key, 0, JDFConstants.COLON);
 				if (AttributeName.XMLNS.equalsIgnoreCase(prefix))
 				{
 					if (needXmlns && !contextStack.contains(key))
@@ -346,7 +342,7 @@ class JSONRootWalker extends JSONObjHelper
 				}
 				else if (needXmlns && key.indexOf(JDFConstants.COLON) > 0)
 				{
-					String newKey = AttributeName.XMLNS + JDFConstants.COLON + prefix;
+					final String newKey = AttributeName.XMLNS + JDFConstants.COLON + prefix;
 					if (!contextStack.contains(newKey))
 					{
 						contextStack.add(newKey);

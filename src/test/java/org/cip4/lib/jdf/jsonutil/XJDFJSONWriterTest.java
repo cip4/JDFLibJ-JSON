@@ -100,7 +100,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = jsonWriter.convert(xjdf);
 
 		assertNotNull(o.toJSONString());
-		JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
+		final JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
 		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
 	}
 
@@ -137,7 +137,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		return getXJDFWriter(false);
 	}
 
-	public static JSONWriter getXJDFWriter(boolean isRoot)
+	public static JSONWriter getXJDFWriter(final boolean isRoot)
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
@@ -171,15 +171,28 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	public void testSetCache()
+	{
+		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "file:foo");
+		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, null);
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+		assertNotNull(jsonWriter);
+
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	public void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "J1");
 		h.setTypes("Product");
-		ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
+		final ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
 		p.setDescriptiveName("my node");
 		p.setPartMap(new JDFAttributeMap("SheetName", "Sheet1"));
-		JDFNodeInfo ni = (JDFNodeInfo) p.getResource();
+		final JDFNodeInfo ni = (JDFNodeInfo) p.getResource();
 		ni.setAttribute(AttributeName.STATUS, "Waiting");
 		ni.setStart(new JDFDate());
 
@@ -217,7 +230,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		c.setText("1");
 		h.cleanUp();
 		h.getRoot().removeChild(ElementName.AUDITPOOL, null, 0);
-		JSONObjHelper o = jsonWriter.convertHelper(h.getRoot());
+		final JSONObjHelper o = jsonWriter.convertHelper(h.getRoot());
 		assertEquals("1", o.getPathObject("Comment/Text"));
 
 	}
@@ -252,8 +265,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
-		SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
-		ResourceHelper rh = set.getCreatePartition(0, false);
+		final SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
+		final ResourceHelper rh = set.getCreatePartition(0, false);
 		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
 		h.cleanUp();
 		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false);
@@ -268,8 +281,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
-		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
-		ResourceHelper rh = set.getCreatePartition(0, true);
+		final SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
+		final ResourceHelper rh = set.getCreatePartition(0, true);
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		h.cleanUp();
 		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false, false);
@@ -284,8 +297,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
 		final XJDFHelper h = getBaseXJDF();
-		SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
-		ResourceHelper rh = set.getCreatePartition(0, true);
+		final SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
+		final ResourceHelper rh = set.getCreatePartition(0, true);
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		rh.getResource().setAttribute("bar2:foo2", "abc", "www.bar2.com");
 		h.cleanUp();
@@ -314,26 +327,26 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
-		KElement xjdf = h.getRoot();
+		final KElement xjdf = h.getRoot();
 		final AuditPoolHelper ap = h.getCreateAuditPool();
-		AuditHelper status = ap.appendAudit(eAudit.Status);
-		JDFDeviceInfo di = (JDFDeviceInfo) status.appendElement(ElementName.DEVICEINFO);
+		final AuditHelper status = ap.appendAudit(eAudit.Status);
+		final JDFDeviceInfo di = (JDFDeviceInfo) status.appendElement(ElementName.DEVICEINFO);
 		di.setAttribute("Status", "Production");
 
-		KElement ri0 = ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
+		final KElement ri0 = ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
 		ri0.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
 
 		ap.appendAudit(eAudit.Notification).appendElement(ElementName.NOTIFICATION).setAttribute("Class", "Warning");
 
-		JDFProcessRun pr = (JDFProcessRun) ap.appendAudit(eAudit.ProcessRun).appendElement(ElementName.PROCESSRUN);
+		final JDFProcessRun pr = (JDFProcessRun) ap.appendAudit(eAudit.ProcessRun).appendElement(ElementName.PROCESSRUN);
 		pr.setAttribute("Start", new JDFDate().getDateTimeISO());
 		pr.setAttribute("End", new JDFDate().getDateTimeISO());
 		pr.setAttribute("EndStatus", "Completed");
 		h.cleanUp();
 
 		final String output = "auditpool.json";
-		JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false);
-		for (String key : jo.getKeys())
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false);
+		for (final String key : jo.getKeys())
 		{
 			if (!ElementName.AUDITPOOL.equals(key))
 			{
@@ -392,6 +405,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	{
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
+		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "dummy");
+
 	}
 
 }

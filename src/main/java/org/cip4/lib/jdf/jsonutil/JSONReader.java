@@ -109,19 +109,19 @@ public class JSONReader
 		return wantAttributes;
 	}
 
-	String getKey(final String key, Object object, KElement root)
+	String getKey(final String key, final Object object, final KElement root)
 	{
-		String prefix = KElement.xmlnsPrefix(key);
+		final String prefix = KElement.xmlnsPrefix(key);
 		if (prefix != null)
 		{
 			if (root != null)
 			{
-				String namespaceURIFromPrefix = root.getNamespaceURIFromPrefix(prefix);
+				final String namespaceURIFromPrefix = root.getNamespaceURIFromPrefix(prefix);
 				if (namespaceURIFromPrefix == null)
 				{
 					if (object instanceof JSONObject)
 					{
-						Object context = ((JSONObject) object).get("@context");
+						final Object context = ((JSONObject) object).get("@context");
 						if (context != null)
 						{
 							processContext(context, root);
@@ -140,14 +140,14 @@ public class JSONReader
 		return key;
 	}
 
-	void processContext(Object object, KElement root)
+	void processContext(final Object object, final KElement root)
 	{
 		if (object instanceof JSONArray)
 		{
-			JSONArray array = (JSONArray) object;
+			final JSONArray array = (JSONArray) object;
 			if (array != null)
 			{
-				for (Object next : array)
+				for (final Object next : array)
 				{
 					processSingleNS(next, root);
 				}
@@ -159,7 +159,7 @@ public class JSONReader
 		}
 	}
 
-	void processSingleNS(Object context, KElement root)
+	void processSingleNS(final Object context, final KElement root)
 	{
 		if (context instanceof String)
 		{
@@ -168,11 +168,11 @@ public class JSONReader
 		}
 		else if (context instanceof JSONObject)
 		{
-			JSONObjHelper oh = JSONObjHelper.getHelper(context);
-			for (Object newNSo : oh.getRoot().keySet())
+			final JSONObjHelper oh = JSONObjHelper.getHelper(context);
+			for (final Object newNSo : oh.getRoot().keySet())
 			{
-				String newNs = (String) newNSo;
-				String uri = oh.getString(newNs);
+				final String newNs = (String) newNSo;
+				final String uri = oh.getString(newNs);
 				log.info("found new namespace in context: " + newNs + "=" + uri);
 				root.addNameSpace(newNs, uri);
 			}
@@ -311,7 +311,7 @@ public class JSONReader
 
 		if (root == null)
 		{
-			for (String name : new String[] { "Schema", "Name" })
+			for (final String name : new String[] { "$schema", "Name" })
 			{
 				if (o.get(name) != null)
 				{
@@ -331,13 +331,13 @@ public class JSONReader
 			new JDFDoc(root.getOwnerDocument()).setInitOnCreate(false);
 		}
 		KElement next = root;
-		Object context = o.get("@context");
+		final Object context = o.get("@context");
 		processContext(context, root);
 		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
 		{
 			final String key = getKey(kid.getKey(), kid.getValue(), root);
 			final Object val = kid.getValue();
-			if ("@context".equals(key))
+			if ("@context".equals(key) || JSONWriter.SCHEMA.equals(key))
 			{
 				// skip
 			}

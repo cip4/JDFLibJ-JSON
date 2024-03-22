@@ -46,8 +46,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -88,6 +90,15 @@ public class JSONWriter extends JSONObjHelper
 	boolean learnArrays;
 	boolean typeSafe;
 	ElementWalker prepWalker;
+	private static Map<EnumVersion, String> schemaCache = new HashMap<>();
+
+	public static void setSchemaUrl(final EnumVersion v, final String cachePath)
+	{
+		if (v != null && cachePath != null)
+		{
+			schemaCache.put(v, cachePath);
+		}
+	}
 
 	/**
 	 * @return the prepWalker
@@ -111,7 +122,7 @@ public class JSONWriter extends JSONObjHelper
 	 * @param splitXJMF TODO
 	 * @param explicitAudit TODO
 	 */
-	public void setXJDF(boolean splitXJMF, boolean explicitAudit)
+	public void setXJDF(final boolean splitXJMF, final boolean explicitAudit)
 	{
 		setXJDF(splitXJMF, explicitAudit, null);
 	}
@@ -122,7 +133,7 @@ public class JSONWriter extends JSONObjHelper
 	 * @param splitXJMF TODO
 	 * @param explicitAudit TODO
 	 */
-	public void setXJDF(boolean splitXJMF, boolean explicitAudit, EnumVersion version)
+	public void setXJDF(final boolean splitXJMF, final boolean explicitAudit, EnumVersion version)
 	{
 		if (version == null)
 			version = XJDF20.getDefaultVersion();
@@ -139,7 +150,7 @@ public class JSONWriter extends JSONObjHelper
 		String schemaURL = getSchemaURL(version, true);
 		if (schemaURL == null)
 			schemaURL = getSchemaURL(version, false);
-		UrlPart part = UrlUtil.writerToURL(schemaURL, null, UrlUtil.GET, null, null);
+		final UrlPart part = UrlUtil.writerToURL(schemaURL, null, UrlUtil.GET, null, null);
 		XMLDoc schema = UrlPart.isReturnCodeOK(part) ? part.getXMLDoc() : null;
 		if (schema == null)
 		{
@@ -147,7 +158,7 @@ public class JSONWriter extends JSONObjHelper
 		}
 		if (schema != null)
 		{
-			KElement root = schema.getRoot();
+			final KElement root = schema.getRoot();
 			new SchemaFiller(root, splitXJMF).fillTypesFromSchema();
 		}
 
@@ -155,17 +166,25 @@ public class JSONWriter extends JSONObjHelper
 		addArray(ElementName.MEDIALAYERS);
 	}
 
-	String getSchemaURL(EnumVersion version, boolean local)
+	String getSchemaURL(final EnumVersion version, final boolean local)
 	{
-		int minor = version.getMinorVersion();
+		final int minor = version.getMinorVersion();
 		if (local)
 		{
-			final URL url = ClassLoader.getSystemResource("/schema/Version2_" + minor + XJDF_SCHEMA_XSD);
-			return UrlUtil.urlToString(url);
+			final String localUrl = schemaCache.get(version);
+			if (localUrl == null)
+			{
+				final URL url = ClassLoader.getSystemResource("/schema/Version2_" + minor + XJDF_SCHEMA_XSD);
+				return UrlUtil.urlToString(url);
+			}
+			else
+			{
+				return localUrl;
+			}
 		}
 		else
 		{
-			String sMinor = (minor >= ((EnumVersion) ContainerUtil.get(EnumVersion.getEnumList(), -1)).getMinorVersion() ? "x" : "" + minor);
+			final String sMinor = (minor >= ((EnumVersion) ContainerUtil.get(EnumVersion.getEnumList(), -1)).getMinorVersion() ? "x" : "" + minor);
 			return XJDF_SCHEMA_Base + sMinor + XJDF_SCHEMA_XSD;
 		}
 	}
@@ -277,7 +296,7 @@ public class JSONWriter extends JSONObjHelper
 	eJSONCase keyCase;
 	eJSONCase valueCase;
 	static final Log log = LogFactory.getLog(JSONWriter.class);
-	static final String SCHEMA = "Schema";
+	static final String SCHEMA = "$schema";
 
 	public boolean isTypeSafe()
 	{
@@ -404,15 +423,15 @@ public class JSONWriter extends JSONObjHelper
 		private static final String ABSTRACT = "abstract";
 		private static final String NAME = "name";
 		private static final String SUBSTITUTION_GROUP = "substitutionGroup";
-		private KElement schema;
-		private boolean splitXJMF;
+		private final KElement schema;
+		private final boolean splitXJMF;
 		final Collection<KElement> ve;
 		final ListMap<String, KElement> nameMap;
 
 		/**
 		 * @param schema
 		 */
-		SchemaFiller(final KElement schema, boolean splitXJMF)
+		SchemaFiller(final KElement schema, final boolean splitXJMF)
 		{
 			this.schema = schema;
 			this.splitXJMF = splitXJMF;
@@ -423,10 +442,10 @@ public class JSONWriter extends JSONObjHelper
 			{
 				for (final KElement e : ve)
 				{
-					String name = e.getNonEmpty(NAME);
+					final String name = e.getNonEmpty(NAME);
 					if (name != null)
 						nameMap.putOne(name, e);
-					String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
+					final String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
 					if (sg != null)
 						nameMap.putOne(sg, e);
 				}
@@ -467,13 +486,13 @@ public class JSONWriter extends JSONObjHelper
 
 		void fillAttributeFromSchema(final KElement e, final Set<String> types)
 		{
-			List<String> l = getNamesFromSchema(e);
+			final List<String> l = getNamesFromSchema(e);
 			final String type = getTypeFromSchemaAttribute(e);
 			final String name = e.getNonEmpty(NAME);
 			ContainerUtil.appendUnique(l, name);
-			for (String complet : l)
+			for (final String complet : l)
 			{
-				String normalize = StringUtil.normalize(complet, true, "_:-");
+				final String normalize = StringUtil.normalize(complet, true, "_:-");
 				addSingleAttribute(types, type, normalize);
 			}
 		}
@@ -518,8 +537,8 @@ public class JSONWriter extends JSONObjHelper
 			boolean isMulti = UNBOUNDED.equals(maxOcc) || StringUtil.parseInt(maxOcc, 1) > 1;
 			if (!isMulti)
 			{
-				KElement parentSeq = e.getDeepParent(SEQUENCE, 0);
-				KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
+				final KElement parentSeq = e.getDeepParent(SEQUENCE, 0);
+				final KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
 				if (parentSeq != null && !parentSeq.isAncestor(parentElement))
 				{
 					final String maxOccSeq = parentSeq.getNonEmpty(MAX_OCCURS);
@@ -528,8 +547,8 @@ public class JSONWriter extends JSONObjHelper
 			}
 			if (!isMulti)
 			{
-				KElement parentChoice = e.getDeepParent("choice", 0);
-				KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
+				final KElement parentChoice = e.getDeepParent("choice", 0);
+				final KElement parentElement = e.getParentNode_KElement().getDeepParent(ELEMENT, 0);
 				if (parentChoice != null && !parentChoice.isAncestor(parentElement))
 				{
 					final String maxOccSeq = parentChoice.getNonEmpty(MAX_OCCURS);
@@ -546,8 +565,8 @@ public class JSONWriter extends JSONObjHelper
 			{
 				fillArrayFromSchema(e);
 			}
-			List<String> namesFromSchema = getNamesFromSchema(e);
-			for (String name : namesFromSchema)
+			final List<String> namesFromSchema = getNamesFromSchema(e);
+			for (final String name : namesFromSchema)
 				addList(name, knownElems);
 
 		}
@@ -565,7 +584,7 @@ public class JSONWriter extends JSONObjHelper
 		void fillArrayFromSchema(final KElement e)
 		{
 			final List<String> keys = getNamesFromSchema(e);
-			for (String key : keys)
+			for (final String key : keys)
 				addArray(key);
 		}
 
@@ -588,7 +607,7 @@ public class JSONWriter extends JSONObjHelper
 			}
 			if (parentContent != null && contentName == null)
 			{
-				List<String> contentNames = getNamesFromRef(parentContent);
+				final List<String> contentNames = getNamesFromRef(parentContent);
 				contentName = ContainerUtil.get(contentNames, 0);
 			}
 			if (!StringUtil.isEmpty(contentName))
@@ -603,23 +622,23 @@ public class JSONWriter extends JSONObjHelper
 
 		protected List<String> getNamesFromRef(final KElement e)
 		{
-			String nonEmpty = e.getNonEmpty(REF);
+			final String nonEmpty = e.getNonEmpty(REF);
 			return getNamesFromRef(nonEmpty);
 		}
 
 		protected List<String> getNamesFromSubstitution(final KElement e)
 		{
-			String nonEmpty = e.getNonEmpty(SUBSTITUTION_GROUP);
+			final String nonEmpty = e.getNonEmpty(SUBSTITUTION_GROUP);
 			return getNamesFromRef(nonEmpty);
 		}
 
-		protected List<String> getNamesFromRef(String nonEmpty)
+		protected List<String> getNamesFromRef(final String nonEmpty)
 		{
 			if (nonEmpty == null)
 				return null;
-			StringArray ret = new StringArray();
-			List<KElement> vv = nameMap.get(nonEmpty);
-			for (KElement e2 : vv)
+			final StringArray ret = new StringArray();
+			final List<KElement> vv = nameMap.get(nonEmpty);
+			for (final KElement e2 : vv)
 			{
 				if (nonEmpty.equals(e2.getNonEmpty(NAME)))
 				{
@@ -641,12 +660,12 @@ public class JSONWriter extends JSONObjHelper
 		return addList(name, transferFunction);
 	}
 
-	public boolean addList(final String name, Set<String> list)
+	public boolean addList(final String name, final Set<String> list)
 	{
 		final String key = StringUtil.normalize(name, true, "_ -");
 		if (key != null)
 		{
-			boolean add = list.add(key);
+			final boolean add = list.add(key);
 			return add;
 		}
 		return false;
@@ -654,7 +673,7 @@ public class JSONWriter extends JSONObjHelper
 
 	String getTypeFromSchemaAttribute(final KElement e)
 	{
-		boolean abst = StringUtil.parseBoolean(e.getAttribute("abstract"), false);
+		final boolean abst = StringUtil.parseBoolean(e.getAttribute("abstract"), false);
 		if (abst)
 			return null;
 		String type = e.getAttribute("type");
@@ -730,7 +749,7 @@ public class JSONWriter extends JSONObjHelper
 	public List<JSONObject> splitConvert(final KElement e0)
 	{
 		List<KElement> l;
-		List<JSONObject> ret = new ArrayList<>();
+		final List<JSONObject> ret = new ArrayList<>();
 		if (prepWalker instanceof JSONPrepWalker)
 		{
 			l = ((JSONPrepWalker) prepWalker).split(e0);
@@ -740,9 +759,9 @@ public class JSONWriter extends JSONObjHelper
 			l = new VElement();
 			ContainerUtil.add(l, e0);
 		}
-		for (KElement e : l)
+		for (final KElement e : l)
 		{
-			JSONObject j = convert(e);
+			final JSONObject j = convert(e);
 			ContainerUtil.add(ret, j);
 		}
 		return ret;
@@ -791,7 +810,7 @@ public class JSONWriter extends JSONObjHelper
 
 	public JSONObject createJSonFromAttributes(final JDFAttributeMap map)
 	{
-		JSONRootWalker jsonRootWalker = new JSONRootWalker(this, null);
+		final JSONRootWalker jsonRootWalker = new JSONRootWalker(this, null);
 		jsonRootWalker.createJSonFromAttributes(map);
 		return jsonRootWalker.getRoot();
 	}
@@ -991,7 +1010,7 @@ public class JSONWriter extends JSONObjHelper
 	{
 		final JDFNumberList nl = JDFNumberList.createNumberList(val);
 		final JSONArray a = new JSONArray();
-		int size = ContainerUtil.size(nl);
+		final int size = ContainerUtil.size(nl);
 		for (int i = 0; i < size; i++)
 		{
 			final double d = nl.doubleAt(i);
@@ -1180,7 +1199,7 @@ public class JSONWriter extends JSONObjHelper
 	 * @param xjdfSchemaElement
 	 */
 	@Deprecated
-	public void fillTypesFromSchema(KElement xjdfSchemaElement)
+	public void fillTypesFromSchema(final KElement xjdfSchemaElement)
 	{
 		new SchemaFiller(xjdfSchemaElement, false).fillTypesFromSchema();
 	}
@@ -1190,19 +1209,19 @@ public class JSONWriter extends JSONObjHelper
 	 * @param xjdfSchemaElement
 	 * @param splitXJMF if true, xjmf messages are singular
 	 */
-	public void fillTypesFromSchema(KElement xjdfSchemaElement, boolean splitXJMF)
+	public void fillTypesFromSchema(final KElement xjdfSchemaElement, final boolean splitXJMF)
 	{
 		new SchemaFiller(xjdfSchemaElement, splitXJMF).fillTypesFromSchema();
 	}
 
-	public JSONObject convert(KElement xjdf)
+	public JSONObject convert(final KElement xjdf)
 	{
 		return convertHelper(xjdf).getRoot();
 	}
 
-	public JSONObjHelper convertHelper(KElement xjdf)
+	public JSONObjHelper convertHelper(final KElement xjdf)
 	{
-		JSONRootWalker jsonRootWalker = new JSONRootWalker(this, xjdf);
+		final JSONRootWalker jsonRootWalker = new JSONRootWalker(this, xjdf);
 		jsonRootWalker.convert();
 		return jsonRootWalker;
 	}
@@ -1216,7 +1235,7 @@ public class JSONWriter extends JSONObjHelper
 	@Deprecated
 	public boolean walk(final KElement e, final JSONAware parent)
 	{
-		JSONObject o = convert(e);
+		final JSONObject o = convert(e);
 		setRoot(o);
 		return true;
 	}

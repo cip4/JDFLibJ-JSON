@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -66,6 +66,7 @@ import org.cip4.jdflib.jmf.JDFResourceInfo;
 import org.cip4.jdflib.jmf.JMFBuilderFactory;
 import org.cip4.jdflib.resource.JDFNotification;
 import org.cip4.jdflib.util.JDFDate;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -78,6 +79,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 
 	public static JSONWriter getXJDFWriter()
 	{
+		JSONWriter.setSchemaUrl(exampleVersion, "foo");
 		return XJDFJSONWriterTest.getXJDFWriter(true);
 	}
 
@@ -126,12 +128,27 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter();
 
 		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
-		JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
+		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
 		n.setClass(EnumClass.Event);
 		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.json", true, false);
 	}
 
-	MessageHelper getBaseXJMF(EnumFamily family, EnumType typ)
+	/**
+	 *
+	 */
+	@Test
+	public void testMinimalSchema()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		jsonWriter.setJsonRoot(eJSONRoot.schema);
+
+		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
+		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
+		n.setClass(EnumClass.Event);
+		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.schema.json", true, false);
+	}
+
+	MessageHelper getBaseXJMF(final EnumFamily family, final EnumType typ)
 	{
 		final XJMFHelper h = new XJMFHelper();
 		h.setVersion(EnumVersion.Version_2_2);
@@ -144,6 +161,8 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
 		totalProductionCounter = System.currentTimeMillis() % 1000000;
+		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "dummy");
+
 	}
 
 	/**
@@ -245,14 +264,14 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperResourceSignal.json", true, false);
 	}
 
-	JDFJobPhase addJobPhase(JDFDeviceInfo di, String jobID, String sheetName, int good, int waste)
+	JDFJobPhase addJobPhase(final JDFDeviceInfo di, final String jobID, final String sheetName, final int good, final int waste)
 	{
 		return addJobPhase(di, jobID, sheetName, "ws1", good, waste);
 	}
 
-	JDFJobPhase addJobPhase(JDFDeviceInfo di, String jobID, String sheetName, String wsid, int good, int waste)
+	JDFJobPhase addJobPhase(final JDFDeviceInfo di, final String jobID, final String sheetName, final String wsid, final int good, final int waste)
 	{
-		JDFJobPhase p = di.appendJobPhase();
+		final JDFJobPhase p = di.appendJobPhase();
 		p.setJobID(jobID);
 		p.setJobPartID("p1");
 		p.setPartMap(new JDFAttributeMap(AttributeName.SHEETNAME, sheetName));
