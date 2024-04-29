@@ -343,7 +343,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		pr.setAttribute("End", new JDFDate().getDateTimeISO());
 		pr.setAttribute("EndStatus", "Completed");
 		h.cleanUp();
-
 		final String output = "auditpool.json";
 		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false);
 		for (final String key : jo.getKeys())
@@ -357,7 +356,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		FileUtil.writeFile(jo, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jo), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
-		// writeBothJson(ap.getRoot(), jsonWriter, output, false, false);
+		writeBothJson(ap.getRoot(), jsonWriter, output + ".keep", false, false);
 	}
 
 	/**

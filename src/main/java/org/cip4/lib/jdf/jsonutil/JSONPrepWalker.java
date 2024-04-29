@@ -56,7 +56,6 @@ import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.util.ContainerUtil;
-import org.cip4.jdflib.util.StringUtil;
 
 /**
  * @author rainer prosi class to preprocess xjdf or printTalk for json conversion
@@ -86,43 +85,43 @@ public class JSONPrepWalker extends BaseElementWalker
 		return explicitAudit;
 	}
 
-	public List<KElement> splitXML(KElement input)
+	public List<KElement> splitXML(final KElement input)
 	{
-		List<KElement> split = split(input);
-		for (KElement e : split)
+		final List<KElement> split = split(input);
+		for (final KElement e : split)
 		{
 			walkTree(e, null);
 		}
 		return split;
 	}
 
-	public List<KElement> split(KElement input)
+	public List<KElement> split(final KElement input)
 	{
-		XJMFHelper xh = splitXJMF ? XJMFHelper.getHelper(input) : null;
+		final XJMFHelper xh = splitXJMF ? XJMFHelper.getHelper(input) : null;
 		if (xh != null)
 		{
-			List<KElement> l = splitXJMF(xh);
+			final List<KElement> l = splitXJMF(xh);
 			return l;
 		}
 
-		VElement v = new VElement();
+		final VElement v = new VElement();
 		ContainerUtil.add(v, input);
 		return v;
 	}
 
-	List<KElement> splitXJMF(XJMFHelper xh)
+	List<KElement> splitXJMF(final XJMFHelper xh)
 	{
-		List<MessageHelper> mhs = xh.getMessageHelpers();
-		VElement v = new VElement();
+		final List<MessageHelper> mhs = xh.getMessageHelpers();
+		final VElement v = new VElement();
 		if (ContainerUtil.size(mhs) > 1)
 		{
-			KElement header = xh.getHeader();
+			final KElement header = xh.getHeader();
 			header.removeAttribute(AttributeName.ID);
-			JDFAttributeMap xjmfMap = xh.getRoot().getAttributeMap();
-			for (MessageHelper mh : mhs)
+			final JDFAttributeMap xjmfMap = xh.getRoot().getAttributeMap();
+			for (final MessageHelper mh : mhs)
 			{
-				XJMFHelper h = new XJMFHelper();
-				KElement root = h.getRoot();
+				final XJMFHelper h = new XJMFHelper();
+				final KElement root = h.getRoot();
 				root.removeChildren(XJDFConstants.Header, null);
 				root.setAttributes(xjmfMap);
 				root.copyElement(header, null);
@@ -242,7 +241,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		@Override
 		public KElement walk(final KElement e, final KElement trackElem)
 		{
-			e.setAttribute(AttributeName.NAME, StringUtil.rightStr(e.getLocalName(), -5));
+			e.setAttribute(AttributeName.NAME, e.getLocalName());
 			e.renameElement(explicitAudit ? ElementName.AUDIT : ElementName.AUDITPOOL, null);
 			return super.walk(e, trackElem);
 		}
@@ -387,7 +386,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		return splitXJMF;
 	}
 
-	public void setSplitXJMF(boolean splitXJMF)
+	public void setSplitXJMF(final boolean splitXJMF)
 	{
 		this.splitXJMF = splitXJMF;
 	}
