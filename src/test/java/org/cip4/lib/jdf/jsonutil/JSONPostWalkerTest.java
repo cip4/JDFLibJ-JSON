@@ -78,7 +78,7 @@ public class JSONPostWalkerTest extends JSONTestCaseBase
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(false);
 		w.walkTree(xjdf, null);
-		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"Created\"]/Header/@DeviceID", null));
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"AuditCreated\"]/Header/@DeviceID", null));
 		final JSONPostWalker pw = new JSONPostWalker();
 		pw.walkTree(xjdf, null);
 		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/AuditCreated/Header/@DeviceID", null));
@@ -97,7 +97,7 @@ public class JSONPostWalkerTest extends JSONTestCaseBase
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(true);
 		w.walkTree(xjdf, null);
-		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/Audit[@Name=\"Created\"]/Header/@DeviceID", null));
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/Audit[@Name=\"AuditCreated\"]/Header/@DeviceID", null));
 		final JSONPostWalker pw = new JSONPostWalker();
 		pw.walkTree(xjdf, null);
 		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/AuditCreated/Header/@DeviceID", null));

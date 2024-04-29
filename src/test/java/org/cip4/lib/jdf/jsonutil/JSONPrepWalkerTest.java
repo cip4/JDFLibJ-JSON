@@ -82,7 +82,7 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(false);
 		w.walkTree(xjdf, null);
-		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"Created\"]/Header/@DeviceID", null));
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool[@Name=\"AuditCreated\"]/Header/@DeviceID", null));
 	}
 
 	/**
@@ -115,8 +115,8 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setSplitXJMF(true);
-		XJMFHelper h0 = new XJMFHelper();
-		List<KElement> l = w.splitXML(h0.getRoot());
+		final XJMFHelper h0 = new XJMFHelper();
+		final List<KElement> l = w.splitXML(h0.getRoot());
 		assertEquals(h0.getRoot(), l.get(0));
 	}
 
@@ -128,9 +128,9 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setSplitXJMF(true);
-		XJMFHelper h0 = new XJMFHelper();
+		final XJMFHelper h0 = new XJMFHelper();
 		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
-		List<KElement> l = w.splitXML(h0.getRoot());
+		final List<KElement> l = w.splitXML(h0.getRoot());
 		assertEquals(h0.getRoot(), l.get(0));
 	}
 
@@ -142,11 +142,11 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 	{
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setSplitXJMF(true);
-		XJMFHelper h0 = new XJMFHelper();
+		final XJMFHelper h0 = new XJMFHelper();
 		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
 		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
 		h0.appendMessage(EnumFamily.Signal, EnumType.Status);
-		List<KElement> l = w.splitXML(h0.getRoot());
+		final List<KElement> l = w.splitXML(h0.getRoot());
 		assertEquals(3, l.size());
 		assertEquals(1, l.get(0).numChildElements(XJDFConstants.Header, null));
 	}
@@ -162,7 +162,7 @@ public class JSONPrepWalkerTest extends JSONTestCaseBase
 		final JSONPrepWalker w = new JSONPrepWalker();
 		w.setExplicitAudit(true);
 		w.walkTree(xjdf, null);
-		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/Audit[@Name=\"Created\"]/Header/@DeviceID", null));
+		assertEquals("foo", xjdf.getXPathAttribute("AuditPool/Audit[@Name=\"AuditCreated\"]/Header/@DeviceID", null));
 	}
 
 	/**
