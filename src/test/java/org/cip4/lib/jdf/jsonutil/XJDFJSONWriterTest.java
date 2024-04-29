@@ -357,6 +357,8 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		FileUtil.writeFile(new JSONRtfWalker(jo), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 		final String name = jo.getString("AuditPool[0]/Name");
 		assertEquals("AuditCreated", name);
+		final String name0 = jo.getString("AuditPool[1]/Name");
+		assertEquals("AuditStatus", name0);
 		final String name1 = jo.getString("AuditPool[-1]/Name");
 		assertEquals("AuditProcessRun", name1);
 		writeBothJson(ap.getRoot(), jsonWriter, output + ".keep", false, false);
