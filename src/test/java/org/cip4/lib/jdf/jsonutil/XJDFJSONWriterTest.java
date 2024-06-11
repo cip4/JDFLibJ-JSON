@@ -187,10 +187,10 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	public void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
-		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "J1");
+		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "Job1");
 		h.setTypes("Product");
 		final ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
-		p.setDescriptiveName("my node");
+		p.setDescriptiveName("my status");
 		p.setPartMap(new JDFAttributeMap("SheetName", "Sheet1"));
 		final JDFNodeInfo ni = (JDFNodeInfo) p.getResource();
 		ni.setAttribute(AttributeName.STATUS, "Waiting");
@@ -262,13 +262,14 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testForeign()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter(false);
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
 		final SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
 		final ResourceHelper rh = set.getCreatePartition(0, false);
 		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
 		h.cleanUp();
+		h.getAuditPool().deleteNode();
 		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false);
 	}
 
@@ -278,7 +279,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	@Test
 	public void testForeignAttribute()
 	{
-		final JSONWriter jsonWriter = getXJDFWriter(false);
+		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
 		final SetHelper set = h.getCreateSet(ElementName.CONVENTIONALPRINTINGPARAMS, EnumUsage.Input);
