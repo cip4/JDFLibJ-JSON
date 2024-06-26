@@ -122,7 +122,7 @@ processResources {
 }
 
 dependencies {
-    implementation ('org.cip4.lib.jdf:JDFLibJ:2.1.7.+'){
+    implementation ('org.cip4.lib.jdf:JDFLibJ:2.1.8.+'){
   		 exclude group: 'xml-apis'
 	}
 	implementation ('xerces:xercesImpl:2.12.2'){transitive=false}
