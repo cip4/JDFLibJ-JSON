@@ -42,12 +42,12 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -88,8 +88,8 @@ import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONPrefix;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
@@ -1013,7 +1013,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void testManyCIP4()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();

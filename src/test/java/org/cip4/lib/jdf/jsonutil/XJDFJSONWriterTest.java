@@ -42,8 +42,8 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 
@@ -80,7 +80,7 @@ import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi

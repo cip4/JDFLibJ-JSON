@@ -42,10 +42,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFDoc;
@@ -57,8 +53,10 @@ import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.resource.process.JDFBoxFoldingParams;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author rainer prosi
@@ -165,7 +163,7 @@ public class JSONPostWalkerTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void testConvertPTKHeaders()
 	{
 		final KElement e = JDFDoc.parseFile(sm_dirTestData + "ptk/confirmation.ptk").getRoot();

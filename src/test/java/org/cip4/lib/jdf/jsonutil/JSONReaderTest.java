@@ -40,11 +40,11 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -58,8 +58,8 @@ import org.cip4.jdflib.datatypes.JDFTransferFunction;
 import org.cip4.jdflib.resource.process.JDFColorControlStrip;
 import org.cip4.jdflib.util.FileUtil;
 import org.json.simple.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author prosirai
@@ -501,7 +501,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void testQCTransferCurve()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();

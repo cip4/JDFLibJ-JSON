@@ -42,7 +42,7 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
 import org.cip4.jdflib.core.AttributeName;
@@ -68,7 +68,7 @@ import org.cip4.jdflib.resource.JDFNotification;
 import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi

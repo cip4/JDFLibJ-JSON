@@ -37,10 +37,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.net.URL;
 
@@ -66,10 +62,12 @@ import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * base class for JDFLib test case classes
@@ -294,7 +292,7 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @see junit.framework.TestCase#setUp()
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception
 	{
 		JDFElement.setDefaultJDFVersion(EnumVersion.Version_2_1);
@@ -306,7 +304,7 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @see junit.framework.TestCase#tearDown()
 	 */
-	@After
+	@AfterEach
 	public void tearDown() throws Exception
 	{
 		JDFElement.setDefaultJDFVersion(EnumVersion.Version_2_1);

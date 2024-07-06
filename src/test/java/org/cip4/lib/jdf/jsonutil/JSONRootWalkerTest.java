@@ -42,8 +42,8 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
@@ -52,7 +52,7 @@ import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONPrefix;
 import org.json.simple.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi

@@ -68,8 +68,8 @@
  */
 package org.cip4.lib.jdf.jsonutil.rtf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +78,7 @@ import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class JSONRtfWalkerTest extends JSONTestCaseBase
 {

@@ -40,16 +40,13 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONArrayHelperTest extends JSONTestCaseBase
 {
@@ -60,7 +57,7 @@ public class JSONArrayHelperTest extends JSONTestCaseBase
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
-		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
+        assertNull(r.getJSONHelper(0).getPathObject("a/b[1]/c"));
 		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b/c"));
 	}
 

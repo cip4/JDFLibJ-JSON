@@ -130,7 +130,8 @@ dependencies {
     implementation ('commons-lang:commons-lang:2.6'){transitive=false}
     implementation ('commons-io:commons-io:2.15.0'){transitive=false}
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
 jacocoTestReport {
