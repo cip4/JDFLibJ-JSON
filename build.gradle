@@ -130,7 +130,7 @@ dependencies {
     implementation ('commons-lang:commons-lang:2.6'){transitive=false}
     implementation ('commons-io:commons-io:2.15.0'){transitive=false}
 
-    testCompile 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13'
 }
 
 jacocoTestReport {
