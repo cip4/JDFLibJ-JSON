@@ -230,7 +230,7 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(xmlFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		Assertions.assertEquals(valResult0, VALID);
+		Assertions.assertEquals(VALID, valResult0);
 
 		JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
@@ -252,7 +252,7 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(roundtripFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		Assertions.assertEquals(valResult1, VALID);
+		Assertions.assertEquals(VALID, valResult1);
 
 		if (equals)
 			Assertions.assertTrue(e.isEqual(roundtrip));
