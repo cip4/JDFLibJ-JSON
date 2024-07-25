@@ -49,15 +49,11 @@
 
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class JSONWalkerTest extends JSONTestCaseBase
+class JSONWalkerTest extends JSONTestCaseBase
 {
 
 	class TestWalker extends JSONWalker
@@ -79,81 +75,81 @@ public class JSONWalkerTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void testJW()
+    void testJW()
 	{
 		JSONWalker w = new TestWalker(new JSONObjHelper(new JSONObject()));
-		assertNotNull(w.toString());
+		Assertions.assertNotNull(w.toString());
 	}
 
 	@Test
-	public void testWalk()
+    void testWalk()
 	{
 		JSONWalker w = new TestWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}"));
-		assertNotNull(w.walk());
+		Assertions.assertNotNull(w.walk());
 	}
 
 	@Test
-	public void testWalkNull()
+    void testWalkNull()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(true);
-		assertTrue(w.isRetainNull());
+		Assertions.assertTrue(w.isRetainNull());
 		JSONObjHelper walk = w.walk();
 		String s = walk.toJSONString();
-		assertEquals(s0, s);
+		Assertions.assertEquals(s0, s);
 	}
 
 	@Test
-	public void testWalkNullArray()
+    void testWalkNullArray()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":[]}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(true);
-		assertTrue(w.isRetainNull());
+		Assertions.assertTrue(w.isRetainNull());
 		JSONObjHelper walk = w.walk();
 		String s = walk.toJSONString();
-		assertEquals(s0, s);
+		Assertions.assertEquals(s0, s);
 	}
 
 	@Test
-	public void testWalkEmptyArray()
+    void testWalkEmptyArray()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":[{},{},{}]}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(true);
-		assertTrue(w.isRetainNull());
+		Assertions.assertTrue(w.isRetainNull());
 		JSONObjHelper walk = w.walk();
 		String s = walk.toJSONString();
-		assertEquals(s0, s);
+		Assertions.assertEquals(s0, s);
 	}
 
 	@Test
-	public void testWalkNullZapp()
+    void testWalkNullZapp()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":null}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(false);
 		JSONObjHelper walk = w.walk();
-		assertNull(walk);
+		Assertions.assertNull(walk);
 	}
 
 	@Test
-	public void testWalkNullZapp1()
+    void testWalkNullZapp1()
 	{
 		String s0 = "{\"a\":{\"b\":[{\"c\":null,\"c1\":\"\"}]}}";
 		JSONWalker w = new TestWalker(new JSONObjHelper(s0));
 		w.setRetainNull(false);
 		JSONObjHelper walk = w.walk();
-		assertNotNull(walk);
-		assertEquals(-1, walk.toJSONString().indexOf("null"));
+		Assertions.assertNotNull(walk);
+		Assertions.assertEquals(-1, walk.toJSONString().indexOf("null"));
 	}
 
 	@Test
-	public void testToString()
+    void testToString()
 	{
 		JSONWalker w = new TestWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}"));
-		assertNotNull(w.toString());
+		Assertions.assertNotNull(w.toString());
 	}
 
 }

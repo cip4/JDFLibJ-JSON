@@ -40,31 +40,29 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
-
-import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author prosirai
  *
  */
-public class JSONTestCase extends JSONTestCaseBase
+class JSONTestCase extends JSONTestCaseBase
 {
 
 	@Test
-	public void testGetXJDFSchema()
+    void testGetXJDFSchema()
 	{
-		assertNotNull(getXJDFSchema(1));
-		assertTrue(new File(getXJDFSchema(1)).exists());
+		Assertions.assertNotNull(getXJDFSchema(1));
+		Assertions.assertTrue(new File(getXJDFSchema(1)).exists());
 	}
 
 	@Test
-	public void testGetXJDFSchemaElement()
+    void testGetXJDFSchemaElement()
 	{
-		assertNotNull(getXJDFSchemaElement(1));
+		Assertions.assertNotNull(getXJDFSchemaElement(1));
 	}
 }

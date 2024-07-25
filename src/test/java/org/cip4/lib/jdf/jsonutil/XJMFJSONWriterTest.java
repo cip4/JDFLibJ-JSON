@@ -42,8 +42,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -68,13 +66,14 @@ import org.cip4.jdflib.resource.JDFNotification;
 import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
  *
  */
-public class XJMFJSONWriterTest extends JSONTestCaseBase
+class XJMFJSONWriterTest extends JSONTestCaseBase
 {
 
 	public static JSONWriter getXJDFWriter()
@@ -89,15 +88,15 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJMFFromFile()
+    void testConvertXJMFFromFile()
 	{
 		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF();
 		final JSONObject o = jsonWriter.convert(xjmf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("\"SignalStatus\":{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"SignalStatus\":{") > 0);
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
 		log.info(jsonString);
 	}
@@ -106,15 +105,15 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJMFFromFileNoSplit()
+    void testConvertXJMFFromFileNoSplit()
 	{
 		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(false, false);
 		final JSONObject o = jsonWriter.convert(xjmf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("\"SignalStatus\":[{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"SignalStatus\":[{") > 0);
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "status.xjmf.json");
 		log.info(jsonString);
 	}
@@ -123,7 +122,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMinimal()
+    void testMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
@@ -137,7 +136,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMinimalSchema()
+    void testMinimalSchema()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		jsonWriter.setJsonRoot(eJSONRoot.schema);
@@ -169,7 +168,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSignalStatus()
+    void testSignalStatus()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
@@ -210,7 +209,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSignalPaper()
+    void testSignalPaper()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
@@ -240,7 +239,7 @@ public class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSignalSimplePaper()
+    void testSignalSimplePaper()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");

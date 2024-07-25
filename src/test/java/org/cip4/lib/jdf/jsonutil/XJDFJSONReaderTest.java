@@ -42,9 +42,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -61,13 +58,14 @@ import org.cip4.jdflib.resource.process.JDFContact;
 import org.cip4.jdflib.resource.process.JDFMedia;
 import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
  *
  */
-public class XJDFJSONReaderTest extends JSONTestCaseBase
+class XJDFJSONReaderTest extends JSONTestCaseBase
 {
 
 	public static JSONReader getXJDFReader()
@@ -81,7 +79,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testAddressLine()
+    void testAddressLine()
 	{
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
@@ -99,9 +97,9 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 		final JSONReader jr = getXJDFReader();
 		final KElement xjdf2 = jr.getElement(o);
 		xjdf2.write2File(sm_dirTestDataTemp + "addressline.xjdf");
-		assertEquals("line 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[1]", null));
-		assertEquals("line 2", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[2]", null));
-		assertEquals("line 3", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[3]", null));
+		Assertions.assertEquals("line 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[1]", null));
+		Assertions.assertEquals("line 2", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[2]", null));
+		Assertions.assertEquals("line 3", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Address/AddressLine[3]", null));
 
 	}
 
@@ -109,7 +107,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMediaLayers()
+    void testMediaLayers()
 	{
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
@@ -133,7 +131,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testOrgUnit()
+    void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
@@ -154,14 +152,14 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 		final JSONReader jr = getXJDFReader();
 		final KElement xjdf2 = jr.getElement(o);
 		xjdf2.write2File(sm_dirTestDataTemp + "orgunit2.xjdf");
-		assertEquals("ACME Unit 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Company/OrganizationalUnit[1]", null));
+		Assertions.assertEquals("ACME Unit 1", xjdf2.getXPathAttribute("ResourceSet/Resource/Contact/Company/OrganizationalUnit[1]", null));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testAuditPool()
+    void testAuditPool()
 	{
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
@@ -188,7 +186,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 	*
 	*/
 	@Test
-	public void testDollar()
+    void testDollar()
 	{
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
@@ -201,7 +199,7 @@ public class XJDFJSONReaderTest extends JSONTestCaseBase
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "auditpool.json");
 		final JSONReader jr = getXJDFReader();
 		final KElement xjdf2 = jr.getElement(o);
-		assertNotNull(xjdf2);
+		Assertions.assertNotNull(xjdf2);
 		xjdf2.write2File(sm_dirTestDataTemp + "auditpool2.xjdf");
 	}
 

@@ -68,9 +68,6 @@
  */
 package org.cip4.lib.jdf.jsonutil.rtf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -78,45 +75,46 @@ import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class JSONIndentWalkerTest extends JSONTestCaseBase
+class JSONIndentWalkerTest extends JSONTestCaseBase
 {
 
 	@Test
-	public void testSimple() throws IOException
+    void testSimple() throws IOException
 	{
 		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}");
 		final JSONIndentWalker w = new JSONIndentWalker(root);
 		final ByteArrayIOStream ios = new ByteArrayIOStream();
 		w.writeStream(ios);
 		final String s = new String(ios.toByteArray());
-		assertNotNull(s);
-		assertEquals(root, new JSONObjHelper(s));
+		Assertions.assertNotNull(s);
+		Assertions.assertEquals(root, new JSONObjHelper(s));
 
 	}
 
 	@Test
-	public void testFile() throws IOException
+    void testFile() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test.json"));
 	}
 
 	@Test
-	public void testToString() throws IOException
+    void testToString() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
-		assertNotNull(w.toString());
+		Assertions.assertNotNull(w.toString());
 	}
 
 	@Test
-	public void testIndent() throws IOException
+    void testIndent() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		w.setSingleIndent(0);
 		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test0.json"));
-		assertEquals(0, w.getSingleIndent());
+		Assertions.assertEquals(0, w.getSingleIndent());
 
 		final JSONIndentWalker w4 = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		w.setSingleIndent(4);

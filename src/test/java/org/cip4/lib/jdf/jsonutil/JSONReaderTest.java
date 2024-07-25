@@ -40,12 +40,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
@@ -58,193 +52,194 @@ import org.cip4.jdflib.datatypes.JDFTransferFunction;
 import org.cip4.jdflib.resource.process.JDFColorControlStrip;
 import org.cip4.jdflib.util.FileUtil;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author prosirai
  */
-public class JSONReaderTest extends JSONTestCaseBase
+class JSONReaderTest extends JSONTestCaseBase
 {
 
 	@Test
-	public void testSimpleStream()
+    void testSimpleStream()
 	{
 		final JSONReader r = new JSONReader();
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final KElement a = r.getElement(new ByteArrayInputStream(root.getBytes()));
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(r.toString());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(r.toString());
 	}
 
 	@Test
-	public void testAddText()
+    void testAddText()
 	{
 		final JSONReader r = new JSONReader();
-		assertFalse(r.addText(null));
+		Assertions.assertFalse(r.addText(null));
 	}
 
 	@Test
-	public void testPostWalker()
+    void testPostWalker()
 	{
 		final JSONReader r = new JSONReader();
 		r.setPostWalker(null);
-		assertNull(r.getPostWalker());
+		Assertions.assertNull(r.getPostWalker());
 	}
 
 	@Test
-	public void testIsJSON()
+    void testIsJSON()
 	{
-		assertTrue(JSONReader.isJSON("application/JSON"));
-		assertFalse(JSONReader.isJSON("application/JPEG"));
+		Assertions.assertTrue(JSONReader.isJSON("application/JSON"));
+		Assertions.assertFalse(JSONReader.isJSON("application/JPEG"));
 	}
 
 	@Test
-	public void testAttribs()
+    void testAttribs()
 	{
 		final JSONReader r = new JSONReader();
 		r.setWantAttributes(true);
-		assertTrue(r.isWantAttributes());
+		Assertions.assertTrue(r.isWantAttributes());
 	}
 
 	@Test
-	public void testComment()
+    void testComment()
 	{
 		final JSONReader r = new JSONReader();
 		final String root = "{\"a\":{\"b\":[{\"" + JSONWriter.TEXT + "\":\"d\"}]}}";
 		final KElement a = r.getElement(new ByteArrayInputStream(root.getBytes()));
-		assertNotNull(a);
-		assertEquals("<a><b>d</b></a>", a.toDisplayXML(0));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("<a><b>d</b></a>", a.toDisplayXML(0));
 	}
 
 	@Test
-	public void testRootArray()
+    void testRootArray()
 	{
 		final JSONReader r = new JSONReader();
 		final String root = "[{\"c\":\"d\"},\"a\"]";
 		final KElement a = r.getElement(new ByteArrayInputStream(root.getBytes()));
-		assertNotNull(a);
-		assertEquals("array", a.getLocalName());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("array", a.getLocalName());
 	}
 
 	@Test
-	public void testRootNoName()
+    void testRootNoName()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r
 				.getElement("{\"id\": 159877, 	\"product_id\": 107274, 	\"created_at\": \"2019-04-01T13:55:45.837Z\", 	\"updated_at\": \"2019-04-01T14:05:49.518Z\"}");
-		assertNotNull(a);
-		assertEquals("json", a.getLocalName());
-		assertEquals("159877", a.getAttribute("id"));
-		assertEquals("2019-04-01T13:55:45.837Z", a.getAttribute("created_at"));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("json", a.getLocalName());
+		Assertions.assertEquals("159877", a.getAttribute("id"));
+		Assertions.assertEquals("2019-04-01T13:55:45.837Z", a.getAttribute("created_at"));
 
 	}
 
 	@Test
-	public void testSimpleNull()
+    void testSimpleNull()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[{\"c\":\"d\"}]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
 
 	}
 
 	@Test
-	public void testStringOnly()
+    void testStringOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":\"b\"}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("b", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("b", a.getText());
 
 	}
 
 	@Test
-	public void ArrayrootStringOnly()
+    void ArrayrootStringOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("[\"a\",\"b\"]");
-		assertEquals("array", a.getLocalName());
-		assertEquals("ab", a.getText());
+		Assertions.assertEquals("array", a.getLocalName());
+		Assertions.assertEquals("ab", a.getText());
 
 	}
 
 	@Test
-	public void testIntOnly()
+    void testIntOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":2}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("2", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("2", a.getText());
 
 	}
 
 	@Test
-	public void testSlashOnly()
+    void testSlashOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":\"a\\/b\"}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("a/b", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("a/b", a.getText());
 
 	}
 
 	@Test
-	public void testBackSlashOnly()
+    void testBackSlashOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":\"a\\\\b\"}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("a\\b", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("a\\b", a.getText());
 
 	}
 
 	@Test
-	public void testdoubleOnly()
+    void testdoubleOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":2.33}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("2.33", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("2.33", a.getText());
 
 	}
 
 	@Test
-	public void testBoolOnly()
+    void testBoolOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":true}");
-		assertEquals("a", a.getLocalName());
-		assertEquals("true", a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("true", a.getText());
 
 	}
 
 	@Test
-	public void testNullOnly()
+    void testNullOnly()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":null}");
-		assertEquals("a", a.getLocalName());
-		assertNull(a.getText());
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNull(a.getText());
 
 	}
 
 	@Test
-	public void testArray()
+    void testArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[{\"c1\":\"d1\"},{\"c2\":\"d2\"}]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
 
 	}
 
 	@Test
-	public void testMixedArray4()
+    void testMixedArray4()
 	{
 
 		final JSONObjHelper h = new JSONObjHelper("{\"r\":[]}");
@@ -269,7 +264,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void testMixedArray5()
+    void testMixedArray5()
 	{
 
 		final JSONObjHelper h = new JSONObjHelper("{\"r\":[]}");
@@ -295,193 +290,193 @@ public class JSONReaderTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void testMixedArray()
+    void testMixedArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[1,{\"c1\":\"d1\"},{\"c2\":\"d2\"},2]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
-		assertEquals("1 2", a.getElement("b").getText());
-		assertEquals("1 2", a.getElement("b", null, 1).getText());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertEquals("1 2", a.getElement("b").getText());
+		Assertions.assertEquals("1 2", a.getElement("b", null, 1).getText());
 
 	}
 
 	@Test
-	public void testMixedArray3()
+    void testMixedArray3()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[[1,{\"c1\":\"d1\"}],[{\"c2\":\"d2\"},2]]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
-		assertEquals("1", a.getElement("b").getText());
-		assertEquals("2", a.getElement("b", null, 1).getText());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertEquals("1", a.getElement("b").getText());
+		Assertions.assertEquals("2", a.getElement("b", null, 1).getText());
 
 	}
 
 	@Test
-	public void testMixedArray2()
+    void testMixedArray2()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[\"txt\",{\"c1\":\"d1\"}]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
 		final KElement b = a.getElement("b");
-		assertNotNull(b);
-		assertNull(a.getElement("b", null, 1));
-		assertEquals("txt", b.getText());
-		assertEquals("d1", b.getAttribute("c1"));
+		Assertions.assertNotNull(b);
+		Assertions.assertNull(a.getElement("b", null, 1));
+		Assertions.assertEquals("txt", b.getText());
+		Assertions.assertEquals("d1", b.getAttribute("c1"));
 
 	}
 
 	@Test
-	public void testSimpleArray()
+    void testSimpleArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[1,2,3]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNull(a.getElement("b"));
-		assertEquals("1 2 3", a.getAttribute("b"));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNull(a.getElement("b"));
+		Assertions.assertEquals("1 2 3", a.getAttribute("b"));
 
 	}
 
 	@Test
-	public void testDoubleSimpleArray()
+    void testDoubleSimpleArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[[1,2,3],[4,5],[6],7]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNull(a.getElement("b"));
-		assertEquals("1 2 3 4 5 6 7", a.getAttribute("b"));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNull(a.getElement("b"));
+		Assertions.assertEquals("1 2 3 4 5 6 7", a.getAttribute("b"));
 
 	}
 
 	@Test
-	public void testDoubleSimpleArrayElem()
+    void testDoubleSimpleArrayElem()
 	{
 		final JSONReader r = new JSONReader();
 		r.setWantAttributes(false);
 		final KElement a = r.getElement("{\"a\":{\"b\":[[1,2,3],[4,5],[6],7]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertEquals("2", a.getXPathAttribute("b[1]/b[2]", null));
-		assertEquals("5", a.getXPathAttribute("b[2]/b[2]", null));
-		assertEquals("6", a.getXPathAttribute("b[3]/b[1]", null));
-		assertEquals("7", a.getXPathAttribute("b[4]", null));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertEquals("2", a.getXPathAttribute("b[1]/b[2]", null));
+		Assertions.assertEquals("5", a.getXPathAttribute("b[2]/b[2]", null));
+		Assertions.assertEquals("6", a.getXPathAttribute("b[3]/b[1]", null));
+		Assertions.assertEquals("7", a.getXPathAttribute("b[4]", null));
 
 	}
 
 	@Test
-	public void testTripleSimpleArray()
+    void testTripleSimpleArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":[[[1,2,3],[4,5],[6],7],[[[[[8.9]]],null]]]}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNull(a.getElement("b"));
-		assertEquals("1 2 3 4 5 6 7 8.9", a.getAttribute("b"));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNull(a.getElement("b"));
+		Assertions.assertEquals("1 2 3 4 5 6 7 8.9", a.getAttribute("b"));
 
 	}
 
 	@Test
-	public void testSimpleObj()
+    void testSimpleObj()
 	{
 		final XMLDoc d = new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNull(a.getElement("b", null, 1));
 	}
 
 	@Test
-	public void testSimpleObjSchema()
+    void testSimpleObjSchema()
 	{
 		final XMLDoc d = new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement root = r.getElement("{\"$schema\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
-		assertNotNull(root);
-		assertEquals("foo", root.getLocalName());
+		Assertions.assertNotNull(root);
+		Assertions.assertEquals("foo", root.getLocalName());
 		final KElement a = root.getElement("a");
-		assertNotNull(a.getElement("b"));
-		assertNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNull(a.getElement("b", null, 1));
 	}
 
 	@Test
-	public void testSimpleObjNS()
+    void testSimpleObjNS()
 	{
 		final XMLDoc d = new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"x:a\":{\"x:b\":{\"y:c1\":\"d1\",\"z:c2\":\"d2\"}}}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNull(a.getElement("b", null, 1));
 
 	}
 
 	@Test
-	public void testDoubleArray1()
+    void testDoubleArray1()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":[{\"b\":[{\"c1\":\"d1\"},{\"c2\":\"d2\"}]}]}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
 
 	}
 
 	@Test
-	public void testDoubleArray2()
+    void testDoubleArray2()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":[[{\"b\":[{\"c1\":\"d1\"},{\"c1\":\"d2\"}]}]]}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
 
 	}
 
 	@Test
-	public void testDoubleArray3()
+    void testDoubleArray3()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":[{\"b\":[[{\"c1\":\"d1\"},{\"c2\":\"d2\"}]]}]}");
-		assertNotNull(a);
-		assertEquals("a", a.getLocalName());
-		assertNotNull(a.getElement("b"));
-		assertNull(a.getElement("b").getElement("b"));
-		assertNotNull(a.getElement("b", null, 1));
+		Assertions.assertNotNull(a);
+		Assertions.assertEquals("a", a.getLocalName());
+		Assertions.assertNotNull(a.getElement("b"));
+		Assertions.assertNull(a.getElement("b").getElement("b"));
+		Assertions.assertNotNull(a.getElement("b", null, 1));
 
 	}
 
 	@Test
-	public void testElem()
+    void testElem()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"XJDF\":1}");
-		assertTrue(a instanceof JDFElement);
-		assertNull(r.getElement((String) null));
-		assertNull(r.getElement((JSONObject) null));
-		assertNull(r.getElement((InputStream) null));
-		assertNull(r.getElement((Reader) null));
+		Assertions.assertTrue(a instanceof JDFElement);
+		Assertions.assertNull(r.getElement((String) null));
+		Assertions.assertNull(r.getElement((JSONObject) null));
+		Assertions.assertNull(r.getElement((InputStream) null));
+		Assertions.assertNull(r.getElement((Reader) null));
 
 	}
 
 	@Test
-	public void testTextArray()
+    void testTextArray()
 	{
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"r\":{\"a\":[\"a1\",\"a2\"]}}");
-		assertEquals("a1 a2", a.getAttribute("a"));
+		Assertions.assertEquals("a1 a2", a.getAttribute("a"));
 
 	}
 
@@ -489,12 +484,12 @@ public class JSONReaderTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testCreateRoot()
+    void testCreateRoot()
 	{
 		final JSONReader r = new JSONReader();
-		assertTrue(r.createRoot("XJDF") instanceof JDFElement);
-		assertTrue(r.createRoot("XJMF") instanceof JDFElement);
-		assertFalse(r.createRoot("xxx") instanceof JDFElement);
+		Assertions.assertTrue(r.createRoot("XJDF") instanceof JDFElement);
+		Assertions.assertTrue(r.createRoot("XJMF") instanceof JDFElement);
+		Assertions.assertFalse(r.createRoot("xxx") instanceof JDFElement);
 	}
 
 	/**
@@ -502,7 +497,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 	 */
 	@Test
 	@Disabled
-	public void testQCTransferCurve()
+    void testQCTransferCurve()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -516,7 +511,7 @@ public class JSONReaderTest extends JSONTestCaseBase
 		final JDFColorControlStrip ccs = (JDFColorControlStrip) e.getChildByTagName(ElementName.COLORCONTROLSTRIP, null, 0, null, false, false);
 		for (int i = 0; i < 10; i++)
 		{
-			assertEquals(JDFTransferFunction.createTransferFunction("400 0 450 0.5 500 1.0 550 0.8 600 0.3 650 0.2 700 0"), ccs.getPatch(i).getSpectrum());
+			Assertions.assertEquals(JDFTransferFunction.createTransferFunction("400 0 450 0.5 500 1.0 550 0.8 600 0.3 650 0.2 700 0"), ccs.getPatch(i).getSpectrum());
 		}
 	}
 

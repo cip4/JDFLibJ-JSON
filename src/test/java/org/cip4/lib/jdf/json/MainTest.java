@@ -2,11 +2,11 @@ package org.cip4.lib.jdf.json;
 
 import org.junit.jupiter.api.Test;
 
-public class MainTest
+class MainTest
 {
 
 	@Test
-	public void testMain()
+    void testMain()
 	{
 		Main.main(new String[] {});
 	}

@@ -46,106 +46,105 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class JSONObjHelperTest extends JSONTestCaseBase
+class JSONObjHelperTest extends JSONTestCaseBase
 {
 
 	@Test
-	public void testSimpleStream()
+    void testSimpleStream()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("d", r.getPathObject("a/b[0]/c"));
-		assertEquals(null, r.getPathObject("a/b[1]/c"));
-		assertEquals("d", r.getPathObject("a/b/c"));
+		Assertions.assertEquals("d", r.getPathObject("a/b[0]/c"));
+		Assertions.assertEquals(null, r.getPathObject("a/b[1]/c"));
+		Assertions.assertEquals("d", r.getPathObject("a/b/c"));
 	}
 
 	@Test
-	public void testRootName()
+    void testRootName()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("a", r.getRootNames().get(0));
-		assertEquals("a", r.getRootName());
+		Assertions.assertEquals("a", r.getRootNames().get(0));
+		Assertions.assertEquals("a", r.getRootName());
 	}
 
 	@Test
-	public void testBlank()
+    void testBlank()
 	{
 		final String root = "{\"a b c\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("a b c", r.getRootNames().get(0));
-		assertEquals("a b c", r.getRootName());
+		Assertions.assertEquals("a b c", r.getRootNames().get(0));
+		Assertions.assertEquals("a b c", r.getRootName());
 	}
 
 	@Test
-	public void testAdd()
+    void testAdd()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
-		assertNotNull(r.setArray("gg"));
+		Assertions.assertNotNull(r.setArray("gg"));
 	}
 
 	@Test
-	public void testSimpleFile()
+    void testSimpleFile()
 	{
 		final JSONObjHelper r = new JSONObjHelper((File) null);
-		assertTrue(r.isNull());
+		Assertions.assertTrue(r.isNull());
 	}
 
 	@Test
-	public void testUndertoCamel()
+    void testUndertoCamel()
 	{
-		assertNull(JSONObjHelper.undertocamel(""));
-		assertNull(JSONObjHelper.undertocamel(""));
-		assertEquals("AaBb", JSONObjHelper.undertocamel("AA_BB"));
+		Assertions.assertNull(JSONObjHelper.undertocamel(""));
+		Assertions.assertNull(JSONObjHelper.undertocamel(""));
+		Assertions.assertEquals("AaBb", JSONObjHelper.undertocamel("AA_BB"));
 	}
 
 	@Test
-	public void testUndertoCamelLower()
+    void testUndertoCamelLower()
 	{
-		assertEquals("AaBb", JSONObjHelper.undertocamel("aa_bb"));
+		Assertions.assertEquals("AaBb", JSONObjHelper.undertocamel("aa_bb"));
 	}
 
 	@Test
-	public void testUndertoCamelLower1()
+    void testUndertoCamelLower1()
 	{
-		assertEquals("Aa", JSONObjHelper.undertocamel("aa"));
+		Assertions.assertEquals("Aa", JSONObjHelper.undertocamel("aa"));
 	}
 
 	@Test
-	public void testUndertoCamel1()
+    void testUndertoCamel1()
 	{
-		assertEquals("Aa", JSONObjHelper.undertocamel("AA"));
+		Assertions.assertEquals("Aa", JSONObjHelper.undertocamel("AA"));
 	}
 
 	@Test
-	public void testUndertoCamelCamel()
+    void testUndertoCamelCamel()
 	{
-		assertEquals("AaBb", JSONObjHelper.undertocamel("AaBb"));
+		Assertions.assertEquals("AaBb", JSONObjHelper.undertocamel("AaBb"));
 	}
 
 	@Test
-	public void testGetInt()
+    void testGetInt()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(4, r.getInt("a/b[0]/c", 0));
-		assertEquals(0, r.getInt("a/b", 0));
+		Assertions.assertEquals(4, r.getInt("a/b[0]/c", 0));
+		Assertions.assertEquals(0, r.getInt("a/b", 0));
 	}
 
 	@Test
-	public void testGetInt2()
+    void testGetInt2()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"4\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(4, r.getInt("a/b[0]/c", 0));
+		Assertions.assertEquals(4, r.getInt("a/b[0]/c", 0));
 	}
 
 	@Test
-	public void testEquals()
+    void testEquals()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final String root2 = "{\"a\":{\"b\":[{\"c\":4}]}}";
@@ -153,12 +152,12 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r = new JSONObjHelper(root);
 		final JSONObjHelper r2 = new JSONObjHelper(root2);
 		final JSONObjHelper r3 = new JSONObjHelper(root3);
-		assertEquals(r, r2);
-		assertNotEquals(r, r3);
+		Assertions.assertEquals(r, r2);
+		Assertions.assertNotEquals(r, r3);
 	}
 
 	@Test
-	public void testHash()
+    void testHash()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final String root2 = "{\"a\":{\"b\":[{\"c\":4}]}}";
@@ -166,301 +165,301 @@ public class JSONObjHelperTest extends JSONTestCaseBase
 		final JSONObjHelper r = new JSONObjHelper(root);
 		final JSONObjHelper r2 = new JSONObjHelper(root2);
 		final JSONObjHelper r3 = new JSONObjHelper(root3);
-		assertEquals(r.hashCode(), r2.hashCode());
-		assertNotEquals(r.hashCode(), r3.hashCode());
+		Assertions.assertEquals(r.hashCode(), r2.hashCode());
+		Assertions.assertNotEquals(r.hashCode(), r3.hashCode());
 	}
 
 	@Test
-	public void testIsNull()
+    void testIsNull()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertFalse(r.isNull());
+		Assertions.assertFalse(r.isNull());
 	}
 
 	@Test
-	public void testIsEmpty()
+    void testIsEmpty()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertFalse(r.isEmpty());
+		Assertions.assertFalse(r.isEmpty());
 		final JSONObjHelper r0 = new JSONObjHelper();
-		assertTrue(r0.isEmpty());
+		Assertions.assertTrue(r0.isEmpty());
 	}
 
 	@Test
-	public void testIsEmptyStatic()
+    void testIsEmptyStatic()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertFalse(JSONObjHelper.isEmpty(r));
+		Assertions.assertFalse(JSONObjHelper.isEmpty(r));
 		final JSONObjHelper r0 = new JSONObjHelper();
-		assertTrue(JSONObjHelper.isEmpty(r0));
-		assertTrue(JSONObjHelper.isEmpty(null));
+		Assertions.assertTrue(JSONObjHelper.isEmpty(r0));
+		Assertions.assertTrue(JSONObjHelper.isEmpty(null));
 	}
 
 	@Test
-	public void testSizeStatic()
+    void testSizeStatic()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(1, JSONObjHelper.size(r));
+		Assertions.assertEquals(1, JSONObjHelper.size(r));
 		final JSONObjHelper r0 = new JSONObjHelper();
-		assertEquals(0, JSONObjHelper.size(r0));
-		assertEquals(0, JSONObjHelper.size(null));
+		Assertions.assertEquals(0, JSONObjHelper.size(r0));
+		Assertions.assertEquals(0, JSONObjHelper.size(null));
 	}
 
 	@Test
-	public void testGetRoot()
+    void testGetRoot()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertNotNull(r.getRoot());
+		Assertions.assertNotNull(r.getRoot());
 	}
 
 	@Test
-	public void testGetRootName()
+    void testGetRootName()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("a", r.getRootName());
+		Assertions.assertEquals("a", r.getRootName());
 	}
 
 	@Test
-	public void testParseString()
+    void testParseString()
 	{
 		final String root = "\"a\"";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("a", r.getRootObject());
+		Assertions.assertEquals("a", r.getRootObject());
 	}
 
 	@Test
-	public void testParseInt()
+    void testParseInt()
 	{
 		final String root = "1";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(Long.valueOf(1), r.getRootObject());
+		Assertions.assertEquals(Long.valueOf(1), r.getRootObject());
 	}
 
 	@Test
-	public void testParseDouble()
+    void testParseDouble()
 	{
 		final String root = "1.23";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(Double.valueOf(1.23), r.getRootObject());
+		Assertions.assertEquals(Double.valueOf(1.23), r.getRootObject());
 	}
 
 	@Test
-	public void testStaticInputStream() throws IOException
+    void testStaticInputStream() throws IOException
 	{
-		assertNull(JSONObjHelper.getHelper((InputStream) null));
-		assertNull(JSONObjHelper.getHelper(new ByteArrayInputStream(new byte[0])));
-		assertNull(JSONObjHelper.getHelper(new ByteArrayInputStream(new byte[] { 0x20 })));
+		Assertions.assertNull(JSONObjHelper.getHelper((InputStream) null));
+		Assertions.assertNull(JSONObjHelper.getHelper(new ByteArrayInputStream(new byte[0])));
+		Assertions.assertNull(JSONObjHelper.getHelper(new ByteArrayInputStream(new byte[] { 0x20 })));
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = JSONObjHelper.getHelper(new ByteArrayInputStream(root.getBytes()));
-		assertEquals(root, r.getRoot().toJSONString());
+		Assertions.assertEquals(root, r.getRoot().toJSONString());
 	}
 
 	@Test
-	public void testBadInputStream() throws IOException
+    void testBadInputStream() throws IOException
 	{
-		assertNull(JSONObjHelper.getHelper((InputStream) null));
+		Assertions.assertNull(JSONObjHelper.getHelper((InputStream) null));
 		final String root = "<html/>";
 		final JSONObjHelper r = JSONObjHelper.getHelper(new ByteArrayInputStream(root.getBytes()));
-		assertNull(r);
+		Assertions.assertNull(r);
 	}
 
 	@Test
-	public void testInputStream() throws IOException
+    void testInputStream() throws IOException
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals('{', r.getInputStream().read());
+		Assertions.assertEquals('{', r.getInputStream().read());
 	}
 
 	@Test
-	public void testInputStreamLength() throws IOException
+    void testInputStreamLength() throws IOException
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 
 		final byte[] b = new byte[100];
-		assertEquals(root.length(), r.getInputStream().read(b));
+		Assertions.assertEquals(root.length(), r.getInputStream().read(b));
 	}
 
 	@Test
-	public void testGetString()
+    void testGetString()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("d", r.getString("a/b[0]/c"));
-		assertEquals(null, r.getString("a/c"));
-		assertNotNull(r.getString("a/b[0]"));
+		Assertions.assertEquals("d", r.getString("a/b[0]/c"));
+		Assertions.assertEquals(null, r.getString("a/c"));
+		Assertions.assertNotNull(r.getString("a/b[0]"));
 	}
 
 	@Test
-	public void testToString()
+    void testToString()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertNotNull(r.toString());
-		assertNotNull(r.toJSONString());
-		assertNotNull(r.getBytes());
+		Assertions.assertNotNull(r.toString());
+		Assertions.assertNotNull(r.toJSONString());
+		Assertions.assertNotNull(r.getBytes());
 	}
 
 	@Test
-	public void testGetHelper()
+    void testGetHelper()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertNotNull(r.getHelper("a"));
+		Assertions.assertNotNull(r.getHelper("a"));
 	}
 
 	@Test
-	public void testHasPath()
+    void testHasPath()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"d\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertTrue(r.hasPath("a"));
+		Assertions.assertTrue(r.hasPath("a"));
 	}
 
 	@Test
-	public void testGetDouble()
+    void testGetDouble()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4.2}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
-		assertEquals(0, r.getDouble("a/b", 0), 0);
+		Assertions.assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
+		Assertions.assertEquals(0, r.getDouble("a/b", 0), 0);
 	}
 
 	@Test
-	public void testGetDouble2()
+    void testGetDouble2()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":\"4.2\"}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
-		assertEquals(0, r.getDouble("a/b", 0), 0);
+		Assertions.assertEquals(4.2, r.getDouble("a/b[0]/c", 0), 0);
+		Assertions.assertEquals(0, r.getDouble("a/b", 0), 0);
 	}
 
 	@Test
-	public void testGetDoubleInt()
+    void testGetDoubleInt()
 	{
 		final String root = "{\"a\":{\"b\":[{\"c\":4}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals(4, r.getDouble("a/b[0]/c", 0), 0);
+		Assertions.assertEquals(4, r.getDouble("a/b[0]/c", 0), 0);
 	}
 
 	@Test
-	public void testGetInheritedObject()
+    void testGetInheritedObject()
 	{
 		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		r.getObject("a").put("c2", "test");
-		assertEquals("test", r.getInheritedObject("a/b/c2", true));
-		assertEquals(null, r.getInheritedObject("a/b/c3", true));
-		assertEquals(null, r.getInheritedObject("a/c/c2", true));
+		Assertions.assertEquals("test", r.getInheritedObject("a/b/c2", true));
+		Assertions.assertEquals(null, r.getInheritedObject("a/b/c3", true));
+		Assertions.assertEquals(null, r.getInheritedObject("a/c/c2", true));
 	}
 
 	@Test
-	public void testGetInheritedObjects()
+    void testGetInheritedObjects()
 	{
 		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		r.getObject("a").put("c2", "test");
-		assertEquals("test", r.getInheritedObjects("a/b/c2").get(0));
-		assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
-		assertTrue(r.getInheritedObjects("").isEmpty());
+		Assertions.assertEquals("test", r.getInheritedObjects("a/b/c2").get(0));
+		Assertions.assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
+		Assertions.assertTrue(r.getInheritedObjects("").isEmpty());
 	}
 
 	@Test
-	public void testGetInheritedObjectsArray()
+    void testGetInheritedObjectsArray()
 	{
 		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		r.getObject("a").put("c2", new JSONArrayHelper("[0,1,2,3,4]").getArray());
 		List<Object> inheritedObjects = r.getInheritedObjects("a/b/c2");
 		for (int i = 0; i < 5; i++)
-			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
-		assertEquals(5, inheritedObjects.size());
-		assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
-		assertTrue(r.getInheritedObjects("").isEmpty());
+			Assertions.assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		Assertions.assertEquals(5, inheritedObjects.size());
+		Assertions.assertTrue(r.getInheritedObjects("a/b/c3").isEmpty());
+		Assertions.assertTrue(r.getInheritedObjects("").isEmpty());
 	}
 
 	@Test
-	public void testGetInherited()
+    void testGetInherited()
 	{
 		final String root = "{\"a\":{\"b\":{\"c\":4}}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
 		r.getObject("a").put("c2", "test");
-		assertEquals("test", r.getInheritedObject("a/b/c2"));
-		assertEquals(null, r.getInheritedObject("a/b/c3"));
-		assertEquals(null, r.getInheritedObject("a/c/c2"));
-		assertEquals(null, r.getInheritedObject(null));
-		assertEquals(null, r.getInheritedObject(""));
+		Assertions.assertEquals("test", r.getInheritedObject("a/b/c2"));
+		Assertions.assertEquals(null, r.getInheritedObject("a/b/c3"));
+		Assertions.assertEquals(null, r.getInheritedObject("a/c/c2"));
+		Assertions.assertEquals(null, r.getInheritedObject(null));
+		Assertions.assertEquals(null, r.getInheritedObject(""));
 	}
 
 	@Test
-	public void testSetDouble()
+    void testSetDouble()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setDouble("a/b/c/d", 4.2);
-		assertEquals(4.2, r.getDouble("a/b/c/d", 0), 0);
-		assertEquals(4, r.getInt("a/b/c/d", 0), 0);
+		Assertions.assertEquals(4.2, r.getDouble("a/b/c/d", 0), 0);
+		Assertions.assertEquals(4, r.getInt("a/b/c/d", 0), 0);
 	}
 
 	@Test
-	public void testSetInt()
+    void testSetInt()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setInt("a/b/c/d", 5);
-		assertEquals(5, r.getDouble("a/b/c/d", 0), 0);
-		assertEquals(5, r.getInt("a/b/c/d", 0), 0);
+		Assertions.assertEquals(5, r.getDouble("a/b/c/d", 0), 0);
+		Assertions.assertEquals(5, r.getInt("a/b/c/d", 0), 0);
 	}
 
 	@Test
-	public void testSetBool()
+    void testSetBool()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setBool("a/b/c/d", true);
-		assertTrue(r.getBool("a/b/c/d", false));
+		Assertions.assertTrue(r.getBool("a/b/c/d", false));
 	}
 
 	@Test
-	public void testSetString()
+    void testSetString()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setString("a/b/c/d", "e");
-		assertEquals("e", r.getString("a/b/c/d"));
+		Assertions.assertEquals("e", r.getString("a/b/c/d"));
 	}
 
 	@Test
-	public void testSetStringNull()
+    void testSetStringNull()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setString("a/b/c/d", "");
-		assertNull(r.getString("a/b/c/d"));
+		Assertions.assertNull(r.getString("a/b/c/d"));
 	}
 
 	@Test
-	public void testSet2String()
+    void testSet2String()
 	{
 		final JSONObjHelper r = new JSONObjHelper(new JSONObject());
 		r.setString("a/b/c/d", "e");
 		r.setString("a/b/c/d2", "e2");
 		r.setString("a/b/c2/d2", "e3");
 		r.setString("a2/b/c2/d2", "e4");
-		assertEquals("e", r.getString("a/b/c/d"));
-		assertEquals("e2", r.getString("a/b/c/d2"));
-		assertEquals("e3", r.getString("a/b/c2/d2"));
-		assertEquals("e4", r.getString("a2/b/c2/d2"));
+		Assertions.assertEquals("e", r.getString("a/b/c/d"));
+		Assertions.assertEquals("e2", r.getString("a/b/c/d2"));
+		Assertions.assertEquals("e3", r.getString("a/b/c2/d2"));
+		Assertions.assertEquals("e4", r.getString("a2/b/c2/d2"));
 	}
 
 	@Test
-	public void testGetId()
+    void testGetId()
 	{
 		final String root = "{\"id\":\"iidd\",\"a\":{\"b\":[{\"c\":4.2}]}}";
 		final JSONObjHelper r = new JSONObjHelper(root);
-		assertEquals("iidd", r.getID());
+		Assertions.assertEquals("iidd", r.getID());
 	}
 
 }

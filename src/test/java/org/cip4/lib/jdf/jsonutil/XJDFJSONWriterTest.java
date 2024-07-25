@@ -42,9 +42,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.File;
 
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
@@ -80,41 +77,42 @@ import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
  *
  */
-public class XJDFJSONWriterTest extends JSONTestCaseBase
+class XJDFJSONWriterTest extends JSONTestCaseBase
 {
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertBoolean()
+    void testConvertBoolean()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final JSONObject o = jsonWriter.convert(xjdf);
 
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		final JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
-		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
+		Assertions.assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertSkipProductList()
+    void testConvertSkipProductList()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/poster.noproductlist.json");
 	}
 
@@ -122,13 +120,13 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertSkipProductListBroc()
+    void testConvertSkipProductListBroc()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/Brochure.noproductlist.json");
 	}
 
@@ -151,7 +149,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testAddressLine()
+    void testAddressLine()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -171,12 +169,12 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSetCache()
+    void testSetCache()
 	{
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "file:foo");
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, null);
 		final JSONWriter jsonWriter = getXJDFWriter(true);
-		assertNotNull(jsonWriter);
+		Assertions.assertNotNull(jsonWriter);
 
 	}
 
@@ -184,7 +182,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testResourceSet()
+    void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "Job1");
@@ -204,7 +202,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testComment()
+    void testComment()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		final XJDFHelper h = getBaseXJDF();
@@ -222,7 +220,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testCommentString()
+    void testCommentString()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = getBaseXJDF();
@@ -231,7 +229,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		h.getRoot().removeChild(ElementName.AUDITPOOL, null, 0);
 		final JSONObjHelper o = jsonWriter.convertHelper(h.getRoot());
-		assertEquals("1", o.getPathObject("Comment/Text"));
+		Assertions.assertEquals("1", o.getPathObject("Comment/Text"));
 
 	}
 
@@ -239,7 +237,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testOrgUnit()
+    void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -260,7 +258,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testForeign()
+    void testForeign()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -277,7 +275,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testForeignAttribute()
+    void testForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -293,7 +291,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMultiForeignAttribute()
+    void testMultiForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -310,7 +308,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMinimal()
+    void testMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -323,7 +321,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testAuditPool()
+    void testAuditPool()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -357,11 +355,11 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		FileUtil.writeFile(jo, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jo), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 		final String name = jo.getString("AuditPool[0]/Name");
-		assertEquals("AuditCreated", name);
+		Assertions.assertEquals("AuditCreated", name);
 		final String name0 = jo.getString("AuditPool[1]/Name");
-		assertEquals("AuditStatus", name0);
+		Assertions.assertEquals("AuditStatus", name0);
 		final String name1 = jo.getString("AuditPool[-1]/Name");
-		assertEquals("AuditProcessRun", name1);
+		Assertions.assertEquals("AuditProcessRun", name1);
 		writeBothJson(ap.getRoot(), jsonWriter, output + ".keep", false, false);
 	}
 
@@ -369,7 +367,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testAdhesive()
+    void testAdhesive()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("Converting", "Corrugated", null);
 		xjdfHelper.setTypes(JDFConstants.CONVENTIONALPRINTING);

@@ -42,13 +42,6 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -88,25 +81,26 @@ import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONPrefix;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
  */
-public class JSONWriterTest extends JSONTestCaseBase
+class JSONWriterTest extends JSONTestCaseBase
 {
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvert()
+    void testConvert()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
 		final JSONObject o = new JSONWriter().convert(xjmf);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		log.info(o.toJSONString());
 	}
 
@@ -114,7 +108,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertRoot()
+    void testConvertRoot()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
@@ -124,27 +118,27 @@ public class JSONWriterTest extends JSONTestCaseBase
 			jsonWriter.setJsonRoot(r);
 			final JSONObject o = jsonWriter.convert(xjmf);
 			new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + r.name() + ".json");
-			assertNotNull(o.toJSONString());
+			Assertions.assertNotNull(o.toJSONString());
 			log.info(o.toJSONString());
 		}
 	}
 
 	@Test
-	public void testEquals()
+    void testEquals()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		final JSONWriter w2 = new JSONWriter();
-		assertEquals(w1, w2);
+		Assertions.assertEquals(w1, w2);
 		w2.setLearnArrays(false);
 		w1.setLearnArrays(true);
-		assertNotEquals(w1, w2);
+		Assertions.assertNotEquals(w1, w2);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertSchema()
+    void testConvertSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -158,103 +152,103 @@ public class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-	public void testHash()
+    void testHash()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		final JSONWriter w2 = new JSONWriter();
-		assertEquals(w1.hashCode(), w2.hashCode());
+		Assertions.assertEquals(w1.hashCode(), w2.hashCode());
 	}
 
 	@Test
-	public void testClear()
+    void testClear()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		w1.clearArray();
 	}
 
 	@Test
-	public void testRemoveArray()
+    void testRemoveArray()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		w1.removeArray("a");
 	}
 
 	@Test
-	public void testToString()
+    void testToString()
 	{
 		final JSONWriter w1 = new JSONWriter();
-		assertNotNull(w1.toString());
+		Assertions.assertNotNull(w1.toString());
 	}
 
 	@Test
-	public void testPrepWalker()
+    void testPrepWalker()
 	{
 		final JSONWriter w = new JSONWriter();
-		assertNull(w.getPrepWalker());
+		Assertions.assertNull(w.getPrepWalker());
 		w.setPrepWalker(new ElementWalker(null));
 	}
 
 	@Test
-	public void testPrefix()
+    void testPrefix()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setPrefix(eJSONPrefix.none);
-		assertEquals(eJSONPrefix.none, w.getPrefix());
+		Assertions.assertEquals(eJSONPrefix.none, w.getPrefix());
 	}
 
 	@Test
-	public void testTypesafe()
+    void testTypesafe()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setTypeSafe(true);
-		assertTrue(w.isTypeSafe());
+		Assertions.assertTrue(w.isTypeSafe());
 	}
 
 	@Test
-	public void tesMixText()
+    void tesMixText()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setMixedText("a");
-		assertEquals("a", w.getMixedText());
+		Assertions.assertEquals("a", w.getMixedText());
 	}
 
 	@Test
-	public void testWantArray()
+    void testWantArray()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setWantArray(true);
-		assertTrue(w.isWantArray());
+		Assertions.assertTrue(w.isWantArray());
 	}
 
 	@Test
-	public void testPrefix2()
+    void testPrefix2()
 	{
 		for (final String n : eJSONPrefix.getNames())
 		{
-			assertNotNull(eJSONPrefix.getEnum(n));
+			Assertions.assertNotNull(eJSONPrefix.getEnum(n));
 		}
 	}
 
 	@Test
-	public void testCase()
+    void testCase()
 	{
 		for (final String n : eJSONCase.getNames())
 		{
-			assertNotNull(eJSONCase.getEnum(n));
+			Assertions.assertNotNull(eJSONCase.getEnum(n));
 		}
 	}
 
 	@Test
-	public void testCase2()
+    void testCase2()
 	{
 		final JSONWriter w = new JSONWriter();
 		for (final eJSONCase n : eJSONCase.values())
 		{
-			assertNotNull(w.getKey("a:b", n));
+			Assertions.assertNotNull(w.getKey("a:b", n));
 			w.setKeyCase(n);
-			assertEquals(n, w.getKeyCase());
+			Assertions.assertEquals(n, w.getKeyCase());
 			w.setValueCase(n);
-			assertEquals(n, w.getValueCase());
+			Assertions.assertEquals(n, w.getValueCase());
 		}
 	}
 
@@ -262,12 +256,12 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testGetString()
+    void testGetString()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
 		final String s = new JSONWriter().getString(xjmf);
-		assertNotNull(s);
+		Assertions.assertNotNull(s);
 		log.info(s);
 	}
 
@@ -275,7 +269,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 * @throws UnsupportedEncodingException
 	 */
 	@Test
-	public void testGetStream() throws UnsupportedEncodingException
+    void testGetStream() throws UnsupportedEncodingException
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
@@ -283,7 +277,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final ByteArrayIOInputStream ios = ByteArrayIOStream.getBufferedInputStream(s);
 
 		final String st = new String(ios.getBuf(), 0, ios.getBuf().length, StringUtil.UTF8);
-		assertNotNull(st);
+		Assertions.assertNotNull(st);
 		log.info(st);
 	}
 
@@ -291,13 +285,13 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertArray()
+    void testConvertArray()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
 		final JSONObject o = new JSONWriter().convert(xjmf);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		log.info(o.toJSONString());
 	}
 
@@ -305,27 +299,27 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertArrayEmpty()
+    void testConvertArrayEmpty()
 	{
 		final KElement e = KElement.parseString("<e><a/><a/><a b=\"c\"/><a/></e>");
 		final JSONObject o = new JSONWriter().convert(e);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		log.info(o.toJSONString());
-		assertEquals(4, new JSONObjHelper(o).getArray("e/a", false).size());
+		Assertions.assertEquals(4, new JSONObjHelper(o).getArray("e/a", false).size());
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testNumberArray()
+    void testNumberArray()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.setAttribute("XY", "1 2 3");
 		final JSONObject o = new JSONWriter().convert(e);
 		final String jsonString = o.toJSONString();
-		assertNotNull(jsonString);
-		assertTrue(jsonString.indexOf("[1,2,3]") > 0);
+		Assertions.assertNotNull(jsonString);
+		Assertions.assertTrue(jsonString.indexOf("[1,2,3]") > 0);
 
 		log.info(jsonString);
 	}
@@ -334,7 +328,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSkipKey()
+    void testSkipKey()
 	{
 		final KElement e0 = KElement.createRoot("a", null);
 		final KElement b = e0.appendElement("b");
@@ -345,11 +339,11 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(e0);
 		final String jsonString = o.toJSONString();
-		assertNotNull(jsonString);
+		Assertions.assertNotNull(jsonString);
 		final JSONObjHelper h = new JSONObjHelper(jsonString);
-		assertNull(h.getObject("a/b"));
-		assertNotNull(h.getObject("a/e"));
-		assertTrue(jsonString.indexOf("[1,2,3]") > 0);
+		Assertions.assertNull(h.getObject("a/b"));
+		Assertions.assertNotNull(h.getObject("a/e"));
+		Assertions.assertTrue(jsonString.indexOf("[1,2,3]") > 0);
 
 		log.info(jsonString);
 	}
@@ -358,70 +352,70 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testAddNull()
+    void testAddNull()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.addSkipPool("b");
 		jsonWriter.setWantArray(false);
-		assertFalse(jsonWriter.addSkipPool(null));
-		assertFalse(jsonWriter.addArray(null));
-		assertFalse(jsonWriter.addMixed(null));
-		assertFalse(jsonWriter.addStringArray(null));
-		assertFalse(jsonWriter.addKnownAttribute(null));
-		assertFalse(jsonWriter.addKnownElem(null));
+		Assertions.assertFalse(jsonWriter.addSkipPool(null));
+		Assertions.assertFalse(jsonWriter.addArray(null));
+		Assertions.assertFalse(jsonWriter.addMixed(null));
+		Assertions.assertFalse(jsonWriter.addStringArray(null));
+		Assertions.assertFalse(jsonWriter.addKnownAttribute(null));
+		Assertions.assertFalse(jsonWriter.addKnownElem(null));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testAddNotNull()
+    void testAddNotNull()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.addSkipPool("b");
 		jsonWriter.setWantArray(false);
-		assertTrue(jsonWriter.addSkipPool("a"));
-		assertTrue(jsonWriter.addArray("a"));
-		assertTrue(jsonWriter.addMixed("a"));
-		assertTrue(jsonWriter.addStringArray("a"));
-		assertTrue(jsonWriter.addKnownAttribute("a"));
-		assertTrue(jsonWriter.addKnownElem("a"));
+		Assertions.assertTrue(jsonWriter.addSkipPool("a"));
+		Assertions.assertTrue(jsonWriter.addArray("a"));
+		Assertions.assertTrue(jsonWriter.addMixed("a"));
+		Assertions.assertTrue(jsonWriter.addStringArray("a"));
+		Assertions.assertTrue(jsonWriter.addKnownAttribute("a"));
+		Assertions.assertTrue(jsonWriter.addKnownElem("a"));
 
-		assertFalse(jsonWriter.addSkipPool("a"));
-		assertFalse(jsonWriter.addArray("a"));
-		assertFalse(jsonWriter.addMixed("a"));
-		assertFalse(jsonWriter.addStringArray("a"));
-		assertFalse(jsonWriter.addKnownAttribute("a"));
-		assertFalse(jsonWriter.addKnownElem("a"));
+		Assertions.assertFalse(jsonWriter.addSkipPool("a"));
+		Assertions.assertFalse(jsonWriter.addArray("a"));
+		Assertions.assertFalse(jsonWriter.addMixed("a"));
+		Assertions.assertFalse(jsonWriter.addStringArray("a"));
+		Assertions.assertFalse(jsonWriter.addKnownAttribute("a"));
+		Assertions.assertFalse(jsonWriter.addKnownElem("a"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertMap()
+    void testConvertMap()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
-		assertNotNull(jsonWriter.convertMap(null));
+		Assertions.assertNotNull(jsonWriter.convertMap(null));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testNumberArray0()
+    void testNumberArray0()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(1));
 		a.add(Integer.valueOf(2));
-		assertEquals(a, new JSONWriter().getObjectFromVal("aa", "1 2"));
+		Assertions.assertEquals(a, new JSONWriter().getObjectFromVal("aa", "1 2"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testTransferFunction()
+    void testTransferFunction()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(0));
@@ -429,26 +423,26 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.addTransferFunction("aa");
 		final JSONArray jarray = (JSONArray) jsonWriter.getObjectFromVal("aa", "0 0 0.1 0.2 1 1");
-		assertEquals(a, jarray.get(0));
+		Assertions.assertEquals(a, jarray.get(0));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testGetKey()
+    void testGetKey()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setPrefix(eJSONPrefix.underscore);
-		assertEquals("HDM_Foo", jsonWriter.getKey("HDM:Foo", eJSONCase.retain));
-		assertNull(jsonWriter.getKey("xmlns", eJSONCase.retain));
+		Assertions.assertEquals("HDM_Foo", jsonWriter.getKey("HDM:Foo", eJSONCase.retain));
+		Assertions.assertNull(jsonWriter.getKey("xmlns", eJSONCase.retain));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testAddToParentRaw()
+    void testAddToParentRaw()
 	{
 		JSONWriter.addToParentRaw(new JSONObject(), "foo", "bar");
 		JSONWriter.addToParentRaw(new JSONArray(), "foo", "bar");
@@ -458,19 +452,19 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testNumberArray2()
+    void testNumberArray2()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(1));
 		a.add(Double.valueOf(2.3));
-		assertEquals(a, new JSONWriter().getObjectFromVal("bb", "1 2.3"));
+		Assertions.assertEquals(a, new JSONWriter().getObjectFromVal("bb", "1 2.3"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertProduct()
+    void testConvertProduct()
 	{
 		final XJDFHelper h = new XJDFHelper("a", "b");
 		h.getCreateRootProduct(0).setAmount(123);
@@ -478,17 +472,17 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
 		final JSONObject o = jsonWriter.convert(h.getRoot());
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		final JSONObjHelper oh = new JSONObjHelper(o);
-		assertTrue(oh.getBool("XJDF/ProductList/Product[0]/IsRoot", false));
-		assertEquals(123, oh.getInt("XJDF/ProductList/Product[0]/Amount", -1));
+		Assertions.assertTrue(oh.getBool("XJDF/ProductList/Product[0]/IsRoot", false));
+		Assertions.assertEquals(123, oh.getInt("XJDF/ProductList/Product[0]/Amount", -1));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertSchemaArray()
+    void testConvertSchemaArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		MessageResourceHelper mh = (MessageResourceHelper) xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -501,10 +495,10 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertNotNull(o.toJSONString());
+		Assertions.assertNotNull(o.toJSONString());
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("[") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("[") > 0);
 		log.info(jsonString);
 	}
 
@@ -512,26 +506,26 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSimpleXJDF()
+    void testSimpleXJDF()
 	{
 		final KElement xjdf = KElement.createRoot("XJDF", null);
 		xjdf.setAttribute("JobID", "Job_" + KElement.uniqueID(0));
 		final String fileName = sm_dirTestDataTemp + "simple.json";
 		FileUtil.streamToFile(new JSONWriter().getStream(xjdf), fileName);
-		assertTrue(new File(fileName).exists());
+		Assertions.assertTrue(new File(fileName).exists());
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertComment()
+    void testConvertComment()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
 		final JSONObject o = new JSONWriter().convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
 		log.info(jsonString);
 	}
 
@@ -539,7 +533,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertCommentNoArray()
+    void testConvertCommentNoArray()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -547,7 +541,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Comment\":\"foo\"") > 0);
 		log.info(jsonString);
 	}
 
@@ -555,7 +549,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertCommentNoArrayMixed()
+    void testConvertCommentNoArrayMixed()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -564,9 +558,9 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":[") > 0);
-		assertTrue(jsonString.indexOf("\"ID\":\"bar\"") > 0);
-		assertTrue(jsonString.indexOf("[\"foo\",") > 0 || jsonString.indexOf(",\"foo\"]") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Comment\":[") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"ID\":\"bar\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("[\"foo\",") > 0 || jsonString.indexOf(",\"foo\"]") > 0);
 		log.info(jsonString);
 	}
 
@@ -574,7 +568,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertCommentMixed()
+    void testConvertCommentMixed()
 	{
 		final KElement xjdf = KElement.createRoot(XJDFConstants.XJDF, null);
 		xjdf.setXPathValue("Comment", "foo");
@@ -585,9 +579,9 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.addArray(ElementName.COMMENT);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Comment\":[") > 0);
-		assertTrue(jsonString.indexOf("\"ID\":\"bar\"") > 0);
-		assertTrue(jsonString.indexOf("\"Text\":\"foo\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Comment\":[") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"ID\":\"bar\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Text\":\"foo\"") > 0);
 		log.info(jsonString);
 	}
 
@@ -595,7 +589,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJDFTotalDuration()
+    void testConvertXJDFTotalDuration()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -606,7 +600,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = jsonWriter.convert(xjdfHelper.getRoot());
 
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"TotalDuration\":\"1234\"") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"TotalDuration\":\"1234\"") > 0);
 		log.info(jsonString);
 	}
 
@@ -614,7 +608,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testArrayFilespec()
+    void testArrayFilespec()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -623,15 +617,15 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false, EnumVersion.Version_2_2);
 		// jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "schema/Version_2_2/xjdf.xsd"), false);
-		assertTrue(jsonWriter.arrayNames.contains("shapedef/filespec"));
-		assertTrue(jsonWriter.arrayNames.contains("shapetemplate/filespec"));
+		Assertions.assertTrue(jsonWriter.arrayNames.contains("shapedef/filespec"));
+		Assertions.assertTrue(jsonWriter.arrayNames.contains("shapetemplate/filespec"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testLayoutIntentPages()
+    void testLayoutIntentPages()
 	{
 		final JDFNode n = new JDFDoc(ElementName.JDF).getJDFRoot();
 		n.setType(EnumType.Product);
@@ -639,18 +633,18 @@ public class JSONWriterTest extends JSONTestCaseBase
 		li.appendPages().setActual(3);
 		final JDFToXJDF conv = new JDFToXJDF();
 		final KElement xjdf = conv.convert(n);
-		assertEquals("3", xjdf.getXPathAttribute("ProductList/Product/Intent/LayoutIntent/@Pages", null));
+		Assertions.assertEquals("3", xjdf.getXPathAttribute("ProductList/Product/Intent/LayoutIntent/@Pages", null));
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false, EnumVersion.Version_2_1);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertEquals(3, new JSONObjHelper(o).getPathObject("ProductList/Product/Intent/LayoutIntent/Pages"));
+		Assertions.assertEquals(3, new JSONObjHelper(o).getPathObject("ProductList/Product/Intent/LayoutIntent/Pages"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testFillTotalDuration()
+    void testFillTotalDuration()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -658,14 +652,14 @@ public class JSONWriterTest extends JSONTestCaseBase
 		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
-		assertTrue(jsonWriter.alwaysString.contains("totalduration"));
+		Assertions.assertTrue(jsonWriter.alwaysString.contains("totalduration"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testFillTotalDuration2()
+    void testFillTotalDuration2()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -673,14 +667,14 @@ public class JSONWriterTest extends JSONTestCaseBase
 		ni.setAttribute(AttributeName.TOTALDURATION, "1234");
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
-		assertTrue(jsonWriter.alwaysString.contains("totalduration"));
+		Assertions.assertTrue(jsonWriter.alwaysString.contains("totalduration"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertXJMFNoArray()
+    void testConvertXJMFNoArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -691,8 +685,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-		assertTrue(jsonString.indexOf("[") < 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("[") < 0);
 		log.info(jsonString);
 	}
 
@@ -700,7 +694,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testSplitXJMF()
+    void testSplitXJMF()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -710,12 +704,12 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
 		final List<JSONObject> os = jsonWriter.splitConvert(xjdf);
-		assertEquals(2, os.size());
+		Assertions.assertEquals(2, os.size());
 		for (JSONObject o : os)
 		{
 			final String jsonString = o.toJSONString();
-			assertTrue(jsonString.indexOf("\"Header\":{") > 0);
-			assertTrue(jsonString.indexOf("[") < 0);
+			Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
+			Assertions.assertTrue(jsonString.indexOf("[") < 0);
 
 			log.info(jsonString);
 		}
@@ -725,7 +719,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testXJMFMessageNoArray()
+    void testXJMFMessageNoArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -734,11 +728,11 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
 		final List<JSONObject> os = jsonWriter.splitConvert(xjdf);
-		assertEquals(1, os.size());
+		Assertions.assertEquals(1, os.size());
 		for (JSONObject o : os)
 		{
-			assertNull(new JSONObjHelper(o).getArray("XJMF/SignalResource", false));
-			assertNotNull(new JSONObjHelper(o).getHelper("XJMF/SignalResource"));
+			Assertions.assertNull(new JSONObjHelper(o).getArray("XJMF/SignalResource", false));
+			Assertions.assertNotNull(new JSONObjHelper(o).getHelper("XJMF/SignalResource"));
 		}
 	}
 
@@ -746,7 +740,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testNoArrayDouble()
+    void testNoArrayDouble()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.appendElement("b").setAttribute("c", "d");
@@ -754,12 +748,12 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(e);
 		final String jsonString = o.toJSONString();
-		assertEquals("{\"a\":{\"b\":{\"c\":\"d\"}}}", jsonString);
+		Assertions.assertEquals("{\"a\":{\"b\":{\"c\":\"d\"}}}", jsonString);
 
 		e.appendElement("b").setAttribute("e", "f");
 		final JSONObject o2 = jsonWriter.convert(e);
 		final String jsonString2 = o2.toJSONString();
-		assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"},{\"e\":\"f\"}]}}", jsonString2);
+		Assertions.assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"},{\"e\":\"f\"}]}}", jsonString2);
 
 	}
 
@@ -767,7 +761,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testEmptyElements()
+    void testEmptyElements()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		for (int i = 0; i < 3; i++)
@@ -781,9 +775,9 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final String jsonString = o.toJSONString();
 		JSONObject a = (JSONObject) o.get("a");
 		JSONArray b = (JSONArray) a.get("b");
-		assertEquals(7, b.size());
+		Assertions.assertEquals(7, b.size());
 		JSONObject b4 = (JSONObject) b.get(3);
-		assertEquals("d", b4.get("c"));
+		Assertions.assertEquals("d", b4.get("c"));
 
 	}
 
@@ -791,7 +785,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testLearnArray()
+    void testLearnArray()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.appendElement("b").setAttribute("c", "d");
@@ -800,17 +794,17 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(e);
 		final String jsonString = o.toJSONString();
-		assertEquals("{\"a\":{\"b\":{\"c\":\"d\"}}}", jsonString);
+		Assertions.assertEquals("{\"a\":{\"b\":{\"c\":\"d\"}}}", jsonString);
 
 		e.appendElement("b").setAttribute("e", "f");
 		final JSONObject o2 = jsonWriter.convert(e);
 		final String jsonString2 = o2.toJSONString();
-		assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"},{\"e\":\"f\"}]}}", jsonString2);
-		assertTrue(jsonWriter.getArrayNames().contains("a/b"));
+		Assertions.assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"},{\"e\":\"f\"}]}}", jsonString2);
+		Assertions.assertTrue(jsonWriter.getArrayNames().contains("a/b"));
 		e.removeChild("b", null, 1);
 		final JSONObject o3 = jsonWriter.convert(e);
 		final String jsonString3 = o3.toJSONString();
-		assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"}]}}", jsonString3);
+		Assertions.assertEquals("{\"a\":{\"b\":[{\"c\":\"d\"}]}}", jsonString3);
 
 	}
 
@@ -818,27 +812,27 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testArrayFromSchema()
+    void testArrayFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
-		assertTrue(jsonWriter.getArrayNames().contains("resource/part"));
-		assertTrue(jsonWriter.getArrayNames().contains("layout/placedobject"));
-		assertTrue(jsonWriter.getArrayNames().contains("xjdf/comment"));
-		assertTrue(jsonWriter.getArrayNames().contains("address/addressline"));
-		assertFalse(jsonWriter.getArrayNames().contains("xjdf"));
-		assertFalse(jsonWriter.getArrayNames().contains("xjmf/header"));
-		assertFalse(jsonWriter.getArrayNames().contains("placedobject/markobject"));
+		Assertions.assertTrue(jsonWriter.getArrayNames().contains("resource/part"));
+		Assertions.assertTrue(jsonWriter.getArrayNames().contains("layout/placedobject"));
+		Assertions.assertTrue(jsonWriter.getArrayNames().contains("xjdf/comment"));
+		Assertions.assertTrue(jsonWriter.getArrayNames().contains("address/addressline"));
+		Assertions.assertFalse(jsonWriter.getArrayNames().contains("xjdf"));
+		Assertions.assertFalse(jsonWriter.getArrayNames().contains("xjmf/header"));
+		Assertions.assertFalse(jsonWriter.getArrayNames().contains("placedobject/markobject"));
 
-		assertTrue(jsonWriter.isArray("resource/part"));
+		Assertions.assertTrue(jsonWriter.isArray("resource/part"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testConvertArrayFromSchema()
+    void testConvertArrayFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -847,110 +841,110 @@ public class JSONWriterTest extends JSONTestCaseBase
 		KElement e = KElement.createRoot("XJDF", null);
 		e.appendElement("ResourceSet").appendElement("Resource").appendElement("Part");
 		JSONObject o = jsonWriter.convert(e);
-		assertTrue(o.toJSONString().indexOf("[") > 0);
+		Assertions.assertTrue(o.toJSONString().indexOf("[") > 0);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testNumFromSchema()
+    void testNumFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
-		assertTrue(jsonWriter.numbers.contains("amount"));
+		Assertions.assertTrue(jsonWriter.numbers.contains("amount"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testNumListFromSchema()
+    void testNumListFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
-		assertTrue(jsonWriter.numList.contains("ctm"));
+		Assertions.assertTrue(jsonWriter.numList.contains("ctm"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testNumListRetainSchema()
+    void testNumListRetainSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
-		assertTrue(jsonWriter.numList.contains("ctm"));
+		Assertions.assertTrue(jsonWriter.numList.contains("ctm"));
 		KElement xjdf = KElement.parseString("<XJDF CTM=\"foo\" />");
 		JSONObject o = jsonWriter.convert(xjdf);
-		assertEquals("foo", new JSONObjHelper(o).getPathObject("XJDF/CTM"));
-		assertTrue(jsonWriter.numList.contains("ctm"));
-		assertFalse(jsonWriter.alwaysString.contains("ctm"));
+		Assertions.assertEquals("foo", new JSONObjHelper(o).getPathObject("XJDF/CTM"));
+		Assertions.assertTrue(jsonWriter.numList.contains("ctm"));
+		Assertions.assertFalse(jsonWriter.alwaysString.contains("ctm"));
 		xjdf.appendElement("PlacedObject").setAttribute("CTM", "1");
 		JSONObject o2 = jsonWriter.convert(xjdf);
-		assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/PlacedObject/CTM[0]"));
+		Assertions.assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/PlacedObject/CTM[0]"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testArrayRetainSchema()
+    void testArrayRetainSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
-		assertTrue(jsonWriter.arrayNames.contains("xjdf/resourceset"));
+		Assertions.assertTrue(jsonWriter.arrayNames.contains("xjdf/resourceset"));
 		XJDFHelper xjdf = new XJDFHelper(EnumVersion.Version_2_0, "a");
 		xjdf.getCreateSet("Foo", null);
 		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
 		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
 		JSONObject o = jsonWriter.convert(xjdf.getRoot());
-		assertFalse(jsonWriter.arrayNames.contains("auditpool"));
-		assertFalse(jsonWriter.arrayNames.contains("xjdf/auditpool"));
+		Assertions.assertFalse(jsonWriter.arrayNames.contains("auditpool"));
+		Assertions.assertFalse(jsonWriter.arrayNames.contains("xjdf/auditpool"));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testStringFromSchema()
+    void testStringFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
-		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
-		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
-		assertTrue(jsonWriter.isTypesafeKey("Amount"));
-		assertTrue(jsonWriter.isTypesafeKey(AttributeName.DIMENSION));
-		assertTrue(jsonWriter.isTypesafeKey(AttributeName.DIMENSIONS));
-		assertTrue(jsonWriter.isTypesafeKey(AttributeName.ACTUALAMOUNT));
-		assertTrue(jsonWriter.isTypesafeKey(AttributeName.CMYK));
+		Assertions.assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
+		Assertions.assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey("Amount"));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey(AttributeName.DIMENSION));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey(AttributeName.DIMENSIONS));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey(AttributeName.ACTUALAMOUNT));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey(AttributeName.CMYK));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testStringArray()
+    void testStringArray()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
-		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
-		assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
-		assertTrue(jsonWriter.isTypesafeKey("Amount"));
-		assertTrue(jsonWriter.isTypesafeKey(ElementName.COLORANTORDER));
+		Assertions.assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBID));
+		Assertions.assertFalse(jsonWriter.isTypesafeKey(AttributeName.JOBPARTID));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey("Amount"));
+		Assertions.assertTrue(jsonWriter.isTypesafeKey(ElementName.COLORANTORDER));
 	}
 
 	/**
 	 *
 	 */
 	@Test
-	public void testStringArrayTest()
+    void testStringArrayTest()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
@@ -959,7 +953,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		xjdf.setAttribute(ElementName.COLORANTORDER, "C M Y K");
 		final String fileName = sm_dirTestDataTemp + "co.json";
 		final JSONObject o = jsonWriter.convert(xjdf);
-		assertEquals("Y", new JSONObjHelper(o).getPathObject("ColorantControl/ColorantOrder[2]"));
+		Assertions.assertEquals("Y", new JSONObjHelper(o).getPathObject("ColorantControl/ColorantOrder[2]"));
 
 	}
 
@@ -967,12 +961,12 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testTransferSchemaTest()
+    void testTransferSchemaTest()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
 		jsonWriter.fillTypesFromSchema(KElement.parseFile(sm_dirTestData + "xjdf/xjdf.xsd"), false);
-		assertTrue(jsonWriter.isTransferCurve(AttributeName.SPECTRUM));
+		Assertions.assertTrue(jsonWriter.isTransferCurve(AttributeName.SPECTRUM));
 
 	}
 
@@ -980,7 +974,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testMany()
+    void testMany()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -988,8 +982,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			assertNotNull(
-					FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
+			Assertions.assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
@@ -998,7 +991,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testQCTransferCurce()
+    void testQCTransferCurce()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -1014,7 +1007,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 */
 	@Test
 	@Disabled
-	public void testManyCIP4()
+    void testManyCIP4()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -1035,7 +1028,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 			final String fileNamex = sm_dirTestDataTemp + "jsonex/" + x.getName();
 			parseFile.getOwnerDocument_KElement().write2File(fileNamex, 2, false);
 			final String fileName = UrlUtil.newExtension(fileNamex, "json");
-			assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(parseFile), fileName));
+			Assertions.assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(parseFile), fileName));
 
 		}
 	}
@@ -1044,7 +1037,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertXJMFNoArrayExclude()
+    void testConvertXJMFNoArrayExclude()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1056,7 +1049,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.addArray("Header");
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"Header\":[{") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"Header\":[{") > 0);
 		log.info(jsonString);
 	}
 
@@ -1064,7 +1057,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertCase()
+    void testConvertCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1073,7 +1066,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 		xjdf.setXPathValue("Comment", "foo");
 		final JSONObject o = new JSONWriter().convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"SignalResource\":") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"SignalResource\":") > 0);
 		log.info(jsonString);
 	}
 
@@ -1081,7 +1074,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	public void testConvertLowerCase()
+    void testConvertLowerCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1092,8 +1085,8 @@ public class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setKeyCase(eJSONCase.lower);
 		final JSONObject o = jsonWriter.convert(xjdf);
 		final String jsonString = o.toJSONString();
-		assertTrue(jsonString.indexOf("\"signalresource\":") > 0);
-		assertFalse(jsonString.indexOf("\"SignalResource\":") > 0);
+		Assertions.assertTrue(jsonString.indexOf("\"signalresource\":") > 0);
+		Assertions.assertFalse(jsonString.indexOf("\"SignalResource\":") > 0);
 		log.info(jsonString);
 	}
 
@@ -1101,7 +1094,7 @@ public class JSONWriterTest extends JSONTestCaseBase
 	*
 	*/
 	@Test
-	public void testConvertLowerLowerCase()
+    void testConvertLowerLowerCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1115,11 +1108,11 @@ public class JSONWriterTest extends JSONTestCaseBase
 		final String jsonString = o.toJSONString();
 		for (char a = 'A'; a <= 'Z'; a++)
 		{
-			assertEquals(-1, jsonString.indexOf(a));
+			Assertions.assertEquals(-1, jsonString.indexOf(a));
 		}
-		assertEquals(-1, jsonString.indexOf('Ä'));
-		assertEquals(-1, jsonString.indexOf('Ö'));
-		assertEquals(-1, jsonString.indexOf('Ü'));
+		Assertions.assertEquals(-1, jsonString.indexOf('Ä'));
+		Assertions.assertEquals(-1, jsonString.indexOf('Ö'));
+		Assertions.assertEquals(-1, jsonString.indexOf('Ü'));
 
 		log.info(jsonString);
 	}

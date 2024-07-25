@@ -63,11 +63,10 @@ import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * base class for JDFLib test case classes
@@ -88,7 +87,7 @@ public abstract class JSONTestCaseBase
 	protected boolean reparse(final KElement e, final int minor)
 	{
 		final String written = e.toXML();
-		assertNotNull(written);
+		Assertions.assertNotNull(written);
 		final JDFParser p = getXJDFSchemaParser(minor);
 		final JDFDoc xParsed = p.parseString(written);
 		return xParsed.isSchemaValid();
@@ -231,7 +230,7 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(xmlFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		assertEquals(valResult0, VALID);
+		Assertions.assertEquals(valResult0, VALID);
 
 		JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
@@ -253,10 +252,10 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(roundtripFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		assertEquals(valResult1, VALID);
+		Assertions.assertEquals(valResult1, VALID);
 
 		if (equals)
-			assertTrue(e.isEqual(roundtrip));
+			Assertions.assertTrue(e.isEqual(roundtrip));
 		return JSONObjHelper.getHelper(jo);
 	}
 
