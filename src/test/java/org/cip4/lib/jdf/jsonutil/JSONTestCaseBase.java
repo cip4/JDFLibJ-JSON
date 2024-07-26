@@ -316,7 +316,7 @@ public abstract class JSONTestCaseBase
 	protected static JDFParser getSchemaParser()
 	{
 		final JDFParser parser = JDFParserFactory.getFactory().get();
-		parser.setSchemaLocation(JDFElement.getSchemaURL(2, 0), getXJDFSchema(2, JDFElement.getDefaultJDFVersion().getMinorVersion()));
+		parser.setSchemaLocation(JDFElement.getSchemaURL(2, 0), getXJDFSchema(2, XJDFHelper.defaultVersion().getMinorVersion()));
 		return parser;
 	}
 
