@@ -67,6 +67,7 @@ import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -88,7 +89,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertXJMFFromFile()
+	void testConvertXJMFFromFile()
 	{
 		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -105,7 +106,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertXJMFFromFileNoSplit()
+	void testConvertXJMFFromFileNoSplit()
 	{
 		final KElement xjmf = KElement.parseFile(sm_dirTestData + "xjmf/JMF1.xjmf");
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -122,7 +123,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testMinimal()
+	void testMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
@@ -136,7 +137,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testMinimalSchema()
+	void testMinimalSchema()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		jsonWriter.setJsonRoot(eJSONRoot.schema);
@@ -154,6 +155,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		return h.appendMessage(family, typ);
 	}
 
+	@BeforeEach
 	@Override
 	public void setUp() throws Exception
 	{
@@ -168,7 +170,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSignalStatus()
+	void testSignalStatus()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 
@@ -209,7 +211,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSignalPaper()
+	void testSignalPaper()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
@@ -239,7 +241,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSignalSimplePaper()
+	void testSignalSimplePaper()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();
 		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
