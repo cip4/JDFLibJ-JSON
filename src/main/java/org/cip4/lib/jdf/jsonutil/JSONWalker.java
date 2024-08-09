@@ -172,7 +172,7 @@ public abstract class JSONWalker
 			{
 				final Object a = val.get(i);
 				final Object c;
-				final String newKey = keyInArray ? key : null;
+				final String newKey = getArrayKey(key);
 				if (a instanceof JSONObject)
 				{
 					c = walkTree(newKey, (JSONObject) a);
@@ -200,6 +200,11 @@ public abstract class JSONWalker
 		}
 		postWalk(key, val);
 		return !retainNull && val.isEmpty() ? null : val;
+	}
+
+	protected String getArrayKey(final String key)
+	{
+		return keyInArray ? key : null;
 	}
 
 	protected void postArrayElement(final String key, final Object a, final int i, final int size)
@@ -233,7 +238,7 @@ public abstract class JSONWalker
 		return retainNull;
 	}
 
-	public void setRetainNull(boolean retainNull)
+	public void setRetainNull(final boolean retainNull)
 	{
 		this.retainNull = retainNull;
 	}

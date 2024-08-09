@@ -130,7 +130,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
 		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
 		n.setClass(EnumClass.Event);
-		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.json", true, false);
+		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.json", true, false, true);
 	}
 
 	/**
@@ -145,7 +145,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
 		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
 		n.setClass(EnumClass.Event);
-		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.schema.json", true, false);
+		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.schema.json", true, false, true);
 	}
 
 	MessageHelper getBaseXJMF(final EnumFamily family, final EnumType typ)
@@ -189,7 +189,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		p.setEndTime(new JDFDate().setTime(16, 30, 0));
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
-		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignalSetup.json", true, false);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignalSetup.json", true, false, true);
 
 		xjmfHelper = new XJMFHelper();
 		xjmfHelper.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(17, 00, 0).getDateTimeISO());
@@ -204,7 +204,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		p.setStartTime(new JDFDate().setTime(16, 30, 0));
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
-		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignal.json", true, false);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignal.json", true, false, true);
 	}
 
 	/**
@@ -234,7 +234,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		rh.setAmount(22, new JDFAttributeMap(AttributeName.LOTID, "Lot2"), false);
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
-		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperLotResourceSignal.json", true, false);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperLotResourceSignal.json", true, false, true);
 	}
 
 	/**
@@ -262,7 +262,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		rh.setAmount(66, null, false);
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
-		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperResourceSignal.json", true, false);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperResourceSignal.json", true, false, true);
 	}
 
 	JDFJobPhase addJobPhase(final JDFDeviceInfo di, final String jobID, final String sheetName, final int good, final int waste)

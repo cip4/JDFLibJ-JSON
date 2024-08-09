@@ -37,8 +37,13 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -56,17 +61,20 @@ import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.extensions.BaseXJDFHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
+import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
+import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaReader;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
+
+import com.networknt.schema.ValidationMessage;
 
 /**
  * base class for JDFLib test case classes
@@ -87,7 +95,7 @@ public abstract class JSONTestCaseBase
 	protected boolean reparse(final KElement e, final int minor)
 	{
 		final String written = e.toXML();
-		Assertions.assertNotNull(written);
+		assertNotNull(written);
 		final JDFParser p = getXJDFSchemaParser(minor);
 		final JDFDoc xParsed = p.parseString(written);
 		return xParsed.isSchemaValid();
@@ -176,7 +184,7 @@ public abstract class JSONTestCaseBase
 	 *
 	 * @param h
 	 */
-	protected void cleanSnippets(final BaseXJDFHelper h, boolean removeBase)
+	protected void cleanSnippets(final BaseXJDFHelper h, final boolean removeBase)
 	{
 		if (h == null || h.getRoot() == null)
 			return;
@@ -191,8 +199,8 @@ public abstract class JSONTestCaseBase
 			setSnippet(((XJDFHelper) h).getAuditPool(), false);
 			setSnippet(((XJDFHelper) h).getSet(ElementName.NODEINFO, 0), false);
 		}
-		VElement headers = h.getRoot().getChildrenByTagName(XJDFConstants.Header, null, null, false, false, 0);
-		for (KElement header : headers)
+		final VElement headers = h.getRoot().getChildrenByTagName(XJDFConstants.Header, null, null, false, false, 0);
+		for (final KElement header : headers)
 		{
 			header.removeAttribute(AttributeName.AGENTNAME);
 			header.removeAttribute(AttributeName.AGENTVERSION);
@@ -201,18 +209,25 @@ public abstract class JSONTestCaseBase
 
 	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output)
 	{
-		return writeBothJson(e, jsonWriter, output, true, false);
+		return writeBothJson(e, jsonWriter, output, true, false, true);
 	}
 
-	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals)
 	{
-		return writeBothJson(e, jsonWriter, output, equals, false);
+		return writeBothJson(e, jsonWriter, output, equals, false, true);
 	}
 
-	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, boolean equals, boolean cleansnippets)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets)
+
 	{
-		File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
-		BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
+		return writeBothJson(e, jsonWriter, output, equals, cleansnippets, true);
+	}
+
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets, final boolean checkJSONSchema)
+
+	{
+		final File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
+		final BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
 		if (cleansnippets || e.equals(baseHelper.getRoot()))
 		{
 			cleanSnippets(baseHelper, cleansnippets);
@@ -230,20 +245,28 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(xmlFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		Assertions.assertEquals(VALID, valResult0);
 
-		JSONObject jo = jsonWriter.convert(e);
+		assertEquals(VALID, valResult0);
+
+		final JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
-
-		JSONReader reader = new JSONReader();
+		final String root = e.getLocalName();
+		// jo.put("$schema", "http://www.CIP4.org/JDFSchema_2_0/#/properties/" + root);
+		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
+		if (checkJSONSchema)
+		{
+			assertTrue(ContainerUtil.isEmpty(ret));
+		}
+		final JSONReader reader = new JSONReader();
 		reader.setXJDF();
-		KElement roundtrip = reader.getElement(jo);
+		final KElement roundtrip = reader.getElement(jo);
 		BaseXJDFHelper bh = BaseXJDFHelper.getBaseHelper(roundtrip);
 		if (bh == null)
 			bh = new XJDFHelper(roundtrip);
 		cleanSnippets(bh, cleansnippets);
-		File roundtripFile = new File(sm_dirTestDataTemp + "xjdf/xjdfroundtrip", UrlUtil.newExtension(output, "xml"));
+		final File roundtripFile = new File(sm_dirTestDataTemp + "xjdf/xjdfroundtrip", UrlUtil.newExtension(output, "xml"));
 		roundtrip.write2File(roundtripFile);
 		final JDFDoc docRound = jdfparser.parseFile(roundtripFile);
 		final XMLDoc dVal1 = docRound.getValidationResult();
@@ -252,10 +275,12 @@ public abstract class JSONTestCaseBase
 		{
 			dVal0.write2File(roundtripFile.getPath() + ".xjdf.val.xml", 2, false);
 		}
-		Assertions.assertEquals(VALID, valResult1);
+		assertEquals(VALID, valResult1);
 
 		if (equals)
-			Assertions.assertTrue(e.isEqual(roundtrip));
+		{
+			assertTrue(e.isEqual(roundtrip));
+		}
 		return JSONObjHelper.getHelper(jo);
 	}
 

@@ -311,17 +311,23 @@ public class JSONReader
 
 		if (root == null)
 		{
-			for (final String name : new String[] { "$schema", "Name" })
+			int n = o.size();
+			for (final String name : new String[] { "Name", "$schema" })
 			{
 				if (o.get(name) != null)
 				{
+					n--;
 					final JSONObjHelper h = new JSONObjHelper(o);
-					root = KElement.createRoot(h.getString(name), null);
-					o.remove(name);
-					break;
+					final String token = StringUtil.token(h.getString(name), -1, "/#");
+					if (o.get(token) == null)
+					{
+						root = KElement.createRoot(token, null);
+						o.remove(name);
+						break;
+					}
 				}
 			}
-			if (root == null && o.size() > 1)
+			if (root == null && n > 1)
 			{
 				root = KElement.createRoot("json", null);
 			}

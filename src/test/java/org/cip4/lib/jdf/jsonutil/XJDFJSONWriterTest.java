@@ -42,7 +42,11 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
+import java.net.URISyntaxException;
 
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
 import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaUnit;
@@ -77,42 +81,43 @@ import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
  *
  */
-class XJDFJSONWriterTest extends JSONTestCaseBase
+public class XJDFJSONWriterTest extends JSONTestCaseBase
 {
 
 	/**
 	 *
 	 */
 	@Test
-    void testConvertBoolean()
+	void testConvertBoolean()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final JSONObject o = jsonWriter.convert(xjdf);
 
-		Assertions.assertNotNull(o.toJSONString());
+		assertNotNull(o.toJSONString());
 		final JSONObjHelper jsonObjHelper = new JSONObjHelper(o);
-		Assertions.assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
+		assertEquals(Boolean.TRUE, jsonObjHelper.getPathObject("ProductList/Product/IsRoot"));
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, "poster.json", false, false, true);
+		assertNotNull(jo);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testConvertSkipProductList()
+	void testConvertSkipProductList()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		Assertions.assertNotNull(o.toJSONString());
+		assertNotNull(o.toJSONString());
 		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/poster.noproductlist.json");
 	}
 
@@ -120,14 +125,14 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertSkipProductListBroc()
+	void testConvertSkipProductListBroc()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
-		jsonWriter.addSkipPool(XJDFConstants.ProductList);
 		final JSONObject o = jsonWriter.convert(xjdf);
-		Assertions.assertNotNull(o.toJSONString());
-		new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + "json/Brochure.noproductlist.json");
+		assertNotNull(o.toJSONString());
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, "brochure.json", false, false, true);
+		assertNotNull(jo);
 	}
 
 	public static JSONWriter getXJDFWriter()
@@ -146,10 +151,11 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 	}
 
 	/**
+	 * @throws URISyntaxException
 	 *
 	 */
 	@Test
-    void testAddressLine()
+	void testAddressLine()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -162,27 +168,29 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		add.appendAddressLine().setText("line 3");
 		h.cleanUp();
 
-		writeBothJson(add, jsonWriter, "addressline.json", true, false);
+		writeBothJson(add, jsonWriter, "addressline.json", true, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testSetCache()
+	void testSetCache()
 	{
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "file:foo");
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, null);
 		final JSONWriter jsonWriter = getXJDFWriter(true);
-		Assertions.assertNotNull(jsonWriter);
+		assertNotNull(jsonWriter);
 
 	}
 
 	/**
+	 * @throws URISyntaxException
 	 *
 	 */
 	@Test
-    void testResourceSet()
+
+	void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "Job1");
@@ -195,14 +203,15 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		ni.setStart(new JDFDate());
 
 		h.cleanUp();
-		writeBothJson(h.getRoot(), jsonWriter, "nodeinfo.json", true, false);
+		writeBothJson(h.getRoot(), jsonWriter, "nodeinfo.json", true, false, true);
 	}
 
 	/**
+	 * @throws URISyntaxException
 	 *
 	 */
 	@Test
-    void testComment()
+	void testComment()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		final XJDFHelper h = getBaseXJDF();
@@ -213,14 +222,15 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		// jsonWriter.convert(h.getRoot());
 
-		writeBothJson(c, jsonWriter, "comment.json", false, false);
+		writeBothJson(h.getRoot(), jsonWriter, "comment.json", false, false, true);
+		writeBothJson(c, jsonWriter, "comment.json", false, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testCommentString()
+	void testCommentString()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = getBaseXJDF();
@@ -229,15 +239,16 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 		h.getRoot().removeChild(ElementName.AUDITPOOL, null, 0);
 		final JSONObjHelper o = jsonWriter.convertHelper(h.getRoot());
-		Assertions.assertEquals("1", o.getPathObject("Comment/Text"));
+		assertEquals("1", o.getPathObject("Comment/Text"));
 
 	}
 
 	/**
+	 * @throws URISyntaxException
 	 *
 	 */
 	@Test
-    void testOrgUnit()
+	void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -251,14 +262,15 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		cm.appendOrganizationalUnit("ACME Unit 3");
 		h.cleanUp();
 
-		writeBothJson(c, jsonWriter, "orgunit.json", true, false);
+		writeBothJson(h.getRoot(), jsonWriter, "orgunit.json", true, false, true);
+		writeBothJson(c, jsonWriter, "orgunit.json", true, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testForeign()
+	void testForeign()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -268,14 +280,14 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
 		h.cleanUp();
 		h.getAuditPool().deleteNode();
-		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false);
+		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testForeignAttribute()
+	void testForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -284,14 +296,14 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		final ResourceHelper rh = set.getCreatePartition(0, true);
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		h.cleanUp();
-		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false, false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattribute.json", false, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testMultiForeignAttribute()
+	void testMultiForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -301,27 +313,28 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		rh.getResource().setAttribute("bar:foo", "abc", "www.bar.com");
 		rh.getResource().setAttribute("bar2:foo2", "abc", "www.bar2.com");
 		h.cleanUp();
-		writeBothJson(rh.getRoot(), jsonWriter, "foreignattributes.json", false, false);
+		writeBothJson(rh.getRoot(), jsonWriter, "foreignattributes.json", false, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testMinimal()
+	void testMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
 		h.getRoot().removeChild(null, null, 0);
-		writeBothJson(h.getRoot(), jsonWriter, "minimal.json", true, false);
+
+		// writeBothJson(KElement.createRoot("XJDF"), jsonWriter, "minimal.json", true, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testAuditPool()
+	void testAuditPool()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -343,7 +356,7 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		pr.setAttribute("EndStatus", "Completed");
 		h.cleanUp();
 		final String output = "auditpool.json";
-		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false);
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false, true);
 		for (final String key : jo.getKeys())
 		{
 			if (!ElementName.AUDITPOOL.equals(key))
@@ -355,23 +368,51 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		FileUtil.writeFile(jo, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jo), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 		final String name = jo.getString("AuditPool[0]/Name");
-		Assertions.assertEquals("AuditCreated", name);
+		assertEquals("AuditCreated", name);
 		final String name0 = jo.getString("AuditPool[1]/Name");
-		Assertions.assertEquals("AuditStatus", name0);
+		assertEquals("AuditStatus", name0);
 		final String name1 = jo.getString("AuditPool[-1]/Name");
-		Assertions.assertEquals("AuditProcessRun", name1);
-		writeBothJson(ap.getRoot(), jsonWriter, output + ".keep", false, false);
+		assertEquals("AuditProcessRun", name1);
+		writeBothJson(ap.getRoot(), jsonWriter, output + ".keep", false, false, false);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testAdhesive()
+	void testAuditPoolStatus()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+
+		final XJDFHelper h = getBaseXJDF();
+		final KElement xjdf = h.getRoot();
+		final AuditPoolHelper ap = h.getCreateAuditPool();
+		final AuditHelper status = ap.appendAudit(eAudit.Status);
+		final JDFDeviceInfo di = (JDFDeviceInfo) status.appendElement(ElementName.DEVICEINFO);
+		di.setAttribute("Status", "Production");
+
+		final KElement ri0 = ap.appendAudit(eAudit.Resource).appendElement(ElementName.RESOURCEINFO);
+		ri0.appendElement(XJDFConstants.ResourceSet).setAttribute("Name", "Component");
+		final JDFProcessRun pr = (JDFProcessRun) ap.appendAudit(eAudit.ProcessRun).appendElement(ElementName.PROCESSRUN);
+		pr.setAttribute("Start", new JDFDate().getDateTimeISO());
+		pr.setAttribute("End", new JDFDate().getDateTimeISO());
+		pr.setAttribute("EndStatus", "Completed");
+		h.cleanUp();
+
+		final String output = "auditpool.json";
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false, true);
+	}
+
+	/**
+	 * @throws URISyntaxException
+	 *
+	 */
+	@Test
+	void testAdhesive()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("Converting", "Corrugated", null);
 		xjdfHelper.setTypes(JDFConstants.CONVENTIONALPRINTING);
-		final SetHelper shMedia = xjdfHelper.getCreateSet(XJDFConstants.Resource, ElementName.MEDIA, EnumUsage.Input);
+		final SetHelper shMedia = xjdfHelper.getCreateSet(ElementName.MEDIA, EnumUsage.Input);
 		final ResourceHelper rh = shMedia.appendPartition(null, true);
 		final JDFMedia m = (JDFMedia) rh.getResource();
 		m.setMediaType(EnumMediaType.SelfAdhesive);
@@ -390,7 +431,9 @@ class XJDFJSONWriterTest extends JSONTestCaseBase
 		m2.setWeight(60);
 		final String output = "MediaSelfAdhesive.json";
 		final JSONWriter jsonWriter = getXJDFWriter(false);
-		writeBothJson(shMedia.getSet(), jsonWriter, output, true, false);
+		xjdfHelper.cleanUp();
+		writeBothJson(xjdfHelper.getRoot(), jsonWriter, output, false, false, true);
+		writeBothJson(m2, jsonWriter, output, true, false, false);
 
 	}
 

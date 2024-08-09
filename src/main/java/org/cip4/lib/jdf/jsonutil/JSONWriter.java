@@ -447,6 +447,9 @@ public class JSONWriter extends JSONObjHelper
 					final String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
 					if (sg != null)
 						nameMap.putOne(sg, e);
+					final String ref = e.getNonEmpty(REF);
+					if (ref != null)
+						nameMap.putOne(ref, e);
 				}
 			}
 		}
@@ -485,7 +488,7 @@ public class JSONWriter extends JSONObjHelper
 
 		void fillAttributeFromSchema(final KElement e, final Set<String> types)
 		{
-			final List<String> l = getNamesFromSchema(e);
+			final List<String> l = getNamesFromSchema(e, false);
 			final String type = getTypeFromSchemaAttribute(e);
 			final String name = e.getNonEmpty(NAME);
 			ContainerUtil.appendUnique(l, name);
@@ -564,7 +567,7 @@ public class JSONWriter extends JSONObjHelper
 			{
 				fillArrayFromSchema(e);
 			}
-			final List<String> namesFromSchema = getNamesFromSchema(e);
+			final List<String> namesFromSchema = getNamesFromSchema(e, true);
 			for (final String name : namesFromSchema)
 				addList(name, knownElems);
 
@@ -582,14 +585,14 @@ public class JSONWriter extends JSONObjHelper
 
 		void fillArrayFromSchema(final KElement e)
 		{
-			final List<String> keys = getNamesFromSchema(e);
+			final List<String> keys = getNamesFromSchema(e, true);
 			for (final String key : keys)
 				addArray(key);
 		}
 
-		List<String> getNamesFromSchema(final KElement e)
+		List<String> getNamesFromSchema(final KElement e, final boolean checkName)
 		{
-			List<String> names = getNamesFromRef(e);
+			List<String> names = getNamesFromRef(e, checkName);
 			if (StringUtil.isEmpty(names))
 				names = new StringArray(e.getNonEmpty(NAME));
 
@@ -606,7 +609,7 @@ public class JSONWriter extends JSONObjHelper
 			}
 			if (parentContent != null && contentName == null)
 			{
-				final List<String> contentNames = getNamesFromRef(parentContent);
+				final List<String> contentNames = getNamesFromRef(parentContent, checkName);
 				contentName = ContainerUtil.get(contentNames, 0);
 			}
 			if (!StringUtil.isEmpty(contentName))
@@ -619,9 +622,11 @@ public class JSONWriter extends JSONObjHelper
 			return names;
 		}
 
-		protected List<String> getNamesFromRef(final KElement e)
+		protected List<String> getNamesFromRef(final KElement e, final boolean checkName)
 		{
-			final String nonEmpty = e.getNonEmpty(REF);
+			String nonEmpty = e.getNonEmpty(REF);
+			if (StringUtil.isEmpty(nonEmpty) && checkName)
+				nonEmpty = e.getNonEmpty(NAME);
 			return getNamesFromRef(nonEmpty);
 		}
 
@@ -837,7 +842,7 @@ public class JSONWriter extends JSONObjHelper
 		return updateCase(key, jCase);
 	}
 
-	String updateCase(final String key, final eJSONCase jCase)
+	public static String updateCase(final String key, final eJSONCase jCase)
 	{
 		if (eJSONCase.lowerfirst.equals(jCase))
 		{

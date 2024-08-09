@@ -297,4 +297,26 @@ public class JSONArrayHelper
 		ContainerUtil.remove(array, i);
 	}
 
+	public void remove(final Object o)
+	{
+		if (array != null)
+			array.remove(o);
+	}
+
+	public void addString(final String s)
+	{
+		getArray().add(s);
+
+	}
+
+	public Object set(final int index, final Object element)
+	{
+		return array.set(index, element);
+	}
+
+	public int indexOf(final Object o)
+	{
+		return array.indexOf(o);
+	}
+
 }
