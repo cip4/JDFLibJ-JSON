@@ -118,6 +118,12 @@ public class JSONSchemaReader
 					ValidationMessage.of(e.getClass().getSimpleName(), CustomErrorMessageType.of("42"), new MessageFormat(e.getClass().getSimpleName()), null, null, "bb"));
 			return al;
 		}
+		catch (final Exception e)
+		{
+			ContainerUtil.add(al,
+					ValidationMessage.of(e.getClass().getSimpleName(), CustomErrorMessageType.of("42"), new MessageFormat(e.getClass().getSimpleName()), null, null, "unknown"));
+			return al;
+		}
 		return theSchema.validate(jsonNode);
 
 	}
