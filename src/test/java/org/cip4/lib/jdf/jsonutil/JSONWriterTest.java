@@ -95,7 +95,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvert()
+	void testConvert()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
@@ -108,13 +108,13 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertRoot()
+	void testConvertRoot()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
-		for (eJSONRoot r : eJSONRoot.values())
+		for (final eJSONRoot r : eJSONRoot.values())
 		{
-			JSONWriter jsonWriter = new JSONWriter();
+			final JSONWriter jsonWriter = new JSONWriter();
 			jsonWriter.setJsonRoot(r);
 			final JSONObject o = jsonWriter.convert(xjmf);
 			new JSONObjHelper(o).writeToFile(sm_dirTestDataTemp + r.name() + ".json");
@@ -124,7 +124,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testEquals()
+	void testEquals()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		final JSONWriter w2 = new JSONWriter();
@@ -138,7 +138,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertSchema()
+	void testConvertSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -152,7 +152,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testHash()
+	void testHash()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		final JSONWriter w2 = new JSONWriter();
@@ -160,28 +160,28 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testClear()
+	void testClear()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		w1.clearArray();
 	}
 
 	@Test
-    void testRemoveArray()
+	void testRemoveArray()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		w1.removeArray("a");
 	}
 
 	@Test
-    void testToString()
+	void testToString()
 	{
 		final JSONWriter w1 = new JSONWriter();
 		Assertions.assertNotNull(w1.toString());
 	}
 
 	@Test
-    void testPrepWalker()
+	void testPrepWalker()
 	{
 		final JSONWriter w = new JSONWriter();
 		Assertions.assertNull(w.getPrepWalker());
@@ -189,7 +189,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testPrefix()
+	void testPrefix()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setPrefix(eJSONPrefix.none);
@@ -197,7 +197,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testTypesafe()
+	void testTypesafe()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setTypeSafe(true);
@@ -205,7 +205,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void tesMixText()
+	void tesMixText()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setMixedText("a");
@@ -213,7 +213,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testWantArray()
+	void testWantArray()
 	{
 		final JSONWriter w = new JSONWriter();
 		w.setWantArray(true);
@@ -221,7 +221,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testPrefix2()
+	void testPrefix2()
 	{
 		for (final String n : eJSONPrefix.getNames())
 		{
@@ -230,7 +230,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testCase()
+	void testCase()
 	{
 		for (final String n : eJSONCase.getNames())
 		{
@@ -239,7 +239,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testCase2()
+	void testCase2()
 	{
 		final JSONWriter w = new JSONWriter();
 		for (final eJSONCase n : eJSONCase.values())
@@ -256,7 +256,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testGetString()
+	void testGetString()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
@@ -269,7 +269,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 * @throws UnsupportedEncodingException
 	 */
 	@Test
-    void testGetStream() throws UnsupportedEncodingException
+	void testGetStream() throws UnsupportedEncodingException
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 		final KElement xjmf = new JDFToXJDF().convert(jmf);
@@ -285,7 +285,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertArray()
+	void testConvertArray()
 	{
 		final JDFJMF jmf = JMFBuilderFactory.getJMFBuilder(null).buildStatusSignal(EnumDeviceDetails.Full, EnumJobDetails.MIS);
 
@@ -299,7 +299,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertArrayEmpty()
+	void testConvertArrayEmpty()
 	{
 		final KElement e = KElement.parseString("<e><a/><a/><a b=\"c\"/><a/></e>");
 		final JSONObject o = new JSONWriter().convert(e);
@@ -312,7 +312,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumberArray()
+	void testNumberArray()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.setAttribute("XY", "1 2 3");
@@ -328,7 +328,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSkipKey()
+	void testSkipKey()
 	{
 		final KElement e0 = KElement.createRoot("a", null);
 		final KElement b = e0.appendElement("b");
@@ -352,7 +352,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testAddNull()
+	void testAddNull()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.addSkipPool("b");
@@ -369,7 +369,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testAddNotNull()
+	void testAddNotNull()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.addSkipPool("b");
@@ -393,7 +393,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertMap()
+	void testConvertMap()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		Assertions.assertNotNull(jsonWriter.convertMap(null));
@@ -403,7 +403,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumberArray0()
+	void testNumberArray0()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(1));
@@ -415,7 +415,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testTransferFunction()
+	void testTransferFunction()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(0));
@@ -430,7 +430,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testGetKey()
+	void testGetKey()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setPrefix(eJSONPrefix.underscore);
@@ -442,7 +442,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testAddToParentRaw()
+	void testAddToParentRaw()
 	{
 		JSONWriter.addToParentRaw(new JSONObject(), "foo", "bar");
 		JSONWriter.addToParentRaw(new JSONArray(), "foo", "bar");
@@ -452,7 +452,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumberArray2()
+	void testNumberArray2()
 	{
 		final JSONArray a = new JSONArray();
 		a.add(Integer.valueOf(1));
@@ -464,7 +464,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertProduct()
+	void testConvertProduct()
 	{
 		final XJDFHelper h = new XJDFHelper("a", "b");
 		h.getCreateRootProduct(0).setAmount(123);
@@ -482,11 +482,11 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertSchemaArray()
+	void testConvertSchemaArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
-		MessageResourceHelper mh = (MessageResourceHelper) xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
-		SetHelper sh = mh.appendSet("foo");
+		final MessageResourceHelper mh = (MessageResourceHelper) xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
+		final SetHelper sh = mh.appendSet("foo");
 		xjmfHelper.cleanUp();
 		final KElement xjdf = xjmfHelper.getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -506,7 +506,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSimpleXJDF()
+	void testSimpleXJDF()
 	{
 		final KElement xjdf = KElement.createRoot("XJDF", null);
 		xjdf.setAttribute("JobID", "Job_" + KElement.uniqueID(0));
@@ -519,7 +519,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertComment()
+	void testConvertComment()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -533,7 +533,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertCommentNoArray()
+	void testConvertCommentNoArray()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -549,7 +549,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertCommentNoArrayMixed()
+	void testConvertCommentNoArrayMixed()
 	{
 		final KElement xjdf = new XJDFHelper("a", null, null).getRoot();
 		xjdf.setXPathValue("Comment", "foo");
@@ -568,7 +568,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertCommentMixed()
+	void testConvertCommentMixed()
 	{
 		final KElement xjdf = KElement.createRoot(XJDFConstants.XJDF, null);
 		xjdf.setXPathValue("Comment", "foo");
@@ -589,7 +589,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertXJDFTotalDuration()
+	void testConvertXJDFTotalDuration()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -608,7 +608,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testArrayFilespec()
+	void testArrayFilespec()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -625,11 +625,11 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testLayoutIntentPages()
+	void testLayoutIntentPages()
 	{
 		final JDFNode n = new JDFDoc(ElementName.JDF).getJDFRoot();
 		n.setType(EnumType.Product);
-		JDFLayoutIntent li = (JDFLayoutIntent) n.addResource(ElementName.LAYOUTINTENT, EnumUsage.Input);
+		final JDFLayoutIntent li = (JDFLayoutIntent) n.addResource(ElementName.LAYOUTINTENT, EnumUsage.Input);
 		li.appendPages().setActual(3);
 		final JDFToXJDF conv = new JDFToXJDF();
 		final KElement xjdf = conv.convert(n);
@@ -644,7 +644,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testFillTotalDuration()
+	void testFillTotalDuration()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -659,7 +659,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testFillTotalDuration2()
+	void testFillTotalDuration2()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -674,7 +674,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertXJMFNoArray()
+	void testConvertXJMFNoArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -694,7 +694,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testSplitXJMF()
+	void testSplitXJMF()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -705,7 +705,7 @@ class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setXJDF(true, false);
 		final List<JSONObject> os = jsonWriter.splitConvert(xjdf);
 		Assertions.assertEquals(2, os.size());
-		for (JSONObject o : os)
+		for (final JSONObject o : os)
 		{
 			final String jsonString = o.toJSONString();
 			Assertions.assertTrue(jsonString.indexOf("\"Header\":{") > 0);
@@ -719,7 +719,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testXJMFMessageNoArray()
+	void testXJMFMessageNoArray()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper();
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -729,10 +729,10 @@ class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setXJDF(true, false);
 		final List<JSONObject> os = jsonWriter.splitConvert(xjdf);
 		Assertions.assertEquals(1, os.size());
-		for (JSONObject o : os)
+		for (final JSONObject o : os)
 		{
-			Assertions.assertNull(new JSONObjHelper(o).getArray("XJMF/SignalResource", false));
-			Assertions.assertNotNull(new JSONObjHelper(o).getHelper("XJMF/SignalResource"));
+			Assertions.assertNull(new JSONObjHelper(o).getArray("SignalResource", false));
+			Assertions.assertNotNull(new JSONObjHelper(o).getHelper("SignalResource"));
 		}
 	}
 
@@ -740,7 +740,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNoArrayDouble()
+	void testNoArrayDouble()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.appendElement("b").setAttribute("c", "d");
@@ -761,7 +761,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testEmptyElements()
+	void testEmptyElements()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		for (int i = 0; i < 3; i++)
@@ -773,10 +773,10 @@ class JSONWriterTest extends JSONTestCaseBase
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(e);
 		final String jsonString = o.toJSONString();
-		JSONObject a = (JSONObject) o.get("a");
-		JSONArray b = (JSONArray) a.get("b");
+		final JSONObject a = (JSONObject) o.get("a");
+		final JSONArray b = (JSONArray) a.get("b");
 		Assertions.assertEquals(7, b.size());
-		JSONObject b4 = (JSONObject) b.get(3);
+		final JSONObject b4 = (JSONObject) b.get(3);
 		Assertions.assertEquals("d", b4.get("c"));
 
 	}
@@ -785,7 +785,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testLearnArray()
+	void testLearnArray()
 	{
 		final KElement e = KElement.createRoot("a", null);
 		e.appendElement("b").setAttribute("c", "d");
@@ -812,7 +812,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testArrayFromSchema()
+	void testArrayFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -832,15 +832,15 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertArrayFromSchema()
+	void testConvertArrayFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
 
-		KElement e = KElement.createRoot("XJDF", null);
+		final KElement e = KElement.createRoot("XJDF", null);
 		e.appendElement("ResourceSet").appendElement("Resource").appendElement("Part");
-		JSONObject o = jsonWriter.convert(e);
+		final JSONObject o = jsonWriter.convert(e);
 		Assertions.assertTrue(o.toJSONString().indexOf("[") > 0);
 	}
 
@@ -848,7 +848,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumFromSchema()
+	void testNumFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -860,7 +860,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumListFromSchema()
+	void testNumListFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -872,19 +872,19 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testNumListRetainSchema()
+	void testNumListRetainSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
 		Assertions.assertTrue(jsonWriter.numList.contains("ctm"));
-		KElement xjdf = KElement.parseString("<XJDF CTM=\"foo\" />");
-		JSONObject o = jsonWriter.convert(xjdf);
+		final KElement xjdf = KElement.parseString("<XJDF CTM=\"foo\" />");
+		final JSONObject o = jsonWriter.convert(xjdf);
 		Assertions.assertEquals("foo", new JSONObjHelper(o).getPathObject("XJDF/CTM"));
 		Assertions.assertTrue(jsonWriter.numList.contains("ctm"));
 		Assertions.assertFalse(jsonWriter.alwaysString.contains("ctm"));
 		xjdf.appendElement("PlacedObject").setAttribute("CTM", "1");
-		JSONObject o2 = jsonWriter.convert(xjdf);
+		final JSONObject o2 = jsonWriter.convert(xjdf);
 		Assertions.assertEquals(Integer.valueOf(1), new JSONObjHelper(o2).getPathObject("XJDF/PlacedObject/CTM[0]"));
 	}
 
@@ -892,17 +892,17 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testArrayRetainSchema()
+	void testArrayRetainSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), false);
 		Assertions.assertTrue(jsonWriter.arrayNames.contains("xjdf/resourceset"));
-		XJDFHelper xjdf = new XJDFHelper(EnumVersion.Version_2_0, "a");
+		final XJDFHelper xjdf = new XJDFHelper(EnumVersion.Version_2_0, "a");
 		xjdf.getCreateSet("Foo", null);
 		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
 		xjdf.getRoot().appendElement(ElementName.AUDITPOOL);
-		JSONObject o = jsonWriter.convert(xjdf.getRoot());
+		final JSONObject o = jsonWriter.convert(xjdf.getRoot());
 		Assertions.assertFalse(jsonWriter.arrayNames.contains("auditpool"));
 		Assertions.assertFalse(jsonWriter.arrayNames.contains("xjdf/auditpool"));
 	}
@@ -911,7 +911,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testStringFromSchema()
+	void testStringFromSchema()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -929,7 +929,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testStringArray()
+	void testStringArray()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
@@ -944,7 +944,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testStringArrayTest()
+	void testStringArrayTest()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
@@ -961,7 +961,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testTransferSchemaTest()
+	void testTransferSchemaTest()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(true);
@@ -974,7 +974,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testMany()
+	void testMany()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -982,7 +982,8 @@ class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			Assertions.assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
+			Assertions.assertNotNull(
+					FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
@@ -991,7 +992,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testQCTransferCurce()
+	void testQCTransferCurce()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -1007,7 +1008,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 */
 	@Test
 	@Disabled
-    void testManyCIP4()
+	void testManyCIP4()
 	{
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
@@ -1037,7 +1038,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertXJMFNoArrayExclude()
+	void testConvertXJMFNoArrayExclude()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1057,7 +1058,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertCase()
+	void testConvertCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1074,7 +1075,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertLowerCase()
+	void testConvertLowerCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
@@ -1094,7 +1095,7 @@ class JSONWriterTest extends JSONTestCaseBase
 	*
 	*/
 	@Test
-    void testConvertLowerLowerCase()
+	void testConvertLowerLowerCase()
 	{
 		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
 		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");

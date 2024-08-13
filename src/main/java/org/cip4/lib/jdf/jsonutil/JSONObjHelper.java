@@ -614,20 +614,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	Object getInheritedObject(final String path, final boolean checkParent)
 	{
-		final Object o = getPathObject(path);
-		if (o == null)
-		{
-			if (checkParent)
-			{
-				final String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
-				if (getPathObject(parent) == null)
-					return null;
-			}
-			final String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
-			return removeToken == null || removeToken.equals(path) ? null : getInheritedObject(removeToken, false);
-		}
-		return o;
-
+		return ContainerUtil.get(getInheritedObjects(path, checkParent), 0);
 	}
 
 	/**
@@ -646,24 +633,29 @@ public class JSONObjHelper implements IStreamWriter
 	List<Object> getInheritedObjects(final String path, final boolean checkParent)
 	{
 		final List<Object> c = new ArrayList<>();
-		final Object o = getPathObject(path);
-		if (o instanceof JSONArray)
+		if (!StringUtil.isEmpty(path))
 		{
-			c.addAll(JSONArrayHelper.getHelper(o).getObjects());
+			final Object o = getPathObject(path);
+			if (o instanceof JSONArray)
+			{
+				c.addAll(JSONArrayHelper.getHelper(o).getObjects());
+			}
+			else
+			{
+				ContainerUtil.add(c, o);
+			}
+			if (o == null && checkParent)
+			{
+				final String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
+				if (getPathObject(parent) == null)
+					return c;
+			}
+			final String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
+			if (!path.equals(removeToken))
+			{
+				c.addAll(getInheritedObjects(removeToken, false));
+			}
 		}
-		else
-		{
-			ContainerUtil.add(c, o);
-		}
-		if (o == null && checkParent)
-		{
-			final String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
-			if (getPathObject(parent) == null)
-				return c;
-		}
-		final String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
-		if (!path.equals(removeToken))
-			c.addAll(getInheritedObjects(removeToken, false));
 		return c;
 
 	}
