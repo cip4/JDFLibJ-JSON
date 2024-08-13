@@ -46,9 +46,12 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
+import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JDFMessage.EnumType;
+import org.cip4.jdflib.resource.JDFNotification;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
@@ -85,9 +88,10 @@ class JSONSchemaReaderTest extends JSONTestCaseBase
 	@Test
 	void testCheckJSON() throws URISyntaxException, JsonMappingException, JsonProcessingException
 	{
-		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestData + "schema/Version_2_2/xjdf.json"));
+		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
 		final XJMFHelper h = new XJMFHelper();
-		h.appendMessage(EnumFamily.Signal, EnumType.Notification);
+		final JDFNotification n = (JDFNotification) h.appendMessage(EnumFamily.Signal, EnumType.Notification).appendElement(ElementName.NOTIFICATION);
+		n.setClass(EnumClass.Information);
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final JSONObject jo = jsonWriter.convert(h.getRoot());

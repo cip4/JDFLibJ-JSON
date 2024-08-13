@@ -68,8 +68,10 @@ import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaReader;
+import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaUpdate;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
@@ -84,6 +86,19 @@ import com.networknt.schema.ValidationMessage;
  */
 public abstract class JSONTestCaseBase
 {
+
+	@BeforeAll
+	static void setTmpSchema()
+	{
+		for (int i = 2; i <= 3; i++)
+		{
+			final File f = new File(sm_dirTestData + "schema/Version_2_" + i + "/xjdf.json");
+			assertTrue(f.canRead());
+			final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+			up.update();
+			FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json"));
+		}
+	}
 
 	/**
 	 *
