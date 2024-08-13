@@ -327,7 +327,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final XJDFHelper h = getBaseXJDF();
 		h.getRoot().removeChild(null, null, 0);
 
-		// writeBothJson(KElement.createRoot("XJDF"), jsonWriter, "minimal.json", true, false);
+		writeBothJson(h.getRoot(), jsonWriter, "minimal.json", true, false);
 	}
 
 	/**

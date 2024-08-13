@@ -249,7 +249,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	void updateSingleAudit(final String audit)
 	{
 		final JSONObjHelper o = updateSingleName(audit);
-		o.setString("properties/Header/$ref", "$defs/Header");
+		o.setString("properties/Header/$ref", "#/$defs/Header");
 		o.getCreateArray("required").addString("Header");
 	}
 
