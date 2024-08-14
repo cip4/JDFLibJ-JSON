@@ -68,6 +68,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	private final StringArray pruneRoots;
 	private final StringArray allowedMessages;
 	private final StringArray allowedResources;
+	private final StringArray allowedPartitions;
 
 	public ArrayList<String> getSingleMessages()
 	{
@@ -90,6 +91,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		pruneRoots = new StringArray();
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
+		allowedPartitions = new StringArray();
 	}
 
 	public JSONSchemaUpdate(final InputStream is)
@@ -98,6 +100,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		pruneRoots = new StringArray();
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
+		allowedPartitions = new StringArray();
 	}
 
 	public JSONSchemaUpdate(final JSONObject base)
@@ -106,11 +109,17 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		pruneRoots = new StringArray();
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
+		allowedPartitions = new StringArray();
 	}
 
 	public void addPrune(final String pruneRoot)
 	{
 		ContainerUtil.appendUnique(pruneRoots, pruneRoot);
+	}
+
+	public void addPartidkey(final String partidkey)
+	{
+		ContainerUtil.appendUnique(allowedPartitions, partidkey);
 	}
 
 	void setPrune(final Collection<String> newPruneRoots)
@@ -128,11 +137,21 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		updateAuditPool();
 		updateAbstract();
 		updateMediaLayers();
+		updatePart();
 		final JSONSchemaWalker jsonSchemaWalker = new JSONSchemaWalker(this);
 		jsonSchemaWalker.setJsonCase(jsonCase);
 		jsonSchemaWalker.setSorted(true);
 		jsonSchemaWalker.walk();
 		prune();
+	}
+
+	void updatePart()
+	{
+		if (!allowedPartitions.isEmpty())
+		{
+			final JSONObjHelper ph = getHelper("$defs/Part/properties");
+			ph.retainAll(allowedPartitions);
+		}
 	}
 
 	void prune()
@@ -180,6 +199,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		cw.setPath(true);
 		cw.setKeyInArray(true);
 		cw.walk();
+
 		final Map<String, Object> m = cw.getCollected();
 		if (m != null)
 		{

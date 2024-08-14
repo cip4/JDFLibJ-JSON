@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
@@ -94,6 +95,23 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		up.addSingleResource("Media");
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmedia.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateXJMFSignalResourceMediaPart() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPrune("XJMF");
+		up.addSingleMessage("SignalResource");
+		up.addSingleResource("Media");
+		up.addPartidkey(EnumPartIDKey.SheetName.getName());
+		up.addPartidkey(EnumPartIDKey.Side.getName());
+		up.addPartidkey(EnumPartIDKey.Separation.getName());
+		up.addPartidkey(EnumPartIDKey.PartVersion.getName());
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmediapart.json"));
 	}
 
 	@Test

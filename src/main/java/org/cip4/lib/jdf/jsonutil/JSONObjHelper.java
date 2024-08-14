@@ -51,6 +51,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -923,6 +924,18 @@ public class JSONObjHelper implements IStreamWriter
 		{
 			getRoot().putAll(gluepaper.getRoot());
 		}
+	}
+
+	public void retainAll(final Collection<String> allowedPartitions)
+	{
+		for (final String key : getKeys())
+		{
+			if (!ContainerUtil.contains(allowedPartitions, key))
+			{
+				remove(key);
+			}
+		}
+
 	}
 
 }
