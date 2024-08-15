@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
@@ -67,9 +68,20 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
-		up.addPrune("XJDF");
+		up.addPruneRoot("XJDF");
 		up.update();
-		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdfonly.json"));
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjmfonly.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateXJMF() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPruneRoot("XJMF");
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjmfonly.json"));
 	}
 
 	@Test
@@ -78,7 +90,7 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
-		up.addPrune("XJMF");
+		up.addPruneRoot("XJMF");
 		up.addSingleMessage("SignalNotification");
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalnotification.json"));
@@ -90,11 +102,52 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
-		up.addPrune("XJMF");
+		up.addPruneRoot("XJMF");
 		up.addSingleMessage("SignalResource");
 		up.addSingleResource("Media");
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmedia.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateXJMFSignalResourceMediaNoID() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPruneRoot("XJMF");
+		up.addSingleMessage("SignalResource");
+		up.addSingleResource("Media");
+		up.addPruneMore(ElementName.IDENTIFICATIONFIELD);
+		up.addPruneMore(ElementName.MISDETAILS);
+		up.addPruneMore(ElementName.MEDIALAYERS);
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmediaid.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateXJMFSignalResourceMiscConsumable() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPruneRoot("XJMF");
+		up.addSingleMessage("SignalResource");
+		up.addSingleResource(ElementName.MISCCONSUMABLE);
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmisc.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateXJMFSignalStatus() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPruneRoot("XJMF");
+		up.addSingleMessage("SignalStatus");
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalstatus.json"));
 	}
 
 	@Test
@@ -103,7 +156,7 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
-		up.addPrune("XJMF");
+		up.addPruneRoot("XJMF");
 		up.addSingleMessage("SignalResource");
 		up.addSingleResource("Media");
 		up.addPartidkey(EnumPartIDKey.SheetName.getName());

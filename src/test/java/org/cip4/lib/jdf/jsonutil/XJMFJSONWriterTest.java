@@ -162,7 +162,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
 		totalProductionCounter = System.currentTimeMillis() % 1000000;
-		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "dummy");
+		JSONWriter.setSchemaUrl(EnumVersion.Version_2_2, "dummy");
 
 	}
 

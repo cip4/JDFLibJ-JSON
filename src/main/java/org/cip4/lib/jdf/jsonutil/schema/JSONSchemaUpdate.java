@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -69,6 +70,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	private final StringArray allowedMessages;
 	private final StringArray allowedResources;
 	private final StringArray allowedPartitions;
+	private final StringArray pruneMore;
 
 	public ArrayList<String> getSingleMessages()
 	{
@@ -92,6 +94,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
+		pruneMore = new StringArray();
 	}
 
 	public JSONSchemaUpdate(final InputStream is)
@@ -101,6 +104,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
+		pruneMore = new StringArray();
 	}
 
 	public JSONSchemaUpdate(final JSONObject base)
@@ -110,11 +114,17 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
+		pruneMore = new StringArray();
 	}
 
-	public void addPrune(final String pruneRoot)
+	public void addPruneRoot(final String pruneRoot)
 	{
 		ContainerUtil.appendUnique(pruneRoots, pruneRoot);
+	}
+
+	public void addPruneMore(final String skip)
+	{
+		ContainerUtil.appendUnique(pruneMore, skip);
 	}
 
 	public void addPartidkey(final String partidkey)
@@ -189,25 +199,52 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				defs.remove(key);
 			}
 		}
+		if (!pruneMore.isEmpty())
+		{
+			final JSONCollectWalker cw = getPruneWalker(this);
+			final Map<String, Object> m = cw.getCollected();
+			for (final Entry<String, Object> e : m.entrySet())
+			{
+				final Object o = e.getValue();
+				final String s = (String) o;
+				final String token = StringUtil.token(s, -1, "/");
+				if (pruneMore.contains(token))
+				{
+					final String key = e.getKey();
+
+					String key0 = StringUtil.removeToken(key, -1, "/");
+					if ("items".equals(StringUtil.token(key0, -1, "/")))
+					{
+						key0 = StringUtil.removeToken(key0, -1, "/");
+					}
+					final Object zapp = remove(key0);
+					if (zapp == null)
+					{
+						log.error("no zapp " + key);
+					}
+				}
+			}
+		}
 
 	}
 
 	void collectPrune(final JSONObjHelper root, final HashSet<String> retain)
 	{
-		final JSONCollectWalker cw = new JSONCollectWalker(root);
-		cw.setFilter("(.)*\\$ref");
-		cw.setPath(true);
-		cw.setKeyInArray(true);
-		cw.walk();
+		final JSONCollectWalker cw = getPruneWalker(root);
 
 		final Map<String, Object> m = cw.getCollected();
 		if (m != null)
 		{
 			final List<String> keyList = new StringArray();
-			for (final Object o : m.values())
+			for (final Entry<String, Object> e : m.entrySet())
 			{
+				final Object o = e.getValue();
 				final String s = (String) o;
-				keyList.add(StringUtil.token(s, -1, "/"));
+				final String token = StringUtil.token(s, -1, "/");
+				if (!pruneMore.contains(token))
+				{
+					keyList.add(token);
+				}
 			}
 
 			for (final String newKey : keyList)
@@ -218,6 +255,16 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				}
 			}
 		}
+	}
+
+	private JSONCollectWalker getPruneWalker(final JSONObjHelper root)
+	{
+		final JSONCollectWalker cw = new JSONCollectWalker(root);
+		cw.setFilter("(.)*\\$ref");
+		cw.setPath(true);
+		cw.setKeyInArray(true);
+		cw.walk();
+		return cw;
 	}
 
 	void updateAuditPool()
