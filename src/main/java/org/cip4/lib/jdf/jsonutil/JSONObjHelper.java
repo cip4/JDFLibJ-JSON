@@ -67,6 +67,7 @@ import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StreamUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlUtil;
+import org.cip4.lib.jdf.jsonutil.rtf.JSONIndentWalker;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -753,7 +754,10 @@ public class JSONObjHelper implements IStreamWriter
 	{
 		if (obj != null)
 		{
-			os.write(obj.toJSONString().getBytes());
+			final JSONIndentWalker iw = new JSONIndentWalker(new JSONObjHelper(getRoot()));
+			iw.setCondensed(true);
+			iw.setSingleIndent(0);
+			iw.writeStream(os);
 		}
 
 	}

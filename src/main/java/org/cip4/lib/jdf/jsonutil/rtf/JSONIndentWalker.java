@@ -99,7 +99,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		return condensed;
 	}
 
-	public void setCondensed(boolean condensed)
+	public void setCondensed(final boolean condensed)
 	{
 		this.condensed = condensed;
 	}
@@ -165,8 +165,11 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printLine()
 	{
-		ps.println();
-		indent();
+		if (!condensed)
+		{
+			ps.println();
+			indent();
+		}
 	}
 
 	protected void indent()
@@ -268,7 +271,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	boolean needsLine(final JSONArray val)
 	{
-		for (Object o : val)
+		for (final Object o : val)
 		{
 			if (o instanceof JSONAware)
 				return true;
