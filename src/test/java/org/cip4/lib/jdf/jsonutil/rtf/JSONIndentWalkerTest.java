@@ -1,7 +1,7 @@
 /**
  * The CIP4 Software License, Version 1.0
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of
  * Processes in  Prepress, Press and Postpress (CIP4).  All rights
  * reserved.
  *
@@ -68,6 +68,10 @@
  */
 package org.cip4.lib.jdf.jsonutil.rtf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -75,50 +79,60 @@ import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class JSONIndentWalkerTest extends JSONTestCaseBase
 {
 
 	@Test
-    void testSimple() throws IOException
+	void testSimple() throws IOException
 	{
 		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[{\"c\":\"d\"}]}}");
 		final JSONIndentWalker w = new JSONIndentWalker(root);
 		final ByteArrayIOStream ios = new ByteArrayIOStream();
 		w.writeStream(ios);
 		final String s = new String(ios.toByteArray());
-		Assertions.assertNotNull(s);
-		Assertions.assertEquals(root, new JSONObjHelper(s));
+		assertNotNull(s);
+		assertEquals(root, new JSONObjHelper(s));
 
 	}
 
 	@Test
-    void testFile() throws IOException
+	void testFile() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test.json"));
 	}
 
 	@Test
-    void testToString() throws IOException
+	void testToString() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
-		Assertions.assertNotNull(w.toString());
+		assertNotNull(w.toString());
 	}
 
 	@Test
-    void testIndent() throws IOException
+	void testIndent() throws IOException
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		w.setSingleIndent(0);
 		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test0.json"));
-		Assertions.assertEquals(0, w.getSingleIndent());
+		assertEquals(0, w.getSingleIndent());
 
 		final JSONIndentWalker w4 = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		w.setSingleIndent(4);
 		FileUtil.writeFile(w4, new File(sm_dirTestDataTemp + "test4.json"));
+
+	}
+
+	@Test
+	void testCondense() throws IOException
+	{
+		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
+		w.setSingleIndent(0);
+		w.setCondensed(true);
+		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "testc0.json"));
+		assertTrue(w.isCondensed());
 
 	}
 
