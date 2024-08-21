@@ -38,6 +38,7 @@
 package org.cip4.lib.jdf.jsonutil.schema;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -81,6 +82,15 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+	}
+
+	@Test
+	void testToString() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		assertNotNull(up.toString());
 	}
 
 	@Test

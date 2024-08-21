@@ -39,7 +39,6 @@ package org.cip4.lib.jdf.jsonutil.schema;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +52,7 @@ import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.MessageHelper.EFamily;
+import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFSchemaWalker;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ContainerUtil;
@@ -67,6 +67,18 @@ import org.json.simple.JSONObject;
 
 public class JSONSchemaUpdate extends JSONObjHelper
 {
+	private static final String OBJECT = "object";
+	static final String PRODUCT_INTENT = "ProductIntent";
+	static final String ADDITIONAL_PROPERTIES = "additionalProperties";
+	static final String REF = "$ref";
+	static final String STRING = "string";
+	static final String ALL_OF = "allOf";
+	static final String PROPERTIES = "properties";
+	static final String ARRAY = "array";
+	private static final String TYPE = "type";
+	static final String REQUIRED = "required";
+	static final String DEFS = "$defs";
+	static final String DEFS_SLASH = DEFS + "/";
 	private eJSONCase jsonCase;
 	private final StringArray pruneRoots;
 	private final StringArray allowedMessages;
@@ -75,7 +87,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	private final StringArray pruneMore;
 	final JSONSchemaWalker jsonSchemaWalker;
 
-	public ArrayList<String> getSingleMessages()
+	public List<String> getSingleMessages()
 	{
 		return allowedMessages;
 	}
@@ -191,7 +203,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	void prune(final HashSet<String> retain, final String pruneroot)
 	{
-		final JSONObjHelper ph = getHelper("$defs/" + pruneroot);
+		final JSONObjHelper ph = getHelper(DEFS_SLASH + pruneroot);
 		if (ph != null)
 		{
 			retain.add(pruneroot);
@@ -201,7 +213,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	void prune(final HashSet<String> retain)
 	{
-		final JSONObjHelper defs = getHelper("$defs");
+		final JSONObjHelper defs = getHelper(DEFS);
 		for (final String key : defs.getKeys())
 		{
 			if (!retain.contains(key))
@@ -285,12 +297,12 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			updateSingleAudit(audit);
 		}
 		final JSONObjHelper ah = getHelper("$defs/Audit");
-		ah.getArrayHelper("required").addString("Name");
-		ah.setString("properties/Name/type", "string");
+		ah.getArrayHelper(REQUIRED).addString("Name");
+		ah.setString("properties/Name/type", STRING);
 
 		final JSONObjHelper aph = getHelper("$defs/AuditPool");
-		aph.setString("type", "array");
-		final JSONObjHelper prop = (JSONObjHelper) aph.remove("properties");
+		aph.setString(TYPE, ARRAY);
+		final JSONObjHelper prop = (JSONObjHelper) aph.remove(PROPERTIES);
 		final List<String> keys = prop.getKeys();
 		for (final String key : keys)
 		{
@@ -306,8 +318,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	void updateMediaLayers()
 	{
 		final JSONObjHelper mlh = getHelper("$defs/MediaLayers");
-		mlh.setString("type", "array");
-		final JSONObjHelper prop = (JSONObjHelper) mlh.remove("properties");
+		mlh.setString(TYPE, ARRAY);
+		final JSONObjHelper prop = (JSONObjHelper) mlh.remove(PROPERTIES);
 		final List<String> keys = prop.getKeys();
 
 		for (final String key : keys)
@@ -327,18 +339,18 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	{
 		final JSONObjHelper o = updateSingleName(audit);
 		o.setString("properties/Header/$ref", "#/$defs/Header");
-		o.getCreateArray("required").addString("Header");
+		o.getCreateArray(REQUIRED).addString("Header");
 	}
 
 	JSONObjHelper updateSingleName(final String glue)
 	{
-		final JSONObjHelper h = getHelper("$defs/" + glue);
+		final JSONObjHelper h = getHelper(DEFS_SLASH + glue);
 		final JSONObjHelper o = getSchemaParent(h);
-		final JSONObjHelper p = o == null ? null : o.getHelper("properties");
+		final JSONObjHelper p = o == null ? null : o.getHelper(PROPERTIES);
 		if (p != null)
 		{
 			final JSONObjHelper name = p.getCreateObject("Name");
-			name.setString("type", "string");
+			name.setString(TYPE, STRING);
 			name.getCreateArray("enum").addString(glue);
 			return o;
 		}
@@ -348,12 +360,12 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	JSONObjHelper getSchemaParent(final JSONObjHelper h)
 	{
 
-		final JSONObjHelper p = h.getHelper("properties");
+		final JSONObjHelper p = h.getHelper(PROPERTIES);
 		if (p != null)
 		{
 			return h;
 		}
-		final JSONArrayHelper ah = h.getArrayHelper("allOf");
+		final JSONArrayHelper ah = h.getArrayHelper(ALL_OF);
 		for (int i = 0; ah != null && i < 42; i++)
 		{
 			final JSONObjHelper o = ah.getJSONHelper(i);
@@ -378,13 +390,13 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	void removeAbstractRefs()
 	{
 
-		final List<String> alldefs = getHelper("$defs").getKeys();
+		final List<String> alldefs = getHelper(DEFS).getKeys();
 		final StringArray fams = new StringArray(EnumFamily.getFamilies());
 		fams.remove(EnumFamily.Acknowledge.getName());
 		fams.remove(EnumFamily.Registration.getName());
 		fams.add("Message");
 		fams.add("SpecificResource");
-		fams.add("ProductIntent");
+		fams.add(PRODUCT_INTENT);
 		fams.add("Audit");
 
 		final Set<String> refs = new HashSet<>();
@@ -394,12 +406,12 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		}
 		for (final String key : alldefs)
 		{
-			final JSONObjHelper def = getHelper("$defs/" + key);
-			final JSONArrayHelper allOf = def.getArrayHelper("allOf");
+			final JSONObjHelper def = getHelper(DEFS_SLASH + key);
+			final JSONArrayHelper allOf = def.getArrayHelper(ALL_OF);
 			for (int i = JSONArrayHelper.size(allOf) - 1; i >= 0; i--)
 			{
 				final JSONObjHelper oh = allOf.getJSONHelper(i);
-				final String ref = oh.getString("$ref");
+				final String ref = oh.getString(REF);
 				if (refs.contains(ref))
 				{
 					allOf.remove(i);
@@ -407,13 +419,13 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			}
 			if (JSONArrayHelper.size(allOf) == 1)
 			{
-				def.remove("allOf");
+				def.remove(ALL_OF);
 				def.putAll(allOf.getJSONHelper(0));
 			}
 		}
 		for (final String fam : fams)
 		{
-			remove("$defs/" + fam);
+			remove(DEFS_SLASH + fam);
 		}
 
 	}
@@ -424,11 +436,11 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		abs.addAll(EnumFamily.getFamilies());
 		for (final String ab : abs)
 		{
-			final JSONObjHelper h = getHelper("$defs/" + ab);
+			final JSONObjHelper h = getHelper(DEFS_SLASH + ab);
 			if (h != null)
-				h.setBool("additionalProperties", true);
+				h.setBool(ADDITIONAL_PROPERTIES, true);
 		}
-		setBool("additionalProperties", true);
+		setBool(ADDITIONAL_PROPERTIES, true);
 
 	}
 
@@ -436,13 +448,13 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	{
 		final JSONObjHelper h = getHelper("$defs/Resource/properties");
 		h.remove("SpecificResource");
-		final List<String> keys = allowedResources.isEmpty() ? getHelper("$defs").getKeys() : allowedResources;
+		final List<String> keys = allowedResources.isEmpty() ? getHelper(DEFS).getKeys() : allowedResources;
 		for (final String key : keys)
 		{
-			final JSONArrayHelper defHelper = getArrayHelper("$defs/" + key + "/allOf");
+			final JSONArrayHelper defHelper = getArrayHelper(DEFS_SLASH + key + "/allOf");
 			if (defHelper != null)
 			{
-				final String ref = defHelper.getJSONHelper(0).getString("$ref");
+				final String ref = defHelper.getJSONHelper(0).getString(REF);
 				if ("#/$defs/SpecificResource".equals(ref))
 				{
 					h.setString(key + "/$ref", "#/$defs/" + key);
@@ -454,11 +466,11 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	void updateAbstractIntent()
 	{
 		final JSONObjHelper h = getHelper("$defs/Intent/properties");
-		final List<String> alldefs = getHelper("$defs").getKeys();
-		h.remove("ProductIntent");
+		final List<String> alldefs = getHelper(DEFS).getKeys();
+		h.remove(PRODUCT_INTENT);
 		for (final String def : alldefs)
 		{
-			if (def.endsWith("Intent") && !def.equals("Intent") && !def.equals("ProductIntent"))
+			if (def.endsWith(XJDFConstants.Intent) && !def.equals(XJDFConstants.Intent) && !def.equals(PRODUCT_INTENT))
 			{
 				h.setString(def + "/$ref", "#/$defs/" + def);
 			}
@@ -481,7 +493,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		}
 		else
 		{
-			final List<String> alldefs = getHelper("$defs").getKeys();
+			final List<String> alldefs = getHelper(DEFS).getKeys();
 			final StringArray fams = new StringArray(EnumFamily.getFamilies());
 			fams.remove(EnumFamily.Acknowledge.getName());
 			fams.remove(EnumFamily.Registration.getName());
@@ -503,12 +515,12 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	void updateAbstractMessage(final String key, final String fam)
 	{
 		final JSONObjHelper xjmfprop = getHelper("$defs/XJMF/properties");
-		final JSONObjHelper msg = getHelper("$defs/" + key);
-		final JSONObjHelper family = getHelper("$defs/" + fam);
+		final JSONObjHelper msg = getHelper(DEFS_SLASH + key);
+		final JSONObjHelper family = getHelper(DEFS_SLASH + fam);
 		final JSONObjHelper message = getHelper("$defs/Message");
-		final JSONObjHelper msgProp = getSchemaParent(msg).getHelper("properties");
-		final JSONObjHelper famProp = getSchemaParent(family).getHelper("properties");
-		final JSONObjHelper messageProp = getSchemaParent(message).getHelper("properties");
+		final JSONObjHelper msgProp = getSchemaParent(msg).getHelper(PROPERTIES);
+		final JSONObjHelper famProp = getSchemaParent(family).getHelper(PROPERTIES);
+		final JSONObjHelper messageProp = getSchemaParent(message).getHelper(PROPERTIES);
 		msgProp.putAll(famProp);
 		msgProp.putAll(messageProp);
 		xjmfprop.setString(key + "/$ref", "#/$defs/" + key);
@@ -517,47 +529,47 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	JSONObject getType(final String typ)
 	{
 		final JSONObject o = new JSONObject();
-		o.put("type", typ);
+		o.put(TYPE, typ);
 		return o;
 	}
 
 	void updateComment()
 	{
 		final JSONObjHelper comment = getHelper("$defs/Comment");
-		final JSONObject jo = (JSONObject) comment.getPathObject("properties");
+		final JSONObject jo = (JSONObject) comment.getPathObject(PROPERTIES);
 		jo.remove("Value");
 
-		jo.put("Text", getType("string"));
+		jo.put("Text", getType(STRING));
 		final JSONArray req = new JSONArray();
 		req.add("Text");
-		comment.getRoot().put("required", req);
+		comment.getRoot().put(REQUIRED, req);
 
 	}
 
 	void updateXjdfXjmf()
 	{
-		remove("properties");
+		remove(PROPERTIES);
 
 		final JSONArrayHelper oneOf = getCreateArray("oneOf");
 		final StringArray roots = pruneRoots.isEmpty() ? new StringArray(new String[] { "XJDF", "XJMF" }) : pruneRoots;
 		for (final String x : roots)
 		{
-			final JSONObjHelper h = getHelper("$defs/" + x);
+			final JSONObjHelper h = getHelper(DEFS_SLASH + x);
 
-			h.setString("properties/Name/type", "string");
+			h.setString("properties/Name/type", STRING);
 			h.getCreateArray("properties/@context/Name").addString(x);
 
-			h.setString("properties/@context/type", "string");
+			h.setString("properties/@context/type", STRING);
 			// TODO real schema url h.getCreateArray("properties/@context/enum").addString("foo");
 
 			final JSONObjHelper ref = new JSONObjHelper(new JSONObject());
-			ref.setString("$ref", "#/$defs/" + x);
+			ref.setString(REF, "#/$defs/" + x);
 
 			oneOf.add(ref);
 			final JSONObjHelper root = new JSONObjHelper(new JSONObject());
-			root.setString("type", "object");
-			root.getCreateArray("required").addString(x);
-			root.getCreateObject("properties").setObj(x, ref.getPathObject(null));
+			root.setString(TYPE, OBJECT);
+			root.getCreateArray(REQUIRED).addString(x);
+			root.getCreateObject(PROPERTIES).setObj(x, ref.getPathObject(null));
 			oneOf.add(root);
 
 		}
@@ -567,7 +579,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONSchemaUpdate";
+		return "JSONSchemaUpdate [jsonCase=" + jsonCase + ", pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources
+				+ ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneMore + "]";
 	}
 
 	public eJSONCase getJsonCase()
