@@ -60,7 +60,7 @@ public abstract class JSONWalker
 		return "JSONWalker [sorted=" + sorted + ", keyInArray=" + keyInArray + ", retainNull=" + retainNull + ", root=" + root + "]";
 	}
 
-	private static Log log = LogFactory.getLog(JSONReader.class);
+	private static final Log log = LogFactory.getLog(JSONReader.class);
 	private final JSONObjHelper root;
 	boolean sorted;
 	boolean keyInArray;

@@ -309,6 +309,62 @@ public class JSONReader
 	KElement walkTree(final JSONObject o, KElement root)
 	{
 
+		root = ensureRoot(o, root);
+		KElement next = root;
+		final Object context = o.get("@context");
+		processContext(context, root);
+		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
+		{
+			next = walkKid(root, next, kid);
+		}
+		return root != null ? root : next;
+	}
+
+	KElement walkKid(final KElement root, KElement next, final Entry<String, Object> kid)
+	{
+		final String key = getKey(kid.getKey(), kid.getValue(), root);
+		final Object val = kid.getValue();
+		if ("@context".equals(key) || JSONWriter.SCHEMA.equals(key))
+		{
+			// skip
+		}
+		else if (val instanceof JSONObject)
+		{
+			next = root == null ? createRoot(key) : root.appendElement(key);
+			walkTree((JSONObject) val, next);
+		}
+		else if (val instanceof JSONArray)
+		{
+			next = walkKidArray(root, next, key, val);
+		}
+		else if (root == null)
+		{
+			next = createRoot(key);
+			walkSimple(null, val, next);
+		}
+		else
+		{
+			walkSimple(key, val, root);
+		}
+		return next;
+	}
+
+	KElement walkKidArray(final KElement root, KElement next, final String key, final Object val)
+	{
+		if (root == null)
+		{
+			next = createRoot(key);
+			walkArray(null, (JSONArray) val, next);
+		}
+		else
+		{
+			walkArray(key, (JSONArray) val, root);
+		}
+		return next;
+	}
+
+	KElement ensureRoot(final JSONObject o, KElement root)
+	{
 		if (root == null)
 		{
 			int n = o.size();
@@ -336,45 +392,7 @@ public class JSONReader
 		{
 			new JDFDoc(root.getOwnerDocument()).setInitOnCreate(false);
 		}
-		KElement next = root;
-		final Object context = o.get("@context");
-		processContext(context, root);
-		for (final Entry<String, Object> kid : (Set<Entry<String, Object>>) o.entrySet())
-		{
-			final String key = getKey(kid.getKey(), kid.getValue(), root);
-			final Object val = kid.getValue();
-			if ("@context".equals(key) || JSONWriter.SCHEMA.equals(key))
-			{
-				// skip
-			}
-			else if (val instanceof JSONObject)
-			{
-				next = root == null ? createRoot(key) : root.appendElement(key);
-				walkTree((JSONObject) val, next);
-			}
-			else if (val instanceof JSONArray)
-			{
-				if (root == null)
-				{
-					next = createRoot(key);
-					walkArray(null, (JSONArray) val, next);
-				}
-				else
-				{
-					walkArray(key, (JSONArray) val, root);
-				}
-			}
-			else if (root == null)
-			{
-				next = createRoot(key);
-				walkSimple(null, val, next);
-			}
-			else
-			{
-				walkSimple(key, val, root);
-			}
-		}
-		return root != null ? root : next;
+		return root;
 	}
 
 	KElement createRoot(final String key)

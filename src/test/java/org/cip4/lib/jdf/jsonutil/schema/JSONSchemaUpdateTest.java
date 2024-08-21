@@ -37,20 +37,41 @@
  */
 package org.cip4.lib.jdf.jsonutil.schema;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
+import org.cip4.lib.jdf.jsonutil.JSONWriter;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
+import org.cip4.lib.jdf.jsonutil.XJDFJSONWriterTest;
+import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
+
+import com.networknt.schema.ValidationMessage;
 
 class JSONSchemaUpdateTest extends JSONTestCaseBase
 {
+
+	@Test
+	void testJSONSchemaUpdateBad() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final KElement e = KElement.createRoot("foo");
+		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
+		final JSONObject jo = jsonWriter.convert(e);
+		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
+		assertFalse(ret.isEmpty());
+	}
 
 	@Test
 	void testJSONSchemaUpdate() throws URISyntaxException

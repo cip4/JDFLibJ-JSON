@@ -1,5 +1,9 @@
 package org.cip4.lib.jdf.jsonutil.schema;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.extensions.XJDFSchemaWalker;
+import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWalker;
@@ -10,15 +14,31 @@ import org.json.simple.JSONObject;
 
 public class JSONSchemaWalker extends JSONWalker
 {
+	private static final Log log = LogFactory.getLog(JSONSchemaWalker.class);
+
+	String path;
 
 	public JSONSchemaWalker(final JSONObjHelper root)
 	{
 		super(root);
 		setKeyInArray(false);
 		jsonCase = eJSONCase.retain;
+		path = "";
+		xsdWalker = null;
+	}
+
+	public XJDFSchemaWalker getXsdWalker()
+	{
+		return xsdWalker;
+	}
+
+	public void setXsdWalker(final XJDFSchemaWalker xsdWalker)
+	{
+		this.xsdWalker = xsdWalker;
 	}
 
 	eJSONCase jsonCase;
+	private XJDFSchemaWalker xsdWalker;
 
 	public eJSONCase getJsonCase()
 	{
@@ -101,7 +121,28 @@ public class JSONSchemaWalker extends JSONWalker
 
 	void walkObject(final JSONObject o)
 	{
-		updateClazz(new JSONObjHelper(o));
+		final JSONObjHelper oh = new JSONObjHelper(o);
+		updateClazz(oh);
+		updateArrayLength(oh);
+	}
+
+	void updateArrayLength(final JSONObjHelper o)
+	{
+		final String newPath = StringUtil.token(path, -3, "/") + "/" + StringUtil.token(path, -1, "/");
+		final int l = xsdWalker.getLength(newPath);
+		if (l > 0)
+		{
+			o.setInt("minItems", l);
+			o.setInt("maxItems", l);
+			final Integer min = xsdWalker.getMin(newPath);
+			if (min != null)
+				o.setDouble("minimum", min);
+			final Integer max = xsdWalker.getMax(newPath);
+			if (max != null)
+				o.setDouble("maximum", max);
+			log.info(newPath + " " + l + " " + min + "-" + max);
+		}
+
 	}
 
 	void updateClazz(final JSONObjHelper oh)
@@ -113,6 +154,17 @@ public class JSONSchemaWalker extends JSONWalker
 		final int i = a != null ? a.indexOf("Clazz") : -1;
 		if (i >= 0)
 			a.set(i, "Class");
+	}
+
+	@Override
+	protected Object walkTree(final String rootKey, final JSONObject o)
+	{
+		if (!StringUtil.isEmpty(rootKey))
+			path = path + "/" + rootKey;
+		final Object ret = super.walkTree(rootKey, o);
+		if (!StringUtil.isEmpty(rootKey))
+			path = StringUtil.leftStr(path, -1 - rootKey.length());
+		return ret;
 	}
 
 }

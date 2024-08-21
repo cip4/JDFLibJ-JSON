@@ -53,8 +53,10 @@ import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.MessageHelper.EFamily;
+import org.cip4.jdflib.extensions.XJDFSchemaWalker;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ContainerUtil;
+import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
@@ -71,6 +73,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	private final StringArray allowedResources;
 	private final StringArray allowedPartitions;
 	private final StringArray pruneMore;
+	final JSONSchemaWalker jsonSchemaWalker;
 
 	public ArrayList<String> getSingleMessages()
 	{
@@ -95,6 +98,12 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
 		pruneMore = new StringArray();
+		jsonSchemaWalker = new JSONSchemaWalker(this);
+		final File xsd = FileUtil.newExtension(f, "xsd");
+		final KElement xsdRoot = KElement.parseFile(xsd.getPath());
+		final XJDFSchemaWalker xsdWalker = new XJDFSchemaWalker();
+		xsdWalker.walkTree(xsdRoot, null);
+		jsonSchemaWalker.setXsdWalker(xsdWalker);
 	}
 
 	public JSONSchemaUpdate(final InputStream is)
@@ -105,6 +114,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
 		pruneMore = new StringArray();
+		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
 	public JSONSchemaUpdate(final JSONObject base)
@@ -115,6 +125,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
 		pruneMore = new StringArray();
+		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
 	public void addPruneRoot(final String pruneRoot)
@@ -148,7 +159,6 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		updateAbstract();
 		updateMediaLayers();
 		updatePart();
-		final JSONSchemaWalker jsonSchemaWalker = new JSONSchemaWalker(this);
 		jsonSchemaWalker.setJsonCase(jsonCase);
 		jsonSchemaWalker.setSorted(true);
 		jsonSchemaWalker.walk();

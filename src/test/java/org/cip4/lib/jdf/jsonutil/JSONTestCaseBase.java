@@ -266,8 +266,6 @@ public abstract class JSONTestCaseBase
 		final JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
-		final String root = e.getLocalName();
-		// jo.put("$schema", "http://www.CIP4.org/JDFSchema_2_0/#/properties/" + root);
 		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
 		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
