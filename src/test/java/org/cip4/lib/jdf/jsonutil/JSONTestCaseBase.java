@@ -97,6 +97,7 @@ public abstract class JSONTestCaseBase
 			final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 			up.update();
 			FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json"));
+			FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json"));
 		}
 	}
 
@@ -266,7 +267,7 @@ public abstract class JSONTestCaseBase
 		final JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
-		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schemakeep/Version_2_3/xjdf.json"));
 		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{
