@@ -96,8 +96,16 @@ public abstract class JSONTestCaseBase
 			assertTrue(f.canRead());
 			final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 			up.update();
-			FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json"));
-			FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json"));
+			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
+			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
+			if (!f1.exists())
+			{
+				FileUtil.writeFile(up, f1);
+			}
+			if (!f2.exists())
+			{
+				FileUtil.writeFile(up, f2);
+			}
 		}
 	}
 
