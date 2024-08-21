@@ -62,7 +62,6 @@ import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JSONSchemaUpdate extends JSONObjHelper
@@ -526,24 +525,14 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		xjmfprop.setString(key + "/$ref", "#/$defs/" + key);
 	}
 
-	JSONObject getType(final String typ)
-	{
-		final JSONObject o = new JSONObject();
-		o.put(TYPE, typ);
-		return o;
-	}
-
 	void updateComment()
 	{
 		final JSONObjHelper comment = getHelper("$defs/Comment");
-		final JSONObject jo = (JSONObject) comment.getPathObject(PROPERTIES);
+		final JSONObjHelper jo = comment.getHelper(PROPERTIES);
 		jo.remove("Value");
 
-		jo.put("Text", getType(STRING));
-		final JSONArray req = new JSONArray();
-		req.add("Text");
-		comment.getRoot().put(REQUIRED, req);
-
+		jo.setString("Text/" + TYPE, STRING);
+		comment.setArray(REQUIRED).addString("Text");
 	}
 
 	void updateXjdfXjmf()
