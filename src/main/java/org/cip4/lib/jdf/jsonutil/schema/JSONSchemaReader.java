@@ -39,7 +39,6 @@ package org.cip4.lib.jdf.jsonutil.schema;
 
 import java.io.File;
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -52,7 +51,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.CustomErrorMessageType;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -108,20 +106,17 @@ public class JSONSchemaReader
 		}
 		catch (final JsonMappingException e)
 		{
-			ContainerUtil.add(al,
-					ValidationMessage.of(e.getClass().getSimpleName(), CustomErrorMessageType.of("42"), new MessageFormat(e.getClass().getSimpleName()), null, null, "aa"));
+			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		catch (final JsonProcessingException e)
 		{
-			ContainerUtil.add(al,
-					ValidationMessage.of(e.getClass().getSimpleName(), CustomErrorMessageType.of("42"), new MessageFormat(e.getClass().getSimpleName()), null, null, "bb"));
+			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		catch (final Exception e)
 		{
-			ContainerUtil.add(al,
-					ValidationMessage.of(e.getClass().getSimpleName(), CustomErrorMessageType.of("42"), new MessageFormat(e.getClass().getSimpleName()), null, null, "unknown"));
+			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		return theSchema.validate(jsonNode);
