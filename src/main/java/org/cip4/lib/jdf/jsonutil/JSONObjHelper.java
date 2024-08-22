@@ -213,7 +213,6 @@ public class JSONObjHelper implements IStreamWriter
 		}
 		catch (final Exception e)
 		{
-			e.printStackTrace();
 			if (logBad)
 			{
 				log.error("cannot parse stream", e);
