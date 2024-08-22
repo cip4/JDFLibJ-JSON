@@ -136,4 +136,19 @@ class JSONIndentWalkerTest extends JSONTestCaseBase
 
 	}
 
+	@Test
+	void testCondensedEmptyArray() throws IOException
+	{
+		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[],\"c\":[]}}");
+		final JSONIndentWalker w = new JSONIndentWalker(root);
+		w.setSingleIndent(0);
+		w.setCondensed(true);
+		w.setRetainNull(true);
+		final File file = new File(sm_dirTestDataTemp + "testce.json");
+		FileUtil.writeFile(w, file);
+		assertTrue(w.isCondensed());
+		final JSONObjHelper roundTrip = new JSONObjHelper(file);
+		assertEquals(root, roundTrip);
+	}
+
 }

@@ -757,6 +757,7 @@ public class JSONObjHelper implements IStreamWriter
 			final JSONIndentWalker iw = new JSONIndentWalker(new JSONObjHelper(getRoot()));
 			iw.setCondensed(true);
 			iw.setSingleIndent(0);
+			iw.setRetainNull(true);
 			iw.writeStream(os);
 		}
 
