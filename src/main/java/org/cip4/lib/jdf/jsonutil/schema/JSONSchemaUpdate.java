@@ -66,7 +66,8 @@ import org.json.simple.JSONObject;
 
 public class JSONSchemaUpdate extends JSONObjHelper
 {
-	private static final String OBJECT = "object";
+	static final String HASH_DEFS = "#/$defs/";
+	static final String OBJECT = "object";
 	static final String PRODUCT_INTENT = "ProductIntent";
 	static final String ADDITIONAL_PROPERTIES = "additionalProperties";
 	static final String REF = "$ref";
@@ -74,7 +75,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	static final String ALL_OF = "allOf";
 	static final String PROPERTIES = "properties";
 	static final String ARRAY = "array";
-	private static final String TYPE = "type";
+	static final String TYPE = "type";
 	static final String REQUIRED = "required";
 	static final String DEFS = "$defs";
 	static final String DEFS_SLASH = DEFS + "/";
@@ -401,7 +402,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		final Set<String> refs = new HashSet<>();
 		for (final String fam : fams)
 		{
-			refs.add("#/$defs/" + fam);
+			refs.add(HASH_DEFS + fam);
 		}
 		for (final String key : alldefs)
 		{
@@ -456,7 +457,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				final String ref = defHelper.getJSONHelper(0).getString(REF);
 				if ("#/$defs/SpecificResource".equals(ref))
 				{
-					h.setString(key + "/$ref", "#/$defs/" + key);
+					h.setString(key + "/$ref", HASH_DEFS + key);
 				}
 			}
 		}
@@ -471,7 +472,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		{
 			if (def.endsWith(XJDFConstants.Intent) && !def.equals(XJDFConstants.Intent) && !def.equals(PRODUCT_INTENT))
 			{
-				h.setString(def + "/$ref", "#/$defs/" + def);
+				h.setString(def + "/$ref", HASH_DEFS + def);
 			}
 		}
 
@@ -522,7 +523,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		final JSONObjHelper messageProp = getSchemaParent(message).getHelper(PROPERTIES);
 		msgProp.putAll(famProp);
 		msgProp.putAll(messageProp);
-		xjmfprop.setString(key + "/$ref", "#/$defs/" + key);
+		xjmfprop.setString(key + "/$ref", HASH_DEFS + key);
 	}
 
 	void updateComment()
@@ -552,7 +553,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			// TODO real schema url h.getCreateArray("properties/@context/enum").addString("foo");
 
 			final JSONObjHelper ref = new JSONObjHelper(new JSONObject());
-			ref.setString(REF, "#/$defs/" + x);
+			ref.setString(REF, HASH_DEFS + x);
 
 			oneOf.add(ref);
 			final JSONObjHelper root = new JSONObjHelper(new JSONObject());

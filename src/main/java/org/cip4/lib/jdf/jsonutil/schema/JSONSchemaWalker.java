@@ -70,7 +70,7 @@ public class JSONSchemaWalker extends JSONWalker
 
 	void updateCase(final String key, final Object a)
 	{
-		if ("properties".equals(key))
+		if (JSONSchemaUpdate.PROPERTIES.equals(key))
 		{
 			final JSONObjHelper oh = JSONObjHelper.getHelper(a);
 			for (final String k : oh.getKeys())
@@ -79,7 +79,7 @@ public class JSONSchemaWalker extends JSONWalker
 			}
 
 		}
-		else if ("required".equals(key))
+		else if (JSONSchemaUpdate.REQUIRED.equals(key))
 		{
 			final JSONArrayHelper ah = JSONArrayHelper.getHelper(a);
 			if (ah != null)
@@ -94,14 +94,14 @@ public class JSONSchemaWalker extends JSONWalker
 
 	void reduceAbstract(final String key, final Object a)
 	{
-		if ("properties".equals(key))
+		if (JSONSchemaUpdate.PROPERTIES.equals(key))
 		{
 			final JSONObjHelper oh = JSONObjHelper.getHelper(a);
 			oh.remove("Any");
 			oh.remove("any");
 			oh.remove("otherAttributes");
 		}
-		else if ("required".equals(key))
+		else if (JSONSchemaUpdate.REQUIRED.equals(key))
 		{
 			final JSONArrayHelper ah = JSONArrayHelper.getHelper(a);
 			if (ah != null)
@@ -150,7 +150,7 @@ public class JSONSchemaWalker extends JSONWalker
 		final JSONObjHelper c = (JSONObjHelper) oh.remove("Clazz");
 		if (c != null)
 			oh.setObj("Class", c);
-		final JSONArrayHelper a = oh.getArrayHelper("required");
+		final JSONArrayHelper a = oh.getArrayHelper(JSONSchemaUpdate.REQUIRED);
 		final int i = a != null ? a.indexOf("Clazz") : -1;
 		if (i >= 0)
 			a.set(i, "Class");
