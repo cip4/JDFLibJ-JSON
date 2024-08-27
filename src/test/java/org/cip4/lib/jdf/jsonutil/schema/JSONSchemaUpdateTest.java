@@ -182,6 +182,18 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 	}
 
 	@Test
+	void testJSONSchemaUpdateXJMFSignalStatusOnly() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addPruneRoot("SignalStatus");
+		up.addSingleMessage("SignalStatus");
+		up.update();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalstatus2.json"));
+	}
+
+	@Test
 	void testJSONSchemaUpdateXJMFSignalResourceMediaPart() throws URISyntaxException
 	{
 		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");

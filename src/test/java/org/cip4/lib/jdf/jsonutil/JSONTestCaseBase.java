@@ -98,11 +98,11 @@ public abstract class JSONTestCaseBase
 			up.update();
 			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
 			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
-			if (!f1.exists())
+			if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
 			{
 				FileUtil.writeFile(up, f1);
 			}
-			if (!f2.exists())
+			if (!f2.exists() || (System.currentTimeMillis() - f2.lastModified()) > 42000)
 			{
 				FileUtil.writeFile(up, f2);
 			}

@@ -48,6 +48,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.MessageHelper;
@@ -540,30 +541,45 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	{
 		remove(PROPERTIES);
 
+		final StringArray xRoots = new StringArray(new String[] { XJDFConstants.XJDF, XJDFConstants.XJMF });
+		final StringArray roots = pruneRoots.isEmpty() ? new StringArray(xRoots) : pruneRoots;
+		boolean oo = roots.size() > 1;
+		oo = oo || pruneRoots.containsAny(xRoots);
+		if (oo)
+		{
+			updateOnOf(xRoots, roots);
+		}
+		else if (!roots.isEmpty())
+		{
+			setString(PROPERTIES + JDFConstants.SLASH + roots.get(0) + JDFConstants.SLASH + REF, HASH_DEFS + roots.get(0));
+		}
+
+	}
+
+	void updateOnOf(final StringArray xRoots, final StringArray roots)
+	{
 		final JSONArrayHelper oneOf = getCreateArray("oneOf");
-		final StringArray roots = pruneRoots.isEmpty() ? new StringArray(new String[] { "XJDF", "XJMF" }) : pruneRoots;
 		for (final String x : roots)
 		{
-			final JSONObjHelper h = getHelper(DEFS_SLASH + x);
+			if (xRoots.contains(x))
+			{
+				final JSONObjHelper h = getHelper(DEFS_SLASH + x);
 
-			h.setString("properties/Name/type", STRING);
-			h.getCreateArray("properties/@context/Name").addString(x);
+				h.setString("properties/Name/type", STRING);
+				h.getCreateArray("properties/@context/Name").addString(x);
 
-			h.setString("properties/@context/type", STRING);
-			// TODO real schema url h.getCreateArray("properties/@context/enum").addString("foo");
+				h.setString("properties/@context/type", STRING);
+			}
 
 			final JSONObjHelper ref = new JSONObjHelper(new JSONObject());
 			ref.setString(REF, HASH_DEFS + x);
-
 			oneOf.add(ref);
 			final JSONObjHelper root = new JSONObjHelper(new JSONObject());
 			root.setString(TYPE, OBJECT);
 			root.getCreateArray(REQUIRED).addString(x);
 			root.getCreateObject(PROPERTIES).setObj(x, ref.getPathObject(null));
 			oneOf.add(root);
-
 		}
-
 	}
 
 	@Override
