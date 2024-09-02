@@ -39,6 +39,7 @@ package org.cip4.lib.jdf.jsonutil.schema;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -49,6 +50,7 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
+import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
@@ -91,6 +93,16 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 		assertNotNull(up.toString());
+	}
+
+	@Test
+	void testGetSchemaParent()
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		assertNull(up.getSchemaParent(null));
+		assertNull(up.getSchemaParent(new JSONObjHelper()));
 	}
 
 	@Test
@@ -179,6 +191,20 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		up.addSingleMessage("SignalStatus");
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalstatus.json"));
+	}
+
+	@Test
+	void testPrune2() throws URISyntaxException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
+		up.addSingleMessage("SignalStatus");
+		up.update();
+		up.addPruneRoot("XJMF");
+		up.prune();
+		up.prune();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalstatusPrune2.json"));
 	}
 
 	@Test

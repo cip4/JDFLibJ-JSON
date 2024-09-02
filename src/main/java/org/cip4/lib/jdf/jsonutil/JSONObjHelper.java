@@ -303,6 +303,26 @@ public class JSONObjHelper implements IStreamWriter
 
 	}
 
+	/**
+	 * get the underlying object
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static Object getObject(final Object o)
+	{
+		if (o instanceof JSONObjHelper)
+		{
+			return ((JSONObjHelper) o).getRoot();
+		}
+		if (o instanceof JSONArrayHelper)
+		{
+			return ((JSONArrayHelper) o).getArray();
+		}
+		return o;
+
+	}
+
 	public static JSONObjHelper getHelperFromStream(final InputStream is, final boolean logBad)
 	{
 		try
@@ -940,6 +960,24 @@ public class JSONObjHelper implements IStreamWriter
 			}
 		}
 
+	}
+
+	public Object put(final Object key, final Object value)
+	{
+		if (obj == null)
+			obj = new JSONObject();
+		return obj.put(key, value);
+	}
+
+	public void clear()
+	{
+		if (obj != null)
+			obj.clear();
+	}
+
+	public Set<String> keySet()
+	{
+		return obj == null ? null : obj.keySet();
 	}
 
 }

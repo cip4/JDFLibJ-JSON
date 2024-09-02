@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -40,149 +40,157 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class JSONArrayHelperTest extends JSONTestCaseBase
 {
 
 	@Test
-    void testSimpleStream()
+	void testSimpleStream()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
-		Assertions.assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
-		Assertions.assertEquals("d", r.getJSONHelper(0).getPathObject("a/b/c"));
+		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b[0]/c"));
+		assertEquals(null, r.getJSONHelper(0).getPathObject("a/b[1]/c"));
+		assertEquals("d", r.getJSONHelper(0).getPathObject("a/b/c"));
 	}
 
 	@Test
-    void testBadStream()
+	void testBadStream()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNull(r.getArray());
+		assertNull(r.getArray());
 	}
 
 	@Test
-    void testSimpleFil()
+	void testSimpleFil()
 	{
 		final JSONArrayHelper r = new JSONArrayHelper((File) null);
-		Assertions.assertEquals(0, r.size());
+		assertEquals(0, r.size());
 	}
 
 	@Test
-    void testGetArray()
+	void testGetArray()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNotNull(r.getArray());
+		assertNotNull(r.getArray());
 	}
 
 	@Test
-    void testSize()
+	void testSize()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertEquals(1, r.size());
+		assertEquals(1, r.size());
 	}
 
 	@Test
-    void testSizeList()
+	void testSizeList()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertEquals(1, r.getJSONObjects().size());
+		assertEquals(1, r.getJSONObjects().size());
 	}
 
 	@Test
-    void testGetJSonHelper()
+	void testGetJSonHelper()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNotNull(r.getJSONHelper(0));
-		Assertions.assertNull(r.getJSONHelper(42));
+		assertNotNull(r.getJSONHelper(0));
+		assertNull(r.getJSONHelper(42));
 	}
 
 	@Test
-    void testGetListString()
+	void testGetListString()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNotNull(r.getListString());
+		assertNotNull(r.getListString());
 	}
 
 	@Test
-    void testToString()
+	void testToString()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNotNull(r.toString());
+		assertNotNull(r.toString());
 	}
 
 	@Test
-    void testGetString()
+	void testGetString()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNull(r.getString(0));
+		assertNull(r.getString(0));
 	}
 
 	@Test
-    void testIsEmpty()
+	void testIsEmpty()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertFalse(r.isEmpty());
+		assertFalse(r.isEmpty());
 		final JSONArrayHelper r2 = new JSONArrayHelper((String) null);
-		Assertions.assertTrue(r2.isEmpty());
+		assertTrue(r2.isEmpty());
 	}
 
 	@Test
-    void testIsEmptyStatic()
+	void testIsEmptyStatic()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertFalse(JSONArrayHelper.isEmpty(r));
+		assertFalse(JSONArrayHelper.isEmpty(r));
 		final JSONArrayHelper r0 = new JSONArrayHelper();
-		Assertions.assertTrue(JSONArrayHelper.isEmpty(r0));
-		Assertions.assertTrue(JSONArrayHelper.isEmpty(null));
+		assertTrue(JSONArrayHelper.isEmpty(r0));
+		assertTrue(JSONArrayHelper.isEmpty(null));
 	}
 
 	@Test
-    void testSizeStatic()
+	void testSizeStatic()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertEquals(1, JSONArrayHelper.size(r));
+		assertEquals(1, JSONArrayHelper.size(r));
 		final JSONArrayHelper r0 = new JSONArrayHelper();
-		Assertions.assertEquals(0, JSONArrayHelper.size(r0));
-		Assertions.assertEquals(0, JSONArrayHelper.size(null));
+		assertEquals(0, JSONArrayHelper.size(r0));
+		assertEquals(0, JSONArrayHelper.size(null));
 	}
 
 	@Test
-    void testCopyOf()
+	void testCopyOf()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
-		Assertions.assertNotNull(r.copyOf());
+		assertNotNull(r.copyOf());
 	}
 
 	@Test
-    void testAppendUnique()
+	void testAppendUnique()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
 		final JSONObjHelper o = new JSONObjHelper("{\"c\":\"d\"}");
-		Assertions.assertTrue(r.appendUnique(o));
-		Assertions.assertFalse(r.appendUnique(o));
+		assertTrue(r.appendUnique(o));
+		assertFalse(r.appendUnique(o));
+		final JSONObjHelper o2 = new JSONObjHelper("{\"c\":\"d\"}");
+		assertFalse(r.appendUnique(o2));
 	}
 
 	@Test
-    void testRemove()
+	void testRemove()
 	{
 		final String root = "[{\"a\":{\"b\":[{\"c\":\"d\"}]}}]";
 		final JSONArrayHelper r = new JSONArrayHelper(root);
@@ -190,23 +198,48 @@ class JSONArrayHelperTest extends JSONTestCaseBase
 	}
 
 	@Test
-    void testGetObjectsArray()
+	void testClear()
 	{
-		JSONArrayHelper a = new JSONArrayHelper("[0,1,2,3,4]");
-		List<Object> inheritedObjects = a.getObjects();
-		for (int i = 0; i < 5; i++)
-			Assertions.assertEquals(Long.valueOf(i), inheritedObjects.get(i));
-		Assertions.assertEquals(5, inheritedObjects.size());
+		final JSONArrayHelper a = new JSONArrayHelper("[0,1,2,3,4]");
+		a.clear();
+		final List<Object> inheritedObjects2 = a.getObjects();
+		assertTrue(inheritedObjects2.isEmpty());
+		new JSONArrayHelper().clear();
 	}
 
 	@Test
-    void testGetInheritedObjectsArray()
+	void testSort()
 	{
-		JSONArrayHelper a = new JSONArrayHelper("[0,1,2,[3,4]]");
-		List<Object> inheritedObjects = a.getObjects();
+		final JSONArrayHelper a = new JSONArrayHelper("[0,1,2,4,3]");
+		final JSONArrayHelper a2 = new JSONArrayHelper("[0,1,2,3,4]");
+		assertNotEquals(a, a2);
+		a.sort(null);
+		assertEquals(a, a2);
+		assertEquals(a.hashCode(), a2.hashCode());
+	}
+
+	@Test
+	void testGetObjectsArray()
+	{
+		final JSONArrayHelper a = new JSONArrayHelper("[0,1,2,3,4]");
+		final List<Object> inheritedObjects = a.getObjects();
 		for (int i = 0; i < 5; i++)
-			Assertions.assertEquals(Long.valueOf(i), inheritedObjects.get(i));
-		Assertions.assertEquals(5, inheritedObjects.size());
+			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		assertEquals(5, inheritedObjects.size());
+		a.clear();
+		final List<Object> inheritedObjects2 = a.getObjects();
+		assertTrue(inheritedObjects2.isEmpty());
+		new JSONArrayHelper().clear();
+	}
+
+	@Test
+	void testGetInheritedObjectsArray()
+	{
+		final JSONArrayHelper a = new JSONArrayHelper("[0,1,2,[3,4]]");
+		final List<Object> inheritedObjects = a.getObjects();
+		for (int i = 0; i < 5; i++)
+			assertEquals(Long.valueOf(i), inheritedObjects.get(i));
+		assertEquals(5, inheritedObjects.size());
 	}
 
 }

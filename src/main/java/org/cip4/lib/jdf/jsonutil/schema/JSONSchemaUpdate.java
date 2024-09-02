@@ -48,9 +48,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.StringArray;
+import org.cip4.jdflib.core.VString;
 import org.cip4.jdflib.extensions.MessageHelper;
 import org.cip4.jdflib.extensions.MessageHelper.EFamily;
 import org.cip4.jdflib.extensions.XJDFConstants;
@@ -79,7 +81,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	static final String TYPE = "type";
 	static final String REQUIRED = "required";
 	static final String DEFS = "$defs";
-	static final String DEFS_SLASH = DEFS + "/";
+	static final String DEFS_SLASH = DEFS + JDFConstants.SLASH;
 	private eJSONCase jsonCase;
 	private final StringArray pruneRoots;
 	private final StringArray allowedMessages;
@@ -141,16 +143,31 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
+	/**
+	 * add the NAME of a root to RETAIN - all others will be removed
+	 *
+	 * @param pruneRoot
+	 */
 	public void addPruneRoot(final String pruneRoot)
 	{
 		ContainerUtil.appendUnique(pruneRoots, pruneRoot);
 	}
 
+	/**
+	 * add the Name of object to remove
+	 *
+	 * @param pruneRoot
+	 */
 	public void addPruneMore(final String skip)
 	{
 		ContainerUtil.appendUnique(pruneMore, skip);
 	}
 
+	/**
+	 * add the Name of partidkey to remove
+	 *
+	 * @param pruneRoot
+	 */
 	public void addPartidkey(final String partidkey)
 	{
 		ContainerUtil.appendUnique(allowedPartitions, partidkey);
@@ -187,7 +204,10 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		}
 	}
 
-	void prune()
+	/**
+	 * allow for multiple chained prunes
+	 */
+	public void prune()
 	{
 		if (!pruneRoots.isEmpty())
 		{
@@ -199,7 +219,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 			prune(retain);
 		}
-
+		pruneMore();
 	}
 
 	void prune(final HashSet<String> retain, final String pruneroot)
@@ -209,6 +229,35 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		{
 			retain.add(pruneroot);
 			collectPrune(ph, retain);
+		}
+	}
+
+	public void pruneMore()
+	{
+		if (!pruneMore.isEmpty())
+		{
+			final JSONCollectWalker cw = getPruneWalker(this);
+			final Map<String, Object> m = cw.getCollected();
+			for (final String key : m.keySet())
+			{
+				final VString tokens = StringUtil.tokenize(key, JDFConstants.SLASH, false);
+				if (pruneMore.containsAny(tokens))
+				{
+					tokens.retainAll(pruneMore);
+
+					final String key0 = tokens.get(0);
+					String key1 = key;
+					while (!key0.equals(StringUtil.token(key1, -1, JDFConstants.SLASH)))
+					{
+						key1 = StringUtil.removeToken(key1, -1, JDFConstants.SLASH);
+					}
+					final Object zapp = remove(key1);
+					if (zapp == null)
+					{
+						log.error("no zapp " + key);
+					}
+				}
+			}
 		}
 	}
 
@@ -222,33 +271,6 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				defs.remove(key);
 			}
 		}
-		if (!pruneMore.isEmpty())
-		{
-			final JSONCollectWalker cw = getPruneWalker(this);
-			final Map<String, Object> m = cw.getCollected();
-			for (final Entry<String, Object> e : m.entrySet())
-			{
-				final Object o = e.getValue();
-				final String s = (String) o;
-				final String token = StringUtil.token(s, -1, "/");
-				if (pruneMore.contains(token))
-				{
-					final String key = e.getKey();
-
-					String key0 = StringUtil.removeToken(key, -1, "/");
-					if ("items".equals(StringUtil.token(key0, -1, "/")))
-					{
-						key0 = StringUtil.removeToken(key0, -1, "/");
-					}
-					final Object zapp = remove(key0);
-					if (zapp == null)
-					{
-						log.error("no zapp " + key);
-					}
-				}
-			}
-		}
-
 	}
 
 	void collectPrune(final JSONObjHelper root, final HashSet<String> retain)
@@ -263,7 +285,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			{
 				final Object o = e.getValue();
 				final String s = (String) o;
-				final String token = StringUtil.token(s, -1, "/");
+				final String token = StringUtil.token(s, -1, JDFConstants.SLASH);
 				if (!pruneMore.contains(token))
 				{
 					keyList.add(token);
@@ -280,7 +302,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		}
 	}
 
-	private JSONCollectWalker getPruneWalker(final JSONObjHelper root)
+	JSONCollectWalker getPruneWalker(final JSONObjHelper root)
 	{
 		final JSONCollectWalker cw = new JSONCollectWalker(root);
 		cw.setFilter("(.)*\\$ref");
@@ -309,8 +331,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		{
 			if (key.startsWith("Audit"))
 			{
-				final JSONObject bigAudit = prop.getObject(key);
-				aph.getObject(null).putAll(bigAudit);
+				final JSONObjHelper bigAudit = prop.getHelper(key);
+				aph.putAll(bigAudit);
 			}
 		}
 
@@ -325,34 +347,37 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 		for (final String key : keys)
 		{
-			if (key.startsWith("Glue"))
+			if (key.startsWith(ElementName.GLUE))
 			{
 				final JSONObjHelper gluepaper = prop.getHelper(key);
 				mlh.putAll(gluepaper);
 			}
 		}
-		updateSingleName("Glue");
-		updateSingleName("Media");
+		updateSingleName(ElementName.GLUE);
+		updateSingleName(ElementName.MEDIA);
 
 	}
 
 	void updateSingleAudit(final String audit)
 	{
 		final JSONObjHelper o = updateSingleName(audit);
-		o.setString("properties/Header/$ref", "#/$defs/Header");
-		o.getCreateArray(REQUIRED).addString("Header");
+		if (o != null)
+		{
+			o.setString("properties/Header/$ref", "#/$defs/Header");
+			o.getCreateArray(REQUIRED).addString("Header");
+		}
 	}
 
-	JSONObjHelper updateSingleName(final String glue)
+	JSONObjHelper updateSingleName(final String newName)
 	{
-		final JSONObjHelper h = getHelper(DEFS_SLASH + glue);
+		final JSONObjHelper h = getHelper(DEFS_SLASH + newName);
 		final JSONObjHelper o = getSchemaParent(h);
 		final JSONObjHelper p = o == null ? null : o.getHelper(PROPERTIES);
 		if (p != null)
 		{
 			final JSONObjHelper name = p.getCreateObject("Name");
 			name.setString(TYPE, STRING);
-			name.getCreateArray("enum").addString(glue);
+			name.getCreateArray("enum").addString(newName);
 			return o;
 		}
 		return null;
@@ -360,21 +385,23 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	JSONObjHelper getSchemaParent(final JSONObjHelper h)
 	{
-
-		final JSONObjHelper p = h.getHelper(PROPERTIES);
-		if (p != null)
+		if (h != null)
 		{
-			return h;
-		}
-		final JSONArrayHelper ah = h.getArrayHelper(ALL_OF);
-		for (int i = 0; ah != null && i < 42; i++)
-		{
-			final JSONObjHelper o = ah.getJSONHelper(i);
-			if (o == null)
-				return null;
-			if (getSchemaParent(o) != null)
-				return o;
+			final JSONObjHelper p = h.getHelper(PROPERTIES);
+			if (p != null)
+			{
+				return h;
+			}
+			final JSONArrayHelper ah = h.getArrayHelper(ALL_OF);
+			for (int i = 0; ah != null && i < 42; i++)
+			{
+				final JSONObjHelper o = ah.getJSONHelper(i);
+				if (o == null)
+					return null;
+				if (getSchemaParent(o) != null)
+					return o;
 
+			}
 		}
 		return null;
 	}
@@ -547,7 +574,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		oo = oo || pruneRoots.containsAny(xRoots);
 		if (oo)
 		{
-			updateOnOf(xRoots, roots);
+			updateOneOf(xRoots, roots);
 		}
 		else if (!roots.isEmpty())
 		{
@@ -556,7 +583,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	}
 
-	void updateOnOf(final StringArray xRoots, final StringArray roots)
+	void updateOneOf(final StringArray xRoots, final StringArray roots)
 	{
 		final JSONArrayHelper oneOf = getCreateArray("oneOf");
 		for (final String x : roots)

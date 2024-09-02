@@ -44,7 +44,10 @@ import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -250,22 +253,22 @@ public class JSONArrayHelper
 		return array == null ? true : array.isEmpty();
 	}
 
-	public boolean add(final JSONObjHelper o)
+	public boolean add(final Object o)
 	{
-		final JSONObject jo = o == null ? null : o.getRoot();
-		if (jo != null)
+		final Object o2 = JSONObjHelper.getObject(o);
+		if (o2 != null)
 		{
-			return array.add(jo);
+			return array.add(o2);
 		}
 		return false;
 	}
 
-	public boolean appendUnique(final JSONObjHelper o)
+	public boolean appendUnique(final Object o)
 	{
-		final JSONObject jo = o == null ? null : o.getRoot();
-		if (jo != null && !array.contains(jo))
+		final Object o2 = JSONObjHelper.getObject(o);
+		if (o2 != null && !array.contains(o2))
 		{
-			return array.add(jo);
+			return array.add(o2);
 		}
 		return false;
 	}
@@ -305,18 +308,56 @@ public class JSONArrayHelper
 
 	public void addString(final String s)
 	{
-		getArray().add(s);
+		add(s);
 
 	}
 
 	public Object set(final int index, final Object element)
 	{
-		return array.set(index, element);
+		final Object o2 = JSONObjHelper.getObject(element);
+		return array.set(index, o2);
 	}
 
 	public int indexOf(final Object o)
 	{
-		return array.indexOf(o);
+		final Object o2 = JSONObjHelper.getObject(o);
+		return array.indexOf(o2);
+	}
+
+	public void clear()
+	{
+		if (array != null)
+			array.clear();
+	}
+
+	public boolean addAll(final Collection c)
+	{
+		return array.addAll(c);
+	}
+
+	public void sort(final Comparator c)
+	{
+		if (array != null)
+			array.sort(c);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(array);
+	}
+
+	@Override
+	public boolean equals(final Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final JSONArrayHelper other = (JSONArrayHelper) obj;
+		return Objects.equals(array, other.array);
 	}
 
 }
