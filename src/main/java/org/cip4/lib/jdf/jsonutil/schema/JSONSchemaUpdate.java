@@ -64,6 +64,7 @@ import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
+import org.cip4.lib.jdf.jsonutil.JSONPruneWalker;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
 import org.json.simple.JSONObject;
 
@@ -87,8 +88,9 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	private final StringArray allowedMessages;
 	private final StringArray allowedResources;
 	private final StringArray allowedPartitions;
-	private final StringArray pruneMore;
+	private final StringArray pruneType;
 	final JSONSchemaWalker jsonSchemaWalker;
+	private final StringArray pruneKeys;
 
 	public List<String> getSingleMessages()
 	{
@@ -112,7 +114,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
-		pruneMore = new StringArray();
+		pruneType = new StringArray();
+		pruneKeys = new StringArray();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 		final File xsd = FileUtil.newExtension(f, "xsd");
 		final KElement xsdRoot = KElement.parseFile(xsd.getPath());
@@ -128,7 +131,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
-		pruneMore = new StringArray();
+		pruneType = new StringArray();
+		pruneKeys = new StringArray();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
@@ -139,7 +143,8 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
-		pruneMore = new StringArray();
+		pruneType = new StringArray();
+		pruneKeys = new StringArray();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
@@ -154,13 +159,23 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	}
 
 	/**
-	 * add the Name of object to remove
+	 * add the Type of object to remove
 	 *
 	 * @param pruneRoot
 	 */
 	public void addPruneMore(final String skip)
 	{
-		ContainerUtil.appendUnique(pruneMore, skip);
+		ContainerUtil.appendUnique(pruneType, skip);
+	}
+
+	/**
+	 * add the Name of object to remove
+	 *
+	 * @param pruneRoot
+	 */
+	public void addPruneKey(final String skip)
+	{
+		ContainerUtil.appendUnique(pruneKeys, skip);
 	}
 
 	/**
@@ -220,6 +235,13 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			prune(retain);
 		}
 		pruneMore();
+		if (!pruneKeys.isEmpty())
+		{
+			final JSONPruneWalker zapper = new JSONPruneWalker(this);
+			zapper.addAll(pruneKeys);
+			zapper.walk();
+		}
+
 	}
 
 	void prune(final HashSet<String> retain, final String pruneroot)
@@ -234,16 +256,16 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	public void pruneMore()
 	{
-		if (!pruneMore.isEmpty())
+		if (!pruneType.isEmpty())
 		{
 			final JSONCollectWalker cw = getPruneWalker(this);
 			final Map<String, Object> m = cw.getCollected();
 			for (final String key : m.keySet())
 			{
 				final VString tokens = StringUtil.tokenize(key, JDFConstants.SLASH, false);
-				if (pruneMore.containsAny(tokens))
+				if (pruneType.containsAny(tokens))
 				{
-					tokens.retainAll(pruneMore);
+					tokens.retainAll(pruneType);
 
 					final String key0 = tokens.get(0);
 					String key1 = key;
@@ -259,6 +281,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				}
 			}
 		}
+
 	}
 
 	void prune(final HashSet<String> retain)
@@ -286,7 +309,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 				final Object o = e.getValue();
 				final String s = (String) o;
 				final String token = StringUtil.token(s, -1, JDFConstants.SLASH);
-				if (!pruneMore.contains(token))
+				if (!pruneType.contains(token))
 				{
 					keyList.add(token);
 				}
@@ -613,7 +636,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	public String toString()
 	{
 		return "JSONSchemaUpdate [jsonCase=" + jsonCase + ", pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources
-				+ ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneMore + "]";
+				+ ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneType + "]";
 	}
 
 	public eJSONCase getJsonCase()

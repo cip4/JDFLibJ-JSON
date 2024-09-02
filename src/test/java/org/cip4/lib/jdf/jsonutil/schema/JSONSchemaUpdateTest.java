@@ -46,6 +46,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
@@ -164,8 +165,10 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		up.addPruneMore(ElementName.IDENTIFICATIONFIELD);
 		up.addPruneMore(ElementName.MISDETAILS);
 		up.addPruneMore(ElementName.MEDIALAYERS);
+
+		up.addPruneKey(AttributeName.JOBID);
 		up.update();
-		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmediaid.json"));
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmediajobid.json"));
 	}
 
 	@Test
