@@ -68,6 +68,7 @@ import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ContainerUtil;
+import org.cip4.jdflib.util.EnumUtil;
 import org.cip4.jdflib.util.ListMap;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
@@ -233,12 +234,7 @@ public class JSONWriter extends JSONObjHelper
 
 		public static eJSONCase getEnum(final String name)
 		{
-			for (final eJSONCase e : values())
-			{
-				if (e.name().equalsIgnoreCase(name))
-					return e;
-			}
-			return null;
+			return EnumUtil.getJavaEnumIgnoreCase(eJSONCase.class, name);
 		}
 	}
 
@@ -258,12 +254,7 @@ public class JSONWriter extends JSONObjHelper
 
 		public static eJSONRoot getEnum(final String name)
 		{
-			for (final eJSONRoot e : values())
-			{
-				if (e.name().equalsIgnoreCase(name))
-					return e;
-			}
-			return null;
+			return EnumUtil.getJavaEnumIgnoreCase(eJSONRoot.class, name);
 		}
 	}
 
@@ -283,12 +274,7 @@ public class JSONWriter extends JSONObjHelper
 
 		public static eJSONPrefix getEnum(final String name)
 		{
-			for (final eJSONPrefix e : values())
-			{
-				if (e.name().equalsIgnoreCase(name))
-					return e;
-			}
-			return null;
+			return EnumUtil.getJavaEnumIgnoreCase(eJSONPrefix.class, name);
 		}
 
 	}

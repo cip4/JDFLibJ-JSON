@@ -66,10 +66,12 @@ import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONPruneWalker;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JSONSchemaUpdate extends JSONObjHelper
 {
+	private static final String ONE_OF = "oneOf";
 	static final String HASH_DEFS = "#/$defs/";
 	static final String OBJECT = "object";
 	static final String PRODUCT_INTENT = "ProductIntent";
@@ -203,6 +205,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		updateAuditPool();
 		updateAbstract();
 		updateMediaLayers();
+		updatePlacedObject();
 		updatePart();
 		jsonSchemaWalker.setJsonCase(jsonCase);
 		jsonSchemaWalker.setSorted(true);
@@ -379,6 +382,27 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		updateSingleName(ElementName.GLUE);
 		updateSingleName(ElementName.MEDIA);
 
+	}
+
+	void updatePlacedObject()
+	{
+		final JSONObjHelper mlh = getHelper("$defs/PlacedObject");
+		final JSONArray req = mlh.getArray(REQUIRED);
+		if (req != null)
+		{
+			final JSONArray oneOfArray = new JSONArray();
+			for (final String s : new StringArray("MarkObject ContentObject"))
+			{
+				final JSONObject o1 = new JSONObject();
+				final JSONArray a1 = new JSONArray();
+				a1.addAll(req);
+				a1.remove(s);
+				o1.put(REQUIRED, a1);
+				oneOfArray.add(o1);
+			}
+			mlh.put(ONE_OF, oneOfArray);
+			mlh.remove(REQUIRED);
+		}
 	}
 
 	void updateSingleAudit(final String audit)
@@ -608,7 +632,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 
 	void updateOneOf(final StringArray xRoots, final StringArray roots)
 	{
-		final JSONArrayHelper oneOf = getCreateArray("oneOf");
+		final JSONArrayHelper oneOf = getCreateArray(ONE_OF);
 		for (final String x : roots)
 		{
 			if (xRoots.contains(x))

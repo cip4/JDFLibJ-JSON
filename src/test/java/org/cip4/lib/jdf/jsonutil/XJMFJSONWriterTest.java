@@ -241,6 +241,37 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
+	void testSignalPaperRootXJMF()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		jsonWriter.setJsonRoot(eJSONRoot.retain);
+		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
+		final XJMFHelper xjmfHelper = new XJMFHelper();
+		final MessageHelper q = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Resource);
+		q.getHeader().setID("S1");
+		q.getHeader().setAttribute(AttributeName.REFID, "Sub1");
+		final JDFResourceInfo ri = (JDFResourceInfo) q.appendElement(ElementName.RESOURCEINFO);
+		ri.setAttribute(AttributeName.SCOPE, "Job");
+		ri.setAttribute(AttributeName.JOBID, "Job1");
+		ri.setAttribute(AttributeName.JOBPARTID, "Printing");
+		final SetHelper sh = new SetHelper(ri.appendElement(XJDFConstants.ResourceSet));
+		sh.setUsage(EnumUsage.Input);
+		sh.setName(ElementName.MEDIA);
+		final ResourceHelper rh = sh.appendPartition(new JDFAttributeMap(AttributeName.SHEETNAME, "S1"), false);
+		rh.setExternalID("MIS-ID");
+		rh.setAmount(4500, new JDFAttributeMap(AttributeName.LOTID, "Lot1"), true);
+		rh.setAmount(66, new JDFAttributeMap(AttributeName.LOTID, "Lot1"), false);
+		rh.setAmount(2200, new JDFAttributeMap(AttributeName.LOTID, "Lot2"), true);
+		rh.setAmount(22, new JDFAttributeMap(AttributeName.LOTID, "Lot2"), false);
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "paperLotResourceSignal.json", true, false, true);
+	}
+
+	/**
+	 *
+	 */
+	@Test
 	void testSignalSimplePaper()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter();

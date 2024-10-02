@@ -51,6 +51,7 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
+import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter;
@@ -85,6 +86,18 @@ class JSONSchemaUpdateTest extends JSONTestCaseBase
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 		up.update();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+	}
+
+	@Test
+	void testJSONSchemaReaderDigiPrint() throws URISyntaxException
+	{
+		testJSONSchemaUpdate();
+		final JSONSchemaReader sr = new JSONSchemaReader(UrlUtil.fileToUrl(new File(sm_dirTestDataTemp + "schema/Version_2_2/xjdf.json"), true));
+		assertNotNull(sr.getTheSchema());
+		final String jos = FileUtil.fileToString(new File(sm_dirTestData + "json/Duplex-1Up.XJDF.json"), null);
+		assertNotNull(new JSONObjHelper(jos).getRoot());
+		final Collection<ValidationMessage> ret = sr.checkJSON(jos);
+		assertTrue(ret.isEmpty());
 	}
 
 	@Test
