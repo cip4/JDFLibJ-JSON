@@ -2,8 +2,9 @@ package org.cip4.lib.jdf.jsonutil.schema;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.XJDFSchemaWalker;
-import org.cip4.jdflib.util.StringUtil;
+import org.cip4.jdflib.util.ListMap;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWalker;
@@ -16,15 +17,13 @@ public class JSONSchemaWalker extends JSONWalker
 {
 	private static final Log log = LogFactory.getLog(JSONSchemaWalker.class);
 
-	String path;
-
 	public JSONSchemaWalker(final JSONObjHelper root)
 	{
 		super(root);
 		setKeyInArray(false);
 		jsonCase = eJSONCase.retain;
-		path = "";
 		xsdWalker = null;
+		enumMap = new ListMap<>();
 	}
 
 	public XJDFSchemaWalker getXsdWalker()
@@ -39,6 +38,7 @@ public class JSONSchemaWalker extends JSONWalker
 
 	eJSONCase jsonCase;
 	private XJDFSchemaWalker xsdWalker;
+	private final ListMap<String, String> enumMap;
 
 	public eJSONCase getJsonCase()
 	{
@@ -124,25 +124,41 @@ public class JSONSchemaWalker extends JSONWalker
 		final JSONObjHelper oh = new JSONObjHelper(o);
 		updateClazz(oh);
 		updateArrayLength(oh);
+		fillEnum(oh);
+	}
+
+	void fillEnum(final JSONObjHelper oh)
+	{
+		final JSONArray a = oh.getArray("enum");
+		final JSONArrayHelper ah = JSONArrayHelper.getHelper(a);
+		if (ah != null)
+		{
+			final String key = getParents().getString("/", null, null).substring(1);
+			enumMap.put(key, ah.getStrings());
+		}
+
 	}
 
 	void updateArrayLength(final JSONObjHelper o)
 	{
-		final String newPath = StringUtil.token(path, -3, "/") + "/" + StringUtil.token(path, -1, "/");
-		final int l = xsdWalker.getLength(newPath);
-		if (l > 0)
+		final StringArray p = getParents();
+		if (p.size() > 3)
 		{
-			o.setInt("minItems", l);
-			o.setInt("maxItems", l);
-			final Integer min = xsdWalker.getMin(newPath);
-			if (min != null)
-				o.setDouble("minimum", min);
-			final Integer max = xsdWalker.getMax(newPath);
-			if (max != null)
-				o.setDouble("maximum", max);
-			log.info(newPath + " " + l + " " + min + "-" + max);
+			final String newPath = p.get(-3) + "/" + p.get(-1);
+			final int l = xsdWalker.getLength(newPath);
+			if (l > 0)
+			{
+				o.setInt("minItems", l);
+				o.setInt("maxItems", l);
+				final Integer min = xsdWalker.getMin(newPath);
+				if (min != null)
+					o.setDouble("minimum", min);
+				final Integer max = xsdWalker.getMax(newPath);
+				if (max != null)
+					o.setDouble("maximum", max);
+				log.info(newPath + " " + l + " " + min + "-" + max);
+			}
 		}
-
 	}
 
 	void updateClazz(final JSONObjHelper oh)
@@ -157,14 +173,15 @@ public class JSONSchemaWalker extends JSONWalker
 	}
 
 	@Override
-	protected Object walkTree(final String rootKey, final JSONObject o)
+	public JSONObjHelper walk()
 	{
-		if (!StringUtil.isEmpty(rootKey))
-			path = path + "/" + rootKey;
-		final Object ret = super.walkTree(rootKey, o);
-		if (!StringUtil.isEmpty(rootKey))
-			path = StringUtil.leftStr(path, -1 - rootKey.length());
-		return ret;
+		enumMap.clear();
+		return super.walk();
+	}
+
+	public ListMap<String, String> getEnumMap()
+	{
+		return enumMap;
 	}
 
 }

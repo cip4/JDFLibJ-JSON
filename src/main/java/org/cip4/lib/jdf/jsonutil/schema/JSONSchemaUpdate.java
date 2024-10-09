@@ -48,6 +48,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.KElement;
@@ -60,17 +61,20 @@ import org.cip4.jdflib.extensions.XJDFSchemaWalker;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.FileUtil;
+import org.cip4.jdflib.util.ListMap;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONPruneWalker;
+import org.cip4.lib.jdf.jsonutil.JSONWriter;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JSONSchemaUpdate extends JSONObjHelper
 {
+	private static final String NUMBER = "number";
 	private static final String ONE_OF = "oneOf";
 	static final String HASH_DEFS = "#/$defs/";
 	static final String OBJECT = "object";
@@ -210,7 +214,157 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		jsonSchemaWalker.setJsonCase(jsonCase);
 		jsonSchemaWalker.setSorted(true);
 		jsonSchemaWalker.walk();
+		updateEnums();
+		updateNew();
 		prune();
+	}
+
+	void updateNew()
+	{
+		updateDeviceInfo();
+
+	}
+
+	void updateDeviceInfo()
+	{
+		setRef(ElementName.DEVICEINFO, AttributeName.DEVICECONDITION, AttributeName.DEVICECONDITION);
+		setArray(ElementName.DEVICEINFO, "ModuleInfo", "ModuleInfo", true);
+		addModuleInfo();
+	}
+
+	void addModuleInfo()
+	{
+		setBool(JSONWriter.updateCase(DEFS_SLASH + "ModuleInfo/" + ADDITIONAL_PROPERTIES, jsonCase), false);
+		setCaseString(DEFS_SLASH + "ModuleInfo/" + TYPE, OBJECT);
+		setAttribute("ModuleInfo", AttributeName.HOURCOUNTER, STRING);
+		setRef("ModuleInfo", "ModuleCondition", AttributeName.DEVICECONDITION);
+		setAttribute("ModuleInfo", AttributeName.MODULEID, STRING);
+		setAttribute("ModuleInfo", AttributeName.PRODUCTIONCOUNTER, NUMBER);
+		setRef("ModuleInfo", AttributeName.STATUS, "DeviceStatus");
+		setAttribute("ModuleInfo", AttributeName.STATUSDETAILS, STRING);
+		setAttribute("ModuleInfo", AttributeName.TOTALPRODUCTIONCOUNTER, NUMBER);
+	}
+
+	void setCaseString(String path, String value)
+	{
+		path = JSONWriter.updateCase(path, jsonCase);
+		value = JSONWriter.updateCase(value, jsonCase);
+		setString(path, value);
+	}
+
+	void setArray(final String base, final String key, final String ref, final boolean isRef)
+	{
+		final String path = getPath(base, key);
+		if (isRef)
+			setCaseString(path + "/items/$ref", HASH_DEFS + ref);
+		else
+			setCaseString(path + "/items/type", ref);
+		setCaseString(path + "/type", ARRAY);
+		setBool(path + "/" + ADDITIONAL_PROPERTIES, false);
+	}
+
+	private String getPath(final String base, final String key)
+	{
+		return JSONWriter.updateCase(DEFS_SLASH + base + "/properties/" + key, jsonCase);
+	}
+
+	void setRef(final String base, final String key, final String ref)
+	{
+		setPath(base, key, "type/$ref", HASH_DEFS + ref);
+	}
+
+	void setAttribute(final String base, final String key, final String typ)
+	{
+		setPath(base, key, TYPE, typ);
+	}
+
+	void setPath(final String base, final String key, final String what, final String val)
+	{
+		final String path = getPath(base, key);
+		setCaseString(path + JDFConstants.SLASH + what, val);
+	}
+
+	void updateEnums()
+	{
+		final XJDFSchemaWalker xsdw = jsonSchemaWalker.getXsdWalker();
+		final ListMap<String, String> xMap = xsdw.getEnumMap();
+		final Collection<String> xKeys = ContainerUtil.getKeyArray(xMap);
+		final ListMap<String, String> jMap = jsonSchemaWalker.getEnumMap();
+		updateMapCase(xMap);
+		final List<String> jKeyOrig = ContainerUtil.getKeyList(jMap);
+		updateMapCase(jMap);
+		final String suffix = JSONWriter.updateCase("/Name", jsonCase);
+		int i = 0;
+		for (final String jKey : ContainerUtil.getKeyList(jMap))
+		{
+			final String jxKey = getJKey(jKey);
+			if (!jxKey.endsWith(suffix))
+			{
+				final List<String> xEnums = xsdw.getEnums(jxKey);
+				final List<String> jEnums = jMap.get(jKey);
+				if (xEnums.size() != jEnums.size() || !xEnums.containsAll(jEnums))
+				{
+					final JSONArray a = getArray(jKeyOrig.get(i) + "/enum");
+					a.clear();
+					a.addAll(xEnums);
+					log.error("updating enum " + jxKey);
+				}
+				xKeys.remove(xsdw.getKey(jxKey));
+			}
+			i++;
+		}
+		for (final String xKey : xKeys)
+		{
+			addEnum(xMap, xKey);
+		}
+	}
+
+	void addEnum(final ListMap<String, String> xMap, final String xKey0)
+	{
+		final String xKey = JSONWriter.updateCase(xKey0, jsonCase);
+		log.info("new enum " + xKey);
+		final String token = StringUtil.token(xKey, -1, "/");
+		final String parent = StringUtil.token(xKey, -2, "/");
+		final JSONArrayHelper newArray = setArray("$defs/" + token + "/properties/enum");
+		final List<String> newEnums = xMap.get(xKey);
+		newArray.addAll(newEnums);
+		setString("$defs/" + token + "/type", "string");
+		setBool("$defs/" + token + "/additionalProperties", false);
+		if (parent != null)
+		{
+			final String base = "$defs/" + parent + "/properties/" + token;
+			final String typPath = base + "/type";
+			final String typ = getString(typPath);
+			if ("string".equals(typ))
+			{
+				setString(typPath, HASH_DEFS + token);
+			}
+			else if ("array".equals(typ))
+			{
+				setString(base + "/items/type", HASH_DEFS + token);
+			}
+		}
+	}
+
+	void updateMapCase(final ListMap<String, String> xMap)
+	{
+		if (jsonCase != null && !eJSONCase.retain.equals(jsonCase))
+		{
+			final List<String> l = ContainerUtil.getKeyList(xMap);
+			for (final String key : l)
+			{
+				final List<String> val = xMap.remove(key);
+				xMap.put(JSONWriter.updateCase(key, jsonCase), val);
+			}
+		}
+
+	}
+
+	private String getJKey(final String jKey)
+	{
+		final String parentToken = StringUtil.token(jKey, -3, JDFConstants.SLASH);
+		final String token = StringUtil.token(jKey, -1, JDFConstants.SLASH);
+		return parentToken == null ? token : parentToken + "/" + token;
 	}
 
 	void updatePart()

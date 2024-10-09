@@ -51,6 +51,7 @@ import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -176,6 +177,23 @@ public class JSONArrayHelper
 			if (o instanceof JSONObject)
 			{
 				l.add((JSONObject) o);
+			}
+		}
+		return l;
+	}
+
+	/**
+	 * @param arrayIndex
+	 * @return
+	 */
+	public StringArray getStrings()
+	{
+		final StringArray l = new StringArray();
+		for (final Object o : array)
+		{
+			if (o instanceof String)
+			{
+				l.add((String) o);
 			}
 		}
 		return l;

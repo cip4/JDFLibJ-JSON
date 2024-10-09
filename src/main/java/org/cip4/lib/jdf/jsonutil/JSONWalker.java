@@ -57,7 +57,7 @@ public abstract class JSONWalker
 	@Override
 	public String toString()
 	{
-		return "JSONWalker [sorted=" + sorted + ", keyInArray=" + keyInArray + ", retainNull=" + retainNull + ", root=" + root + "]";
+		return getClass().getSimpleName() + " [sorted=" + sorted + ", keyInArray=" + keyInArray + ", retainNull=" + retainNull + ", root=" + root + " " + parents + "]";
 	}
 
 	private static final Log log = LogFactory.getLog(JSONReader.class);
@@ -65,6 +65,7 @@ public abstract class JSONWalker
 	boolean sorted;
 	boolean keyInArray;
 	boolean retainNull;
+	private final StringArray parents;
 
 	/**
 	 * @return the keyInArray
@@ -105,14 +106,17 @@ public abstract class JSONWalker
 		sorted = true;
 		keyInArray = true;
 		retainNull = false;
+		parents = new StringArray();
 	}
 
 	@SuppressWarnings("unchecked")
 	protected Object walkTree(final String rootKey, final JSONObject o)
 	{
+		parents.add(rootKey);
 		final Object b = walkSimple(rootKey, o);
 		if (b == null)
 		{
+			parents.remove(-1);
 			return null;
 		}
 		final StringArray keys = new StringArray(o.keySet());
@@ -148,7 +152,13 @@ public abstract class JSONWalker
 			}
 		}
 		postWalk(rootKey, o);
+		parents.remove(-1);
 		return !retainNull && o.isEmpty() ? null : o;
+	}
+
+	public StringArray getParents()
+	{
+		return parents;
 	}
 
 	protected void postWalk(final String rootKey, final JSONObject o)
@@ -159,9 +169,11 @@ public abstract class JSONWalker
 
 	protected Object walkArray(final String key, final JSONArray val)
 	{
+		parents.add(key);
 		final Object b = walkSimple(key, val);
 		if (b == null)
 		{
+			parents.remove(-1);
 			return null;
 		}
 		else
@@ -199,6 +211,7 @@ public abstract class JSONWalker
 			}
 		}
 		postWalk(key, val);
+		parents.remove(-1);
 		return !retainNull && val.isEmpty() ? null : val;
 	}
 
