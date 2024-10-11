@@ -72,6 +72,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.io.output.NullPrintStream;
 import org.cip4.jdflib.ifaces.IStreamWriter;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
@@ -217,6 +218,11 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	@Override
 	public void writeStream(final OutputStream os) throws IOException
 	{
+		if (!isRetainNull())
+		{
+			ps = NullPrintStream.INSTANCE;
+			walk();
+		}
 		ps = new PrintStream(os);
 		writeHeader();
 		walk();
@@ -308,7 +314,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	@Override
 	public String toString()
 	{
-		return "JSONIndentWalker [singleIndent=" + singleIndent + ", indent=" + indent + "]";
+		return super.toString() + " [singleIndent=" + singleIndent + ", indent=" + indent + "]";
 	}
 
 }

@@ -151,4 +151,35 @@ class JSONIndentWalkerTest extends JSONTestCaseBase
 		assertEquals(root, roundTrip);
 	}
 
+	@Test
+	void testNoRetainNullEmpty() throws IOException
+	{
+		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[],\"c\":{}}}");
+		final JSONIndentWalker w = new JSONIndentWalker(root);
+		w.setSingleIndent(0);
+		w.setCondensed(true);
+		w.setRetainNull(false);
+		final File file = new File(sm_dirTestDataTemp + "testretnull.json");
+		FileUtil.writeFile(w, file);
+		assertTrue(w.isCondensed());
+		final JSONObjHelper roundTrip = new JSONObjHelper(file);
+		assertEquals(new JSONObjHelper("{}"), roundTrip);
+	}
+
+	@Test
+	void testNoRetainNull() throws IOException
+	{
+		final JSONObjHelper root = new JSONObjHelper("{\"a\":{\"b\":[{\"d\":1},{},{\"d\":1}],\"c\":{\"c1\":\"a\",\"c2\":{},\"c3\":\"a\"}}}");
+		final JSONObjHelper root2 = new JSONObjHelper("{\"a\":{\"b\":[{\"d\":1},{\"d\":1}],\"c\":{\"c1\":\"a\",\"c3\":\"a\"}}}");
+		final JSONIndentWalker w = new JSONIndentWalker(root);
+		w.setSingleIndent(0);
+		w.setCondensed(true);
+		w.setRetainNull(false);
+		final File file = new File(sm_dirTestDataTemp + "testret.json");
+		FileUtil.writeFile(w, file);
+		assertTrue(w.isCondensed());
+		final JSONObjHelper roundTrip = new JSONObjHelper(file);
+		assertEquals(root2, roundTrip);
+	}
+
 }
