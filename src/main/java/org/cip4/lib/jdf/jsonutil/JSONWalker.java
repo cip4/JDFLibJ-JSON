@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -60,8 +60,14 @@ public abstract class JSONWalker
 		return getClass().getSimpleName() + " [sorted=" + sorted + ", keyInArray=" + keyInArray + ", retainNull=" + retainNull + ", root=" + root + " " + parents + "]";
 	}
 
-	private static final Log log = LogFactory.getLog(JSONReader.class);
+	private static final Log log = LogFactory.getLog(JSONWalker.class);
 	private final JSONObjHelper root;
+
+	public JSONObjHelper getRoot()
+	{
+		return root;
+	}
+
 	boolean sorted;
 	boolean keyInArray;
 	boolean retainNull;
@@ -121,7 +127,7 @@ public abstract class JSONWalker
 		}
 		final StringArray keys = new StringArray(o.keySet());
 		if (sorted)
-			keys.sort(null);
+			keys.sort(String.CASE_INSENSITIVE_ORDER);
 		int size = keys.size();
 		int i = 0;
 		for (final String key : keys)
