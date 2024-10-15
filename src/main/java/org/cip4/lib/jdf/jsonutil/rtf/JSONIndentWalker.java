@@ -202,7 +202,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printObject(final JSONObject o)
 	{
-		if (!o.isEmpty() && !condensed && !o.equals(getRoot()))
+		if (!o.isEmpty() && !condensed && !o.equals(getRoot().getRootObject()))
 		{
 			printLine();
 		}
