@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -241,7 +241,7 @@ class JSONRootWalker extends JSONObjHelper
 	@SuppressWarnings("unchecked")
 	JSONObject updateRoot()
 	{
-		if (!eJSONRoot.retain.equals(jsonWriter.getJsonRoot()))
+		if (xmlRoot.getParentNode_KElement() == null && !eJSONRoot.retain.equals(jsonWriter.getJsonRoot()))
 		{
 			final Set<String> keys = getRoot().keySet();
 			if (ContainerUtil.size(keys) == 1)

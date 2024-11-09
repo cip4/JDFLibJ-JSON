@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -42,14 +42,19 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.extensions.ResourceHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONPrefix;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.json.simple.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -59,27 +64,27 @@ class JSONRootWalkerTest extends JSONTestCaseBase
 {
 
 	@Test
-    void testPrefix3()
+	void testPrefix3()
 	{
 		final JSONWriter wr = new JSONWriter();
 		final KElement e = KElement.createRoot("a:b", "a.com");
-		JSONRootWalker w = new JSONRootWalker(wr, e);
+		final JSONRootWalker w = new JSONRootWalker(wr, e);
 		for (final String n : eJSONPrefix.getNames())
 		{
 			final eJSONPrefix enum1 = eJSONPrefix.getEnum(n);
-			Assertions.assertNotNull(enum1);
-			Assertions.assertNotNull(w.getNodeName(e));
+			assertNotNull(enum1);
+			assertNotNull(w.getNodeName(e));
 		}
 	}
 
 	@Test
-    void testToString()
+	void testToString()
 	{
 		final JSONWriter wr = new JSONWriter();
 		final KElement e = KElement.createRoot("a:b", "a.com");
-		JSONRootWalker w = new JSONRootWalker(wr, e);
+		final JSONRootWalker w = new JSONRootWalker(wr, e);
 
-		Assertions.assertNotNull(w.toString());
+		assertNotNull(w.toString());
 
 	}
 
@@ -87,7 +92,7 @@ class JSONRootWalkerTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-    void testConvertContext1()
+	void testConvertContext1()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("j", null, null);
 		final SetHelper sh = xjdfHelper.getCreateSet(ElementName.NODEINFO, EnumUsage.Input);
@@ -99,16 +104,16 @@ class JSONRootWalkerTest extends JSONTestCaseBase
 
 		final String jsonString = o.toJSONString();
 		log.info(jsonString);
-		Assertions.assertTrue(jsonString.indexOf("\"@context\":{\"foo\":\"abc.com\"}}") > 0);
+		assertTrue(jsonString.indexOf("\"@context\":{\"foo\":\"abc.com\"}}") > 0);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testConvertContextAttribute()
+	void testConvertContextAttribute()
 	{
-		KElement e0 = KElement.createRoot("XJDF", null);
+		final KElement e0 = KElement.createRoot("XJDF", null);
 
 		e0.appendElement("AuditPool").setAttribute("foo:name", "bar", "abc.com");
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -118,18 +123,45 @@ class JSONRootWalkerTest extends JSONTestCaseBase
 
 		final String jsonString = o.toJSONString();
 		log.info(jsonString);
-		Assertions.assertTrue(jsonString.indexOf("\"@context\":{\"foo\":\"abc.com\"}}") > 0);
+		assertTrue(jsonString.indexOf("\"@context\":{\"foo\":\"abc.com\"}}") > 0);
 	}
 
 	/**
 	 *
 	 */
 	@Test
-    void testConvertContextAttribute2()
+	void testConvertName()
 	{
-		KElement e0 = KElement.createRoot("XJDF", null);
+		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "j1");
+		final ResourceHelper rh = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreateResource();
+		final KElement e0 = h.getRoot();
 
-		KElement ap = e0.appendElement("AuditPool");
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setJsonRoot(eJSONRoot.xmlname);
+		final JSONObject o = jsonWriter.convert(e0);
+
+		final String jsonString = o.toJSONString();
+		log.info(jsonString);
+		assertTrue(jsonString.indexOf("\"XJDF\":") < 0);
+		assertTrue(jsonString.indexOf("\"Name\":\"XJDF\"") >= 0);
+
+		final JSONObject o2 = jsonWriter.convert(rh.getRoot());
+
+		final String jsonString2 = o2.toJSONString();
+		log.info(jsonString2);
+
+		assertTrue(jsonString2.indexOf("\"Name\":") < 0);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testConvertContextAttribute2()
+	{
+		final KElement e0 = KElement.createRoot("XJDF", null);
+
+		final KElement ap = e0.appendElement("AuditPool");
 		ap.setAttribute("foo:name", "bar", "abc.com");
 		ap.setAttribute("foo2:name2", "bar2", "abc2.com");
 		final JSONWriter jsonWriter = new JSONWriter();
@@ -139,7 +171,7 @@ class JSONRootWalkerTest extends JSONTestCaseBase
 
 		final String jsonString = o.toJSONString();
 		log.info(jsonString);
-		Assertions.assertTrue(jsonString.indexOf("\"@context\":[{\"foo") > 0);
+		assertTrue(jsonString.indexOf("\"@context\":[{\"foo") > 0);
 	}
 
 }
