@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -320,6 +320,23 @@ class JSONObjHelperTest extends JSONTestCaseBase
 		assertNotNull(r.toString());
 		assertNotNull(r.toJSONString());
 		assertNotNull(r.getBytes());
+	}
+
+	@Test
+	void testToStringBackSlash()
+	{
+		final String root = "{\"c\":\"a\\\\b\"}";
+
+		final JSONObjHelper r = new JSONObjHelper(root);
+
+		final String jsonString = r.toJSONString();
+		assertEquals(7, jsonString.indexOf("\\\\"));
+		final String s = r.getString("c");
+		r.setString("a", s);
+		r.setString("b", "b\\b");
+		assertNotNull(r.toString());
+		assertEquals(r.getString("a"), r.getString("c"));
+		assertEquals("a\\b", r.getString("c"));
 	}
 
 	@Test

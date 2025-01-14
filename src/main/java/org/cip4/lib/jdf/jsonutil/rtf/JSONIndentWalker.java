@@ -1,7 +1,7 @@
 /**
  * The CIP4 Software License, Version 1.0
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of
  * Processes in  Prepress, Press and Postpress (CIP4).  All rights
  * reserved.
  *
@@ -161,7 +161,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printQuoted(final String key)
 	{
-		ps.print("\"" + key + "\"");
+		ps.print("\"" + JSONObject.escape(key) + "\"");
 	}
 
 	protected void printLine()

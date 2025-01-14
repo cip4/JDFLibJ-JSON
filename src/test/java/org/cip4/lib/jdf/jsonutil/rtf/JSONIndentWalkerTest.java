@@ -1,7 +1,7 @@
 /**
  * The CIP4 Software License, Version 1.0
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of
  * Processes in  Prepress, Press and Postpress (CIP4).  All rights
  * reserved.
  *
@@ -102,6 +102,29 @@ class JSONIndentWalkerTest extends JSONTestCaseBase
 	{
 		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":{\"b\":[{\"c1\":\"d1\",\"e1\":\"e2\"},{\"c2\":\"d2\"}]}}"));
 		FileUtil.writeFile(w, new File(sm_dirTestDataTemp + "test.json"));
+	}
+
+	@Test
+	void testQuote() throws IOException
+	{
+		final JSONIndentWalker w = new JSONIndentWalker(new JSONObjHelper("{\"a\":\"b\\\\c\"}"));
+		final File out = new File(sm_dirTestDataTemp + "testquote.json");
+		FileUtil.writeFile(w, out);
+		final JSONObjHelper h = new JSONObjHelper(out);
+		assertEquals("b\\c", h.getString("a"));
+
+		final JSONIndentWalker w2 = new JSONIndentWalker(new JSONObjHelper("{\"a\":\"b\\\\\\\\c\"}"));
+		final File out2 = new File(sm_dirTestDataTemp + "testquote2.json");
+		FileUtil.writeFile(w2, out2);
+		final JSONObjHelper h2 = new JSONObjHelper(out2);
+		assertEquals("b\\\\c", h2.getString("a"));
+
+		final JSONIndentWalker w3 = new JSONIndentWalker(new JSONObjHelper("{\"a\":\"b\\nc\"}"));
+		final File out3 = new File(sm_dirTestDataTemp + "testquote.json");
+		FileUtil.writeFile(w3, out3);
+		final JSONObjHelper h3 = new JSONObjHelper(out3);
+		assertEquals("b\nc", h3.getString("a"));
+
 	}
 
 	@Test

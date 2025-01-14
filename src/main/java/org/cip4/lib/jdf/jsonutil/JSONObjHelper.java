@@ -243,7 +243,7 @@ public class JSONObjHelper implements IStreamWriter
 	 */
 	public JSONObjHelper(final byte[] s)
 	{
-		this(s == null ? null : new StringReader(new String(s, StandardCharsets.UTF_8)), false);
+		this(s == null ? null : new String(s, StandardCharsets.UTF_8));
 	}
 
 	/**
