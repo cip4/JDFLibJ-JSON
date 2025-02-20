@@ -1,7 +1,7 @@
 /**
  * The CIP4 Software License, Version 1.0
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of
  * Processes in  Prepress, Press and Postpress (CIP4).  All rights
  * reserved.
  *
@@ -108,7 +108,7 @@ public class JSONRtfWalker extends JSONIndentWalker
 	@Override
 	protected void printString(final String a)
 	{
-		String b = StringUtil.replaceChar(a, '\n', "\\\\n", 0);
+		final String b = StringUtil.replaceChar(a, '\n', "\\\\n", 0);
 		ps.print("\\cs4{\"" + b + "\"}");
 	}
 
@@ -154,6 +154,12 @@ public class JSONRtfWalker extends JSONIndentWalker
 
 	@Override
 	protected String getArraySep()
+	{
+		return "\\cs1{,}";
+	}
+
+	@Override
+	protected String getObjectSep()
 	{
 		return "\\cs1{,}";
 	}

@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -154,7 +154,7 @@ public abstract class JSONWalker
 			else
 			{
 				o.put(key, c);
-				postArrayElement(key, o, i++, size);
+				postObjectElement(key, o, i++, size);
 			}
 		}
 		postWalk(rootKey, o);
@@ -226,7 +226,13 @@ public abstract class JSONWalker
 		return keyInArray ? key : null;
 	}
 
-	protected void postArrayElement(final String key, final Object a, final int i, final int size)
+	protected void postArrayElement(final String key, final Object o, final int i, final int size)
+	{
+		// nop
+
+	}
+
+	protected void postObjectElement(final String key, final Object o, final int i, final int size)
 	{
 		// nop
 

@@ -114,6 +114,12 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	}
 
 	PrintStream ps;
+
+	protected PrintStream getPs()
+	{
+		return ps;
+	}
+
 	int indent;
 
 	public JSONIndentWalker(final JSONObjHelper root)
@@ -303,7 +309,25 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		super.postArrayElement(key, a, i, size);
 	}
 
+	/**
+	 * @see org.cip4.lib.jdf.jsonutil.JSONWalker#postArrayElement(java.lang.String, java.lang.Object, int)
+	 */
+	@Override
+	protected void postObjectElement(final String key, final Object a, final int i, final int size)
+	{
+		if (i < size - 1)
+		{
+			ps.print(getObjectSep());
+		}
+		super.postObjectElement(key, a, i, size);
+	}
+
 	protected String getArraySep()
+	{
+		return ",";
+	}
+
+	protected String getObjectSep()
 	{
 		return ",";
 	}
