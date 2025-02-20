@@ -317,9 +317,4 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		return super.toString() + " [singleIndent=" + singleIndent + ", indent=" + indent + "]";
 	}
 
-	protected PrintStream getPs()
-	{
-		return ps;
-	}
-
 }
