@@ -95,6 +95,16 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	boolean condensed;
 
+	protected boolean isObjectNewLine(final JSONObject o)
+	{
+		return !o.isEmpty() && !condensed && !o.equals(getRoot().getRootObject());
+	}
+
+	protected boolean isArrayNewLine(final JSONArray a)
+	{
+		return false;
+	}
+
 	public boolean isCondensed()
 	{
 		return condensed;
@@ -197,6 +207,10 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printArray(final JSONArray a)
 	{
+		if (isArrayNewLine(a))
+		{
+			printLine();
+		}
 		indent += singleIndent;
 		ps.print(getBeginArray());
 	}
@@ -208,7 +222,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 
 	protected void printObject(final JSONObject o)
 	{
-		if (!o.isEmpty() && !condensed && !o.equals(getRoot().getRootObject()))
+		if (isObjectNewLine(o))
 		{
 			printLine();
 		}
@@ -253,7 +267,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 	protected void postWalk(final String rootKey, final JSONObject o)
 	{
 		indent -= singleIndent;
-		if (!o.isEmpty())
+		if (needsLine(o))
 		{
 			printLine();
 		}
@@ -281,7 +295,7 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 		super.postWalk(key, val);
 	}
 
-	boolean needsLine(final JSONArray val)
+	protected boolean needsLine(final JSONArray val)
 	{
 		for (final Object o : val)
 		{
@@ -289,6 +303,11 @@ public class JSONIndentWalker extends JSONWalker implements IStreamWriter
 				return true;
 		}
 		return false;
+	}
+
+	protected boolean needsLine(final JSONObject val)
+	{
+		return !val.isEmpty();
 	}
 
 	protected String getEndArray()
