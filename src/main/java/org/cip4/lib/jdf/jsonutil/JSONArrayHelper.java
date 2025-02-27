@@ -159,6 +159,20 @@ public class JSONArrayHelper
 	 * @param arrayIndex
 	 * @return
 	 */
+	public JSONArray getArray(final int arrayIndex)
+	{
+		final Object o = get(arrayIndex);
+		if (o instanceof JSONArray)
+		{
+			return (JSONArray) o;
+		}
+		return null;
+	}
+
+	/**
+	 * @param arrayIndex
+	 * @return
+	 */
 	public JSONObjHelper getJSONHelper(final int arrayIndex)
 	{
 		final JSONObject o = getJSON(arrayIndex);

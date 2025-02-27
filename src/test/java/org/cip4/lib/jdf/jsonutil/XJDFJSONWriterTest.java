@@ -275,6 +275,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
 		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().addNameSpace("Foo", "www.foo.com");
 		final SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
 		final ResourceHelper rh = set.getCreatePartition(0, false);
 		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");

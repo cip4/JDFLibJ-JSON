@@ -1,0 +1,1170 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "object",
+  "properties" : {
+    "Message" : {
+      "$ref" : "#/$defs/Message"
+    },
+    "Header" : {
+      "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Header"
+    },
+    "Version" : {
+      "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Version"
+    }
+  },
+  "required" : [ "Header" ],
+  "$id" : "https://schema.cip4.org/jdfschema_2_2/xjmf.json",
+  "$defs" : {
+    "EnumGangPolicy" : {
+      "type" : "string",
+      "enum" : [ "Gang", "GangAndForce", "NoGang" ]
+    },
+    "ResponseResource" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ResourceInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/ResourceInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "ResponseGangStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "GangInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/GangInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "Query" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Message"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Subscription" : {
+            "$ref" : "#/$defs/Subscription"
+          }
+        }
+      } ]
+    },
+    "QueryQueueStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "QueueStatusParams" : {
+            "$ref" : "#/$defs/QueueStatusParams"
+          }
+        }
+      } ]
+    },
+    "SubscriptionInfo" : {
+      "type" : "object",
+      "properties" : {
+        "Languages" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+        },
+        "ChannelID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Subscription" : {
+          "$ref" : "#/$defs/Subscription"
+        },
+        "DeviceID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "MessageType" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        }
+      },
+      "required" : [ "ChannelID", "MessageType", "Subscription" ]
+    },
+    "SignalQueueStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Queue" : {
+            "$ref" : "#/$defs/Queue"
+          }
+        },
+        "required" : [ "Queue" ]
+      } ]
+    },
+    "QueryStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Languages" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+          },
+          "StatusQuParams" : {
+            "$ref" : "#/$defs/StatusQuParams"
+          }
+        }
+      } ]
+    },
+    "ResponseStopPersistentChannel" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "SubscriptionInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/SubscriptionInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "ModifyQueueEntryParams" : {
+      "type" : "object",
+      "properties" : {
+        "QueueFilter" : {
+          "$ref" : "#/$defs/QueueFilter"
+        },
+        "PrevQueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Position" : {
+          "type" : "integer"
+        },
+        "Priority" : {
+          "type" : "integer"
+        },
+        "NextQueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "GangName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Operation" : {
+          "type" : "string",
+          "enum" : [ "Abort", "Complete", "Hold", "Move", "Remove", "Resume", "SetGang", "Suspend" ]
+        }
+      },
+      "required" : [ "Operation", "QueueFilter" ]
+    },
+    "ResponseModifyQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "QueueEntry" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/QueueEntry"
+            }
+          }
+        }
+      } ]
+    },
+    "CommandStopPersistentChannel" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "StopPersChParams" : {
+            "$ref" : "#/$defs/StopPersChParams"
+          }
+        },
+        "required" : [ "StopPersChParams" ]
+      } ]
+    },
+    "PipeParams" : {
+      "type" : "object",
+      "properties" : {
+        "Operation" : {
+          "type" : "string",
+          "enum" : [ "Close", "Pause", "Pull", "Push" ]
+        },
+        "ResourceSet" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/ResourceSet"
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "PipeID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "MISDetails" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/MISDetails"
+        }
+      },
+      "required" : [ "JobID", "Operation", "PipeID" ]
+    },
+    "ResponseKnownMessages" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "MessageService" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/MessageService"
+            }
+          }
+        }
+      } ]
+    },
+    "Subscription" : {
+      "type" : "object",
+      "properties" : {
+        "Languages" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+        },
+        "ChannelMode" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/EnumChannelMode"
+          }
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        },
+        "RepeatTime" : {
+          "type" : "number",
+          "format" : "float"
+        }
+      },
+      "required" : [ "URL" ]
+    },
+    "NotificationFilter" : {
+      "type" : "object",
+      "properties" : {
+        "MilestoneTypes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        },
+        "Classes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "Event", "Information", "Warning", "Error", "Fatal" ]
+          }
+        }
+      }
+    },
+    "QueryKnownSubscriptions" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "SubscriptionFilter" : {
+            "$ref" : "#/$defs/SubscriptionFilter"
+          }
+        }
+      } ]
+    },
+    "SubscriptionFilter" : {
+      "type" : "object",
+      "properties" : {
+        "DeviceID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      }
+    },
+    "CommandSubmitQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "QueueSubmissionParams" : {
+            "$ref" : "#/$defs/QueueSubmissionParams"
+          }
+        },
+        "required" : [ "QueueSubmissionParams" ]
+      } ]
+    },
+    "DeviceFilter" : {
+      "type" : "object",
+      "properties" : {
+        "DeviceDetails" : {
+          "type" : "string",
+          "enum" : [ "Brief", "Modules", "Full" ]
+        }
+      }
+    },
+    "CommandResource" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ResourceCmdParams" : {
+            "$ref" : "#/$defs/ResourceCmdParams"
+          }
+        },
+        "required" : [ "ResourceCmdParams" ]
+      } ]
+    },
+    "QueryResource" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Languages" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+          },
+          "ResourceQuParams" : {
+            "$ref" : "#/$defs/ResourceQuParams"
+          }
+        },
+        "required" : [ "ResourceQuParams" ]
+      } ]
+    },
+    "SignalStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "DeviceInfo" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/DeviceInfo"
+          }
+        },
+        "required" : [ "DeviceInfo" ]
+      } ]
+    },
+    "SignalKnownDevices" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Device" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Device"
+            }
+          }
+        }
+      } ]
+    },
+    "ResourceQuParams" : {
+      "type" : "object",
+      "properties" : {
+        "ResourceDetails" : {
+          "type" : "string",
+          "enum" : [ "Brief", "Full" ]
+        },
+        "QueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Types" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        },
+        "Scope" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Scope"
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "ResourceName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Part" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Part"
+          }
+        },
+        "ExternalID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        }
+      },
+      "required" : [ "Scope" ]
+    },
+    "ReturnQueueEntryParams" : {
+      "type" : "object",
+      "properties" : {
+        "QueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      },
+      "required" : [ "QueueEntryID", "URL" ]
+    },
+    "GangInfo" : {
+      "type" : "object",
+      "properties" : {
+        "Amount" : {
+          "type" : "number",
+          "format" : "float"
+        },
+        "GangName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        }
+      },
+      "required" : [ "GangName" ]
+    },
+    "SignalGangStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "GangInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/GangInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "ResourceCmdParams" : {
+      "type" : "object",
+      "properties" : {
+        "UpdateMethod" : {
+          "type" : "string",
+          "enum" : [ "Complete", "CompleteSet", "Incremental", "Remove", "RemoveSet" ]
+        },
+        "ResourceSet" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/ResourceSet"
+        }
+      },
+      "required" : [ "UpdateMethod", "ResourceSet" ]
+    },
+    "ResponseStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "DeviceInfo" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/DeviceInfo"
+          }
+        }
+      } ]
+    },
+    "ResponseKnownDevices" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Device" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Device"
+            }
+          }
+        }
+      } ]
+    },
+    "ResponseSubmitQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "QueueEntry" : {
+            "$ref" : "#/$defs/QueueEntry"
+          }
+        }
+      } ]
+    },
+    "SignalKnownSubscriptions" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "SubscriptionInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/SubscriptionInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "QueryGangStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "GangQuFilter" : {
+            "$ref" : "#/$defs/GangQuFilter"
+          }
+        }
+      } ]
+    },
+    "ResponseKnownSubscriptions" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "SubscriptionInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/$defs/SubscriptionInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "CommandResubmitQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ResubmissionParams" : {
+            "$ref" : "#/$defs/ResubmissionParams"
+          }
+        },
+        "required" : [ "ResubmissionParams" ]
+      } ]
+    },
+    "QueryNotification" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "NotificationFilter" : {
+            "$ref" : "#/$defs/NotificationFilter"
+          },
+          "Languages" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+          }
+        }
+      } ]
+    },
+    "GangCmdFilter" : {
+      "type" : "object",
+      "properties" : {
+        "Policy" : {
+          "type" : "string",
+          "enum" : [ "All", "Optimized" ]
+        },
+        "GangNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        }
+      }
+    },
+    "CommandPipeControl" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "PipeParams" : {
+            "$ref" : "#/$defs/PipeParams"
+          }
+        },
+        "required" : [ "PipeParams" ]
+      } ]
+    },
+    "ResubmissionParams" : {
+      "type" : "object",
+      "properties" : {
+        "QueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "UpdateMethod" : {
+          "type" : "string",
+          "enum" : [ "Complete", "Incremental", "Remove" ]
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      },
+      "required" : [ "QueueEntryID", "UpdateMethod", "URL" ]
+    },
+    "ResponseQueueStatus" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Response"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Queue" : {
+            "$ref" : "#/$defs/Queue"
+          }
+        }
+      } ]
+    },
+    "Message" : {
+      "type" : "object",
+      "properties" : {
+        "Header" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Header"
+        }
+      },
+      "required" : [ "Header" ]
+    },
+    "ResponseReturnQueueEntry" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "StopPersChParams" : {
+      "type" : "object",
+      "properties" : {
+        "ChannelID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "MessageType" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      }
+    },
+    "RequestQueueEntryParams" : {
+      "type" : "object",
+      "properties" : {
+        "Activation" : {
+          "$ref" : "#/$defs/Activation"
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Part" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Part"
+          }
+        },
+        "QueueURL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      },
+      "required" : [ "QueueURL" ]
+    },
+    "Activation" : {
+      "type" : "string",
+      "enum" : [ "Informative", "Held", "Active", "PendingReturn", "Removed" ]
+    },
+    "ResponseShutDown" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "CommandModifyQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ModifyQueueEntryParams" : {
+            "$ref" : "#/$defs/ModifyQueueEntryParams"
+          }
+        },
+        "required" : [ "ModifyQueueEntryParams" ]
+      } ]
+    },
+    "QueueFilter" : {
+      "type" : "object",
+      "properties" : {
+        "MaxEntries" : {
+          "type" : "integer"
+        },
+        "OlderThan" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "GangNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        },
+        "MinPriority" : {
+          "type" : "integer"
+        },
+        "StatusList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/NodeStatus"
+          }
+        },
+        "QueueEntryIDs" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        },
+        "FirstEntry" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "GangSource" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/GangSource"
+          }
+        },
+        "NewerThan" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Part" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Part"
+          }
+        },
+        "MaxPriority" : {
+          "type" : "integer"
+        },
+        "LastEntry" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        }
+      }
+    },
+    "QueueSubmissionParams" : {
+      "type" : "object",
+      "properties" : {
+        "PrevQueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Priority" : {
+          "type" : "integer"
+        },
+        "ReturnJMF" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        },
+        "GangPolicy" : {
+          "$ref" : "#/$defs/EnumGangPolicy"
+        },
+        "Activation" : {
+          "$ref" : "#/$defs/Activation"
+        },
+        "NextQueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "GangName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "URL" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/URL"
+        }
+      },
+      "required" : [ "URL" ]
+    },
+    "Signal" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Message"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ChannelMode" : {
+            "$ref" : "#/$defs/EnumChannelMode"
+          }
+        }
+      } ]
+    },
+    "ResponseForceGang" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "SignalNotification" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Notification" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Notification"
+          }
+        },
+        "required" : [ "Notification" ]
+      } ]
+    },
+    "EnumChannelMode" : {
+      "type" : "string",
+      "enum" : [ "FireAndForget", "Reliable" ]
+    },
+    "QueueStatusParams" : {
+      "type" : "object",
+      "properties" : {
+        "UpdateGranularity" : {
+          "$ref" : "#/$defs/UpdateGranularity"
+        },
+        "QueueFilter" : {
+          "$ref" : "#/$defs/QueueFilter"
+        }
+      }
+    },
+    "ResponseResubmitQueueEntry" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "CommandRequestQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "RequestQueueEntryParams" : {
+            "$ref" : "#/$defs/RequestQueueEntryParams"
+          }
+        }
+      } ]
+    },
+    "Queue" : {
+      "type" : "object",
+      "properties" : {
+        "UpdateGranularity" : {
+          "$ref" : "#/$defs/UpdateGranularity"
+        },
+        "QueueSize" : {
+          "type" : "integer"
+        },
+        "MaxQueueSize" : {
+          "type" : "integer"
+        },
+        "QueueEntry" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/$defs/QueueEntry"
+          }
+        }
+      }
+    },
+    "ResponsePipeControl" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "ResponseRequestQueueEntry" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "ResponseNotification" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "GangQuFilter" : {
+      "type" : "object",
+      "properties" : {
+        "GangNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        }
+      }
+    },
+    "CommandShutDown" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ShutDownCmdParams" : {
+            "$ref" : "#/$defs/ShutDownCmdParams"
+          }
+        },
+        "required" : [ "ShutDownCmdParams" ]
+      } ]
+    },
+    "UpdateGranularity" : {
+      "type" : "string",
+      "enum" : [ "All", "ChangesOnly" ]
+    },
+    "SignalResource" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Signal"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ResourceInfo" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/ResourceInfo"
+            }
+          }
+        }
+      } ]
+    },
+    "CommandReturnQueueEntry" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "ReturnQueueEntryParams" : {
+            "$ref" : "#/$defs/ReturnQueueEntryParams"
+          }
+        },
+        "required" : [ "ReturnQueueEntryParams" ]
+      } ]
+    },
+    "QueueEntry" : {
+      "type" : "object",
+      "properties" : {
+        "Status" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/NodeStatus"
+        },
+        "EndTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "Priority" : {
+          "type" : "integer"
+        },
+        "GangPolicy" : {
+          "$ref" : "#/$defs/EnumGangPolicy"
+        },
+        "RelatedJobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "SubmissionTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "StartTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "Activation" : {
+          "$ref" : "#/$defs/Activation"
+        },
+        "GangSource" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/GangSource"
+          }
+        },
+        "GangName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "QueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "FileSpec" : {
+          "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/FileSpec"
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Part" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Part"
+          }
+        },
+        "StatusDetails" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "RelatedJobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        }
+      },
+      "required" : [ "QueueEntryID", "Status" ]
+    },
+    "MessageService" : {
+      "type" : "object",
+      "properties" : {
+        "Type" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "URLSchemes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "http", "https" ]
+          }
+        },
+        "ResponseModes" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "enum" : [ "FireAndForget", "Reliable", "Response" ]
+          }
+        }
+      },
+      "required" : [ "Type" ]
+    },
+    "Response" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Message"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Notification" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Notification"
+          },
+          "ReturnCode" : {
+            "type" : "integer"
+          }
+        }
+      } ]
+    },
+    "StatusQuParams" : {
+      "type" : "object",
+      "properties" : {
+        "QueueEntryID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Types" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+          }
+        },
+        "JobPartID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "JobID" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._\\-:]*$"
+        },
+        "Part" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/Part"
+          }
+        }
+      }
+    },
+    "ResponseWakeUp" : {
+      "$ref" : "#/$defs/Response"
+    },
+    "QueryKnownDevices" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Query"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "Languages" : {
+            "$ref" : "https://schema.cip4.org/jdfschema_2_2/xjdf.json#/$defs/languages"
+          },
+          "DeviceFilter" : {
+            "$ref" : "#/$defs/DeviceFilter"
+          }
+        }
+      } ]
+    },
+    "Command" : {
+      "$ref" : "#/$defs/Message"
+    },
+    "CommandWakeUp" : {
+      "$ref" : "#/$defs/Command"
+    },
+    "QueryKnownMessages" : {
+      "$ref" : "#/$defs/Query"
+    },
+    "ShutDownCmdParams" : {
+      "type" : "object",
+      "properties" : {
+        "ShutDownType" : {
+          "type" : "string",
+          "enum" : [ "StandBy", "Full" ]
+        }
+      }
+    },
+    "CommandForceGang" : {
+      "allOf" : [ {
+        "$ref" : "#/$defs/Command"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "GangCmdFilter" : {
+            "$ref" : "#/$defs/GangCmdFilter"
+          }
+        },
+        "required" : [ "GangCmdFilter" ]
+      } ]
+    }
+  }
+}

@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 
@@ -61,14 +62,16 @@ import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.extensions.BaseXJDFHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
+import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.jdflib.util.UrlPart;
 import org.cip4.jdflib.util.UrlUtil;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
+import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaMerger;
+import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaPrune;
 import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaReader;
-import org.cip4.lib.jdf.jsonutil.schema.JSONSchemaUpdate;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,23 +93,48 @@ public abstract class JSONTestCaseBase
 	@BeforeAll
 	static void setTmpSchema()
 	{
-		for (int i = 2; i <= 3; i++)
+		for (int i = 5; i <= 3; i++)
 		{
-			final File f = new File(sm_dirTestData + "schema/Version_2_" + i + "/xjdf.json");
+			final File f = getNewSchema();
 			assertTrue(f.canRead());
-			final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
-			up.update();
 			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
 			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
 			if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
 			{
-				FileUtil.writeFile(up, f1);
+				FileUtil.copyFile(f, f1);
 			}
 			if (!f2.exists() || (System.currentTimeMillis() - f2.lastModified()) > 42000)
 			{
-				FileUtil.writeFile(up, f2);
+				FileUtil.copyFile(f, f2);
 			}
 		}
+	}
+
+	protected static File getNewSchema()
+	{
+		final File file = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
+		if (!file.exists())
+		{
+			final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+			assertTrue(f.canRead());
+			final JSONSchemaMerger up = new JSONSchemaMerger(f);
+			final File f2 = new File(sm_dirTestData + "schema/Version_2_3/xjmf.json");
+			up.mergeSchema(f2);
+			FileUtil.writeFile(up, file);
+		}
+		return file;
+	}
+
+	protected static JSONSchemaPrune getUpdater() throws IOException
+	{
+		final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+		assertTrue(f.canRead());
+		final JSONSchemaMerger up = new JSONSchemaMerger(f);
+		final File f2 = new File(sm_dirTestData + "schema/Version_2_3/xjmf.json");
+		up.mergeSchema(f2);
+		final ByteArrayIOStream bos = new ByteArrayIOStream();
+		up.writeStream(bos);
+		return new JSONSchemaPrune(bos.getInputStream());
 	}
 
 	/**
@@ -275,7 +303,9 @@ public abstract class JSONTestCaseBase
 		final JSONObject jo = jsonWriter.convert(e);
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
-		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schemakeep/Version_2_3/xjdf.json"));
+
+		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+		// final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/test/xjdf.json"));
 		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{
