@@ -223,26 +223,6 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		this.jsonCase = jsonCase;
 	}
 
-	void createRoots(final StringArray roots)
-	{
-		final JSONArrayHelper oneof = getCreateArray(ONE_OF);
-		oneof.clear();
-		for (final String root : roots)
-		{
-			addOneOf(oneof, root);
-		}
-
-	}
-
-	void addOneOf(final JSONArrayHelper oneof, final String root)
-	{
-		oneof.add(new JSONObject(new JDFAttributeMap(REF, "#/" + DEFS_SLASH + root)));
-		final JSONObject next = new JSONObject();
-		final JSONObjHelper nexth = new JSONObjHelper(next);
-		nexth.setString(TYPE, OBJECT);
-		nexth.setString(REQUIRED, root);
-		nexth.setString(PROPERTIES + "/" + root + "/" + REF, "#/" + DEFS_SLASH + root);
-		oneof.add(nexth);
-	}
+	
 
 }

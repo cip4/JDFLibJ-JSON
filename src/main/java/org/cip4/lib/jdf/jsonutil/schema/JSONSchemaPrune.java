@@ -51,7 +51,6 @@ import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.core.VString;
-import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.StringUtil;
@@ -395,30 +394,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	{
 		return "JSONSchemaPrunee [ pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources + ", allowedPartitions="
 				+ allowedPartitions + ", pruneMore=" + pruneType + "]";
-	}
-
-	@Override
-	void createRoots(final StringArray roots)
-	{
-		final JSONArrayHelper oneof = getCreateArray(ONE_OF);
-		oneof.clear();
-		for (final String root : roots)
-		{
-			addOneOf(oneof, root);
-		}
-
-	}
-
-	@Override
-	void addOneOf(final JSONArrayHelper oneof, final String root)
-	{
-		oneof.add(new JSONObject(new JDFAttributeMap(REF, "#/" + DEFS_SLASH + root)));
-		final JSONObject next = new JSONObject();
-		final JSONObjHelper nexth = new JSONObjHelper(next);
-		nexth.setString(TYPE, OBJECT);
-		nexth.setString(REQUIRED, root);
-		nexth.setString(PROPERTIES + "/" + root + "/" + REF, "#/" + DEFS_SLASH + root);
-		oneof.add(nexth);
 	}
 
 }

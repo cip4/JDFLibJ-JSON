@@ -190,18 +190,6 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 		return null;
 	}
 
-	@Override
-	void createRoots(final StringArray roots)
-	{
-		final JSONArrayHelper oneof = getCreateArray(ONE_OF);
-		oneof.clear();
-		for (final String root : roots)
-		{
-			addOneOf(oneof, root);
-		}
-
-	}
-
 	void updateDefs(final JSONSchemaUpdate up2)
 	{
 		final JSONObjHelper myDefs = getHelper(DEFS);
