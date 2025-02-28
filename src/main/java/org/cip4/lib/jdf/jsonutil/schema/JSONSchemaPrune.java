@@ -67,7 +67,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	private final StringArray allowedResources;
 	private final StringArray allowedPartitions;
 	private final StringArray pruneType;
-	final JSONSchemaWalker jsonSchemaWalker;
 	private final StringArray pruneKeys;
 
 	public List<String> getSingleMessages()
@@ -94,7 +93,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
-		jsonSchemaWalker = new JSONSchemaWalker(this);
 		preparePrune();
 	}
 
@@ -107,7 +105,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
-		jsonSchemaWalker = new JSONSchemaWalker(this);
 		preparePrune();
 	}
 
@@ -120,7 +117,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
-		jsonSchemaWalker = new JSONSchemaWalker(this);
 		preparePrune();
 	}
 

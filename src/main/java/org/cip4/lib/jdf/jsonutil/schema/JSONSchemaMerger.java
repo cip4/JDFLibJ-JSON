@@ -156,14 +156,14 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 			{
 				p0 = a.getObject(ALL_OF + "[1]/" + PROPERTIES);
 				r0 = a.getArrayHelper(ALL_OF + "[1]/" + REQUIRED);
-				if (r0 != null)
-				{
-					final JSONArrayHelper req = a.getCreateArray(REQUIRED);
-					for (final String r : r0.getStrings())
-						req.appendUnique(r);
-				}
-				a.setObj(PROPERTIES, p0);
 			}
+			if (r0 != null)
+			{
+				final JSONArrayHelper req = a.getCreateArray(REQUIRED);
+				for (final String r : r0.getStrings())
+					req.appendUnique(r);
+			}
+			a.setObj(PROPERTIES, p0);
 			a.setString("properties/Header/$ref", "#/$defs/Header");
 			a.setString(TYPE, OBJECT);
 			a.getCreateArray("properties/Name/enum").appendUnique(audit);
@@ -229,7 +229,7 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 		{
 			if (def.endsWith(XJDFConstants.Intent) && !def.equals(XJDFConstants.Intent) && !def.equals(PRODUCT_INTENT))
 			{
-				h.setString(def + "/$ref", HASH_DEFS + def);
+				h.setString(def + SLASH_REF, HASH_DEFS + def);
 				explicitAbstract.add(def);
 			}
 		}
@@ -247,7 +247,7 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 		final JSONObjHelper messageProp = getSchemaParent(message).getHelper(PROPERTIES);
 		msgProp.putAll(famProp);
 		msgProp.putAll(messageProp);
-		xjmfprop.setString(key + "/$ref", HASH_DEFS + key);
+		xjmfprop.setString(key + SLASH_REF, HASH_DEFS + key);
 		explicitAbstract.add(key);
 	}
 
@@ -287,7 +287,7 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 				final String ref = defHelper.getJSONHelper(0).getString(REF);
 				if ("#/$defs/SpecificResource".equals(ref))
 				{
-					h.setString(key + "/$ref", HASH_DEFS + key);
+					h.setString(key + SLASH_REF, HASH_DEFS + key);
 					explicitAbstract.add(key);
 				}
 			}
