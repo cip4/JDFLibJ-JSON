@@ -60,6 +60,7 @@ import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.VElement;
 import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.extensions.BaseXJDFHelper;
+import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.util.ByteArrayIOStream;
@@ -112,6 +113,7 @@ public abstract class JSONTestCaseBase
 
 	protected static File getNewSchema()
 	{
+
 		final File file = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
 		if (!file.exists())
 		{
@@ -198,6 +200,7 @@ public abstract class JSONTestCaseBase
 	public JSONTestCaseBase()
 	{
 		super();
+		log = LogFactory.getLog(getClass());
 	}
 
 	/**
@@ -304,8 +307,7 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
-		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
-		// final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/test/xjdf.json"));
+		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
 		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{
@@ -361,7 +363,7 @@ public abstract class JSONTestCaseBase
 		return path;
 	}
 
-	protected Log log;
+	protected final Log log;
 
 	// //////////////////////////////////////////////////////////////////////////
 	/**
@@ -371,8 +373,7 @@ public abstract class JSONTestCaseBase
 	@BeforeEach
 	public void setUp() throws Exception
 	{
-		JDFElement.setDefaultJDFVersion(EnumVersion.Version_2_1);
-		log = LogFactory.getLog(getClass());
+		JDFElement.setDefaultJDFVersion(XJDF20.getDefaultVersion());
 	}
 
 	/**
@@ -383,7 +384,7 @@ public abstract class JSONTestCaseBase
 	@AfterEach
 	public void tearDown() throws Exception
 	{
-		JDFElement.setDefaultJDFVersion(EnumVersion.Version_2_1);
+		JDFElement.setDefaultJDFVersion(XJDF20.getDefaultVersion());
 	}
 
 	/**
