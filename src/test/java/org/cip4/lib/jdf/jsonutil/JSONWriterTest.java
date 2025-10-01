@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumDeviceDetails;
+import org.cip4.jdflib.auto.JDFAutoDeviceFilter.EnumDeviceDetails;
 import org.cip4.jdflib.auto.JDFAutoStatusQuParams.EnumJobDetails;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -765,10 +765,14 @@ class JSONWriterTest extends JSONTestCaseBase
 	{
 		final KElement e = KElement.createRoot("a", null);
 		for (int i = 0; i < 3; i++)
+		{
 			e.appendElement("b");
+		}
 		e.appendElement("b").setAttribute("c", "d");
 		for (int i = 0; i < 3; i++)
+		{
 			e.appendElement("b");
+		}
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setWantArray(false);
 		final JSONObject o = jsonWriter.convert(e);
@@ -982,8 +986,8 @@ class JSONWriterTest extends JSONTestCaseBase
 		final File[] xjdfs = FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf");
 		for (final File x : xjdfs)
 		{
-			Assertions.assertNotNull(
-					FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())), sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
+			Assertions.assertNotNull(FileUtil.streamToFile(jsonWriter.getStream(KElement.parseFile(x.getAbsolutePath())),
+					sm_dirTestDataTemp + "json/" + UrlUtil.newExtension(x.getName(), "json")));
 
 		}
 	}
