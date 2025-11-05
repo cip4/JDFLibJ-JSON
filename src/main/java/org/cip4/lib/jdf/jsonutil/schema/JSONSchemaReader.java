@@ -38,9 +38,8 @@
 package org.cip4.lib.jdf.jsonutil.schema;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,10 +50,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.Error;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaLocation;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SchemaRegistry.Builder;
+import com.networknt.schema.SpecificationVersion;
+import com.networknt.schema.resource.SchemaLoader;
 
 public class JSONSchemaReader
 {
@@ -71,20 +73,23 @@ public class JSONSchemaReader
 		this(UrlUtil.fileToUrl(file, false));
 	}
 
-	private final JsonSchema theSchema;
+	private final Schema theSchema;
 
-	public JsonSchema getTheSchema()
+	public Schema getTheSchema()
 	{
 		return theSchema;
 	}
 
-	JsonSchema readJsonSchema(final String schemaURL)
+	Schema readJsonSchema(final String schemaURL)
 	{
-		final JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
 		try
 		{
-			final URI schemaURI = new URI(schemaURL);
-			return factory.getSchema(schemaURI);
+			Builder builder = SchemaRegistry.builder();
+			builder.schemaLoader(SchemaLoader.getRemoteFetcher());
+			builder.defaultDialectId(SpecificationVersion.DRAFT_2020_12.getDialectId());
+			final SchemaRegistry factory = builder.build();
+			SchemaLocation of = SchemaLocation.of(schemaURL);
+			return factory.getSchema(of);
 		}
 		catch (final Exception e)
 		{
@@ -94,29 +99,29 @@ public class JSONSchemaReader
 
 	}
 
-	public Collection<ValidationMessage> checkJSON(final String jsonMsg)
+	public List<Error> checkJSON(final String jsonMsg)
 	{
 
 		final ObjectMapper mapper = new ObjectMapper();
 		JsonNode jsonNode;
-		final ArrayList<ValidationMessage> al = new ArrayList<ValidationMessage>();
+		final ArrayList<Error> al = new ArrayList<Error>();
 		try
 		{
 			jsonNode = mapper.readTree(jsonMsg);
 		}
 		catch (final JsonMappingException e)
 		{
-			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
+			ContainerUtil.add(al, Error.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		catch (final JsonProcessingException e)
 		{
-			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
+			ContainerUtil.add(al, Error.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		catch (final Exception e)
 		{
-			ContainerUtil.add(al, ValidationMessage.builder().message(e.getClass().getSimpleName()).build());
+			ContainerUtil.add(al, Error.builder().message(e.getClass().getSimpleName()).build());
 			return al;
 		}
 		return theSchema.validate(jsonNode);

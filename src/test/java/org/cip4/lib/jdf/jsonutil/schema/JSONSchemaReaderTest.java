@@ -46,7 +46,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
-import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
+import org.cip4.jdflib.auto.JDFAutoNotification.EClass;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
@@ -62,7 +62,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.Error;
 
 class JSONSchemaReaderTest extends JSONTestCaseBase
 {
@@ -91,15 +91,15 @@ class JSONSchemaReaderTest extends JSONTestCaseBase
 		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
 		final XJMFHelper h = new XJMFHelper();
 		final JDFNotification n = (JDFNotification) h.appendMessage(EnumFamily.Signal, EnumType.Notification).appendElement(ElementName.NOTIFICATION);
-		n.setClass(EnumClass.Information);
+		n.setClass(EClass.Information);
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final JSONObject jo = jsonWriter.convert(h.getRoot());
-		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
+		final Collection<Error> ret = srf.checkJSON(jo.toJSONString());
 		assertTrue(ContainerUtil.isEmpty(ret));
-		final Collection<ValidationMessage> retbad = srf.checkJSON("{\"foo\":\"bar\"}");
+		final Collection<Error> retbad = srf.checkJSON("{\"foo\":\"bar\"}");
 		assertFalse(ContainerUtil.isEmpty(retbad));
-		final Collection<ValidationMessage> retbad2 = srf.checkJSON("aaa");
+		final Collection<Error> retbad2 = srf.checkJSON("aaa");
 		assertFalse(ContainerUtil.isEmpty(retbad2));
 	}
 

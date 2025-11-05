@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -56,7 +56,6 @@ import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement;
-import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.elementwalker.ElementWalker;
 import org.cip4.jdflib.extensions.XJDF20;
@@ -68,7 +67,6 @@ import org.json.simple.parser.JSONParser;
 
 /**
  * @author rainer prosi
- *
  */
 public class JSONReader
 {
@@ -252,7 +250,6 @@ public class JSONReader
 	}
 
 	/**
-	 *
 	 * @param a
 	 * @return
 	 */
@@ -400,7 +397,7 @@ public class JSONReader
 		final String xmlnsLocalName = KElement.xmlnsLocalName(key);
 		if (XJDFConstants.XJDF.equals(xmlnsLocalName) || XJDFConstants.XJMF.equals(xmlnsLocalName))
 		{
-			return JDFElement.createRoot(xmlnsLocalName, EnumVersion.Version_2_1);
+			return JDFElement.createRoot(xmlnsLocalName, XJDF20.getDefaultVersion());
 		}
 		else
 		{

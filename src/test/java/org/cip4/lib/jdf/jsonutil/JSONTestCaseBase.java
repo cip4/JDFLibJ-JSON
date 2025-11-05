@@ -80,13 +80,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Node;
 
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.Error;
 
 /**
  * base class for JDFLib test case classes
  *
  * @author prosirai
- *
  */
 public abstract class JSONTestCaseBase
 {
@@ -140,7 +139,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @param major
 	 * @param minor
@@ -158,7 +156,6 @@ public abstract class JSONTestCaseBase
 	protected static EnumVersion exampleVersion = EnumVersion.Version_2_2;
 
 	/**
-	 *
 	 * @return
 	 */
 	public static String getXJDFSchema(final int minor)
@@ -175,7 +172,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public static KElement getXJDFSchemaElement(final int minor)
@@ -184,7 +180,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	protected JDFParser getXJDFSchemaParser(final int minor)
@@ -204,7 +199,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @param h
 	 * @param startFirst
 	 */
@@ -217,7 +211,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @param e
 	 * @param startFirst if true include the enclosing element, if false exclude it
 	 */
@@ -236,16 +229,19 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @param h
 	 */
 	protected void cleanSnippets(final BaseXJDFHelper h, final boolean removeBase)
 	{
 		if (h == null || h.getRoot() == null)
+		{
 			return;
+		}
 		BaseXJDFHelper h2 = BaseXJDFHelper.getBaseHelper(h.getRoot().getDocRoot());
 		if (h2 == null)
+		{
 			h2 = h;
+		}
 
 		h2.cleanUp();
 		setSnippet(h, true);
@@ -278,7 +274,8 @@ public abstract class JSONTestCaseBase
 		return writeBothJson(e, jsonWriter, output, equals, cleansnippets, true);
 	}
 
-	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets, final boolean checkJSONSchema)
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets,
+			final boolean checkJSONSchema)
 
 	{
 		final File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
@@ -308,7 +305,7 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
 		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
-		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
+		final Collection<Error> ret = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{
 			assertTrue(ContainerUtil.isEmpty(ret));
@@ -318,7 +315,9 @@ public abstract class JSONTestCaseBase
 		final KElement roundtrip = reader.getElement(jo);
 		BaseXJDFHelper bh = BaseXJDFHelper.getBaseHelper(roundtrip);
 		if (bh == null)
+		{
 			bh = new XJDFHelper(roundtrip);
+		}
 		cleanSnippets(bh, cleansnippets);
 		final File roundtripFile = new File(sm_dirTestDataTemp + "xjdf/xjdfroundtrip", UrlUtil.newExtension(output, "xml"));
 		roundtrip.write2File(roundtripFile);
@@ -367,7 +366,6 @@ public abstract class JSONTestCaseBase
 
 	// //////////////////////////////////////////////////////////////////////////
 	/**
-	 *
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	@BeforeEach
@@ -388,7 +386,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	protected static JDFParser getSchemaParser()
@@ -399,7 +396,6 @@ public abstract class JSONTestCaseBase
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public static String getXJDFSchema(final int major, final int minor)

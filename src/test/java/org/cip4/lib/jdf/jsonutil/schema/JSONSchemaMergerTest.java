@@ -59,7 +59,7 @@ import org.cip4.lib.jdf.jsonutil.XJDFJSONWriterTest;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.Error;
 
 class JSONSchemaMergerTest extends JSONTestCaseBase
 {
@@ -73,7 +73,7 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 		final JSONObject jo = jsonWriter.convert(e);
 		final JSONSchemaReader srf = new JSONSchemaReader(f);
-		final Collection<ValidationMessage> ret = srf.checkJSON(jo.toJSONString());
+		final Collection<Error> ret = srf.checkJSON(jo.toJSONString());
 		assertFalse(ret.isEmpty());
 	}
 
@@ -91,7 +91,7 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 		assertNotNull(sr.getTheSchema());
 		final String jos = FileUtil.fileToString(new File(sm_dirTestData + "json/Duplex-1Up.XJDF.json"), null);
 		assertNotNull(new JSONObjHelper(jos).getRoot());
-		final Collection<ValidationMessage> ret = sr.checkJSON(jos);
+		final Collection<Error> ret = sr.checkJSON(jos);
 		assertTrue(ret.isEmpty());
 	}
 
@@ -99,15 +99,15 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	void testJSONSchemaReaderIntent() throws URISyntaxException
 	{
 		final File fs = getNewSchema();
+		final JSONWriter w = new JSONWriter();
+		w.setXJDF();
 		for (final File f : FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf"))
 		{
-			final JSONWriter w = new JSONWriter();
-			w.setXJDF();
 			final JSONObjHelper h = w.convertHelper(JDFElement.parseFile(f));
 			final JSONSchemaReader sr = new JSONSchemaReader(UrlUtil.fileToUrl(fs, true));
 			assertNotNull(sr.getTheSchema());
 			final String jos = h.toJSONString();
-			final Collection<ValidationMessage> ret = sr.checkJSON(jos);
+			final Collection<Error> ret = sr.checkJSON(jos);
 			assertTrue(ret.size() >= 0);
 		}
 	}
