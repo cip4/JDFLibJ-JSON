@@ -84,11 +84,11 @@ public class JSONSchemaReader
 	{
 		try
 		{
-			Builder builder = SchemaRegistry.builder();
+			final Builder builder = SchemaRegistry.builder();
 			builder.schemaLoader(SchemaLoader.getRemoteFetcher());
 			builder.defaultDialectId(SpecificationVersion.DRAFT_2020_12.getDialectId());
 			final SchemaRegistry factory = builder.build();
-			SchemaLocation of = SchemaLocation.of(schemaURL);
+			final SchemaLocation of = SchemaLocation.of(schemaURL);
 			return factory.getSchema(of);
 		}
 		catch (final Exception e)
@@ -104,7 +104,7 @@ public class JSONSchemaReader
 
 		final ObjectMapper mapper = new ObjectMapper();
 		JsonNode jsonNode;
-		final ArrayList<Error> al = new ArrayList<Error>();
+		final ArrayList<Error> al = new ArrayList<>();
 		try
 		{
 			jsonNode = mapper.readTree(jsonMsg);
