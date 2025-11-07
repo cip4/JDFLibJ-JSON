@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2022 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -55,7 +55,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.JDFConstants;
@@ -154,7 +154,9 @@ public class JSONObjHelper implements IStreamWriter
 	public List<String> getKeys()
 	{
 		if (obj == null)
+		{
 			return null;
+		}
 		final StringArray sa = new StringArray();
 		for (final Object o : obj.keySet())
 		{
@@ -255,7 +257,6 @@ public class JSONObjHelper implements IStreamWriter
 	}
 
 	/**
-	 * 
 	 * @param toConvert
 	 * @return
 	 * @deprecated use StringUtil.underToCamel
@@ -669,7 +670,9 @@ public class JSONObjHelper implements IStreamWriter
 			{
 				final String parent = StringUtil.removeToken(path, -1, JDFConstants.SLASH);
 				if (getPathObject(parent) == null)
+				{
 					return c;
+				}
 			}
 			final String removeToken = StringUtil.removeToken(path, -2, JDFConstants.SLASH);
 			if (!path.equals(removeToken))
@@ -803,7 +806,9 @@ public class JSONObjHelper implements IStreamWriter
 	public String getRootName()
 	{
 		if (obj == null)
+		{
 			return null;
+		}
 		final Set keySet = obj.keySet();
 		return ContainerUtil.isEmpty(keySet) ? null : (String) keySet.iterator().next();
 	}
@@ -914,14 +919,15 @@ public class JSONObjHelper implements IStreamWriter
 	{
 		final JSONObjHelper ret = getHelper(path);
 		if (ret != null)
+		{
 			return ret;
+		}
 		final JSONObject o = new JSONObject();
 		setObj(path, o);
 		return new JSONObjHelper(o);
 	}
 
 	/**
-	 * 
 	 * @param path
 	 * @return
 	 */
@@ -933,11 +939,17 @@ public class JSONObjHelper implements IStreamWriter
 		{
 			final Object remove = parent.remove(StringUtil.token(path, -1, JDFConstants.SLASH));
 			if (remove instanceof JSONObject)
+			{
 				return new JSONObjHelper((JSONObject) remove);
+			}
 			if (remove instanceof JSONArray)
+			{
 				return new JSONArrayHelper((JSONArray) remove);
+			}
 			else
+			{
 				return remove;
+			}
 		}
 		return null;
 	}
@@ -965,14 +977,18 @@ public class JSONObjHelper implements IStreamWriter
 	public Object put(final Object key, final Object value)
 	{
 		if (obj == null)
+		{
 			obj = new JSONObject();
+		}
 		return obj.put(key, value);
 	}
 
 	public void clear()
 	{
 		if (obj != null)
+		{
 			obj.clear();
+		}
 	}
 
 	public Set<String> keySet()
