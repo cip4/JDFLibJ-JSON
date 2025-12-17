@@ -134,7 +134,7 @@ dependencies {
     implementation ('commons-logging:commons-logging:1.3.5'){transitive=false}
     implementation ('commons-lang:commons-lang:2.6'){transitive=false}
     implementation ('commons-io:commons-io:2.21.0'){transitive=false}
-	implementation ('com.networknt:json-schema-validator:2.0.0')
+	implementation ('com.networknt:json-schema-validator:3.0.0')
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'

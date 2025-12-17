@@ -93,7 +93,7 @@ public abstract class JSONTestCaseBase
 	@BeforeAll
 	static void setTmpSchema()
 	{
-		for (int i = 5; i <= 3; i++)
+		for (int i = 2; i < 3; i++)
 		{
 			final File f = getNewSchema();
 			assertTrue(f.canRead());
@@ -153,7 +153,7 @@ public abstract class JSONTestCaseBase
 		return xParsed.isSchemaValid();
 	}
 
-	protected static EnumVersion exampleVersion = EnumVersion.Version_2_2;
+	protected static EnumVersion exampleVersion = EnumVersion.Version_2_3;
 
 	/**
 	 * @return
@@ -305,10 +305,10 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
 		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
-		final Collection<Error> ret = srf.checkJSON(jo.toJSONString());
+		final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{
-			assertTrue(ContainerUtil.isEmpty(ret));
+			assertTrue(ContainerUtil.isEmpty(schemabugs));
 		}
 		final JSONReader reader = new JSONReader();
 		reader.setXJDF();

@@ -140,9 +140,8 @@ public class JSONReader
 
 	void processContext(final Object object, final KElement root)
 	{
-		if (object instanceof JSONArray)
+		if (object instanceof final JSONArray array)
 		{
-			final JSONArray array = (JSONArray) object;
 			if (array != null)
 			{
 				for (final Object next : array)
@@ -280,9 +279,8 @@ public class JSONReader
 		{
 			final Object parsed = p.parse(reader);
 			KElement elem = null;
-			if (parsed instanceof JSONObject)
+			if (parsed instanceof final JSONObject o)
 			{
-				final JSONObject o = (JSONObject) parsed;
 				elem = walkTree(o, null);
 			}
 			else if (parsed instanceof JSONArray)
@@ -365,7 +363,11 @@ public class JSONReader
 		if (root == null)
 		{
 			int n = o.size();
-			for (final String name : new String[] { "Name", "$schema" })
+			if (o.get("$schema") != null)
+			{
+				n--;
+			}
+			for (final String name : new String[] { "Name" })
 			{
 				if (o.get(name) != null)
 				{
@@ -465,7 +467,7 @@ public class JSONReader
 	{
 		if (a != null)
 		{
-			if (key == null || key.equals(JSONWriter.TEXT))
+			if (key == null || JSONWriter.TEXT.equals(key))
 			{
 				a0.appendText(a.toString());
 			}

@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -46,17 +46,17 @@ import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.UrlUtil;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.Error;
 import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaException;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SchemaRegistry.Builder;
 import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.resource.SchemaLoader;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 public class JSONSchemaReader
 {
@@ -91,7 +91,7 @@ public class JSONSchemaReader
 			final SchemaLocation of = SchemaLocation.of(schemaURL);
 			return factory.getSchema(of);
 		}
-		catch (final Exception e)
+		catch (final SchemaException e)
 		{
 			log.error("Could not parse schema at " + schemaURL, e);
 			return null;
@@ -102,22 +102,12 @@ public class JSONSchemaReader
 	public List<Error> checkJSON(final String jsonMsg)
 	{
 
-		final ObjectMapper mapper = new ObjectMapper();
+		final JsonMapper mapper = new JsonMapper();
 		JsonNode jsonNode;
 		final ArrayList<Error> al = new ArrayList<>();
 		try
 		{
 			jsonNode = mapper.readTree(jsonMsg);
-		}
-		catch (final JsonMappingException e)
-		{
-			ContainerUtil.add(al, Error.builder().message(e.getClass().getSimpleName()).build());
-			return al;
-		}
-		catch (final JsonProcessingException e)
-		{
-			ContainerUtil.add(al, Error.builder().message(e.getClass().getSimpleName()).build());
-			return al;
 		}
 		catch (final Exception e)
 		{
@@ -126,6 +116,12 @@ public class JSONSchemaReader
 		}
 		return theSchema.validate(jsonNode);
 
+	}
+
+	@Override
+	public String toString()
+	{
+		return "JSONSchemaReader [theSchema=" + theSchema + "]";
 	}
 
 }

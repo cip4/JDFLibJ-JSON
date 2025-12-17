@@ -48,8 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaType;
-import org.cip4.jdflib.auto.JDFAutoMedia.EnumMediaUnit;
+import org.cip4.jdflib.auto.JDFAutoMedia.EMediaType;
+import org.cip4.jdflib.auto.JDFAutoMedia.EMediaUnit;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
@@ -81,11 +81,11 @@ import org.cip4.jdflib.util.JDFDate;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
- *
  */
 public class XJDFJSONWriterTest extends JSONTestCaseBase
 {
@@ -145,14 +145,15 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONWriter jsonWriter = new JSONWriter();
 		jsonWriter.setXJDF(true, false);
 		if (!isRoot)
+		{
 			jsonWriter.setJsonRoot(eJSONRoot.retain);
+		}
 		jsonWriter.fillTypesFromSchema(getXJDFSchemaElement(MINOR), true);
 		return jsonWriter;
 	}
 
 	/**
 	 * @throws URISyntaxException
-	 *
 	 */
 	@Test
 	void testAddressLine()
@@ -186,7 +187,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 	/**
 	 * @throws URISyntaxException
-	 *
 	 */
 	@Test
 
@@ -208,7 +208,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 	/**
 	 * @throws URISyntaxException
-	 *
 	 */
 	@Test
 	void testComment()
@@ -245,7 +244,6 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 
 	/**
 	 * @throws URISyntaxException
-	 *
 	 */
 	@Test
 	void testOrgUnit()
@@ -401,12 +399,11 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.cleanUp();
 
 		final String output = "auditpool.json";
-		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, output, false, false, true);
+		writeBothJson(xjdf, jsonWriter, output, false, false, true);
 	}
 
 	/**
 	 * @throws URISyntaxException
-	 *
 	 */
 	@Test
 	void testAdhesive()
@@ -416,43 +413,45 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final SetHelper shMedia = xjdfHelper.getCreateSet(ElementName.MEDIA, EnumUsage.Input);
 		final ResourceHelper rh = shMedia.appendPartition(null, true);
 		final JDFMedia m = (JDFMedia) rh.getResource();
-		m.setMediaType(EnumMediaType.SelfAdhesive);
+		m.setMediaType(EMediaType.SelfAdhesive);
 		m.setDimensionCM(new JDFXYPair(42, 0));
-		m.setMediaUnit(EnumMediaUnit.Roll);
+		m.setMediaUnit(EMediaUnit.Roll);
 		m.setThickness(900);
 		final JDFMediaLayers ml = m.appendMediaLayers();
 		JDFMedia m2 = ml.appendMedia();
-		m2.setMediaType(EnumMediaType.Paper);
+		m2.setMediaType(EMediaType.Paper);
 		m2.setWeight(90);
 		final JDFGlue g = (JDFGlue) ml.appendElement(ElementName.GLUE);
 		g.setAttribute(AttributeName.AREAGLUE, "" + true);
 		g.setAttribute(AttributeName.GLUETYPE, "Removable");
 		m2 = ml.appendMedia();
-		m2.setMediaType(EnumMediaType.Paper);
+		m2.setMediaType(EMediaType.Paper);
 		m2.setWeight(60);
 		final String output = "MediaSelfAdhesive.json";
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		xjdfHelper.cleanUp();
 		writeBothJson(xjdfHelper.getRoot(), jsonWriter, output, false, false, true);
-		writeBothJson(m2, jsonWriter, output, true, false, false);
+		writeBothJson(m, jsonWriter, output, true, false, false);
 
 	}
 
 	XJDFHelper getBaseXJDF()
 	{
 		final XJDFHelper h = new XJDFHelper("J1", null);
-		h.setVersion(EnumVersion.Version_2_2);
+		h.setVersion(exampleVersion);
 		h.setTypes("Product");
 		h.removeSet(ElementName.NODEINFO);
 		return h;
 	}
 
+	@BeforeEach
 	@Override
 	public void setUp() throws Exception
 	{
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
-		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "dummy");
+		XJDFHelper.setDefaultVersion(exampleVersion);
+		JSONWriter.setSchemaUrl(exampleVersion, "dummy");
 
 	}
 

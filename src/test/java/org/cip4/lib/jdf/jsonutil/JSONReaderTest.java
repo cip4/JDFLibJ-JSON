@@ -390,7 +390,7 @@ class JSONReaderTest extends JSONTestCaseBase
 	@Test
 	void testSimpleObj()
 	{
-		final XMLDoc d = new XMLDoc();
+		new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
 		assertNotNull(a);
@@ -402,9 +402,22 @@ class JSONReaderTest extends JSONTestCaseBase
 	@Test
 	void testSimpleObjSchema()
 	{
-		final XMLDoc d = new XMLDoc();
+		new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement root = r.getElement("{\"$schema\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
+		assertNotNull(root);
+		assertEquals("a", root.getLocalName());
+		final KElement a = root;
+		assertNotNull(a.getElement("b"));
+		assertNull(a.getElement("b", null, 1));
+	}
+
+	@Test
+	void testSimpleObjName()
+	{
+		new XMLDoc();
+		final JSONReader r = new JSONReader();
+		final KElement root = r.getElement("{\"Name\":\"foo\",\"a\":{\"b\":{\"c1\":\"d1\",\"c2\":\"d2\"}}}");
 		assertNotNull(root);
 		assertEquals("foo", root.getLocalName());
 		final KElement a = root.getElement("a");
@@ -415,7 +428,7 @@ class JSONReaderTest extends JSONTestCaseBase
 	@Test
 	void testSimpleObjNS()
 	{
-		final XMLDoc d = new XMLDoc();
+		new XMLDoc();
 		final JSONReader r = new JSONReader();
 		final KElement a = r.getElement("{\"x:a\":{\"x:b\":{\"y:c1\":\"d1\",\"z:c2\":\"d2\"}}}");
 		assertNotNull(a);

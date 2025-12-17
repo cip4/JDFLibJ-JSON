@@ -42,6 +42,7 @@
  */
 package org.cip4.lib.jdf.jsonutil;
 
+import org.cip4.jdflib.auto.JDFAutoNotification.EClass;
 import org.cip4.jdflib.auto.JDFAutoNotification.EnumClass;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
@@ -72,7 +73,6 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author rainer prosi
- *
  */
 class XJMFJSONWriterTest extends JSONTestCaseBase
 {
@@ -144,8 +144,23 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 
 		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
 		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
-		n.setClass(EnumClass.Event);
+		n.setClass(EClass.Event);
 		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.schema.json", true, false, true);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testMinimalName()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		jsonWriter.setJsonRoot(eJSONRoot.xmlname);
+
+		final MessageHelper h = getBaseXJMF(EnumFamily.Signal, EnumType.Notification);
+		final JDFNotification n = (JDFNotification) h.appendElement(ElementName.NOTIFICATION);
+		n.setClass(EClass.Event);
+		writeBothJson(h.getRoot().getParentNode_KElement(), jsonWriter, "minimalxjmf.xmlname.json", true, false, true);
 	}
 
 	MessageHelper getBaseXJMF(final EnumFamily family, final EnumType typ)
@@ -162,7 +177,7 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		super.setUp();
 		JDFElement.setDefaultJDFVersion(exampleVersion);
 		totalProductionCounter = System.currentTimeMillis() % 1000000;
-		JSONWriter.setSchemaUrl(EnumVersion.Version_2_2, "dummy");
+		JSONWriter.setSchemaUrl(exampleVersion, "dummy");
 
 	}
 
@@ -319,7 +334,9 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 			p.setWaste(waste);
 		}
 		if (good + waste > 0)
+		{
 			di.setTotalProductionCounter(totalProductionCounter);
+		}
 
 		return p;
 	}

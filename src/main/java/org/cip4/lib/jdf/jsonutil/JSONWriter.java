@@ -65,6 +65,7 @@ import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.datatypes.JDFNumberList;
 import org.cip4.jdflib.elementwalker.ElementWalker;
 import org.cip4.jdflib.extensions.XJDF20;
+import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.util.ByteArrayIOStream;
 import org.cip4.jdflib.util.ContainerUtil;
@@ -87,10 +88,13 @@ public class JSONWriter extends JSONObjHelper
 	static final String TEXT = "Text";
 	private static final String XJDF_SCHEMA_Base = "http://schema.cip4.org/jdfschema_2_";
 	private static final String XJDF_SCHEMA_XSD = "/xjdf.xsd";
+	private static final String JSON_SCHEMA_Base = "https://schema.cip4.org/jdfschema_2_";
+	private static final String XJDF_SCHEMA_JSON = "/xjdf.json";
 	boolean wantArray;
 	boolean learnArrays;
 	boolean typeSafe;
 	ElementWalker prepWalker;
+	String jsonSchemaURL;
 	private static Map<EnumVersion, String> schemaCache = new HashMap<>();
 
 	public static void setSchemaUrl(final EnumVersion v, final String cachePath)
@@ -119,8 +123,8 @@ public class JSONWriter extends JSONObjHelper
 
 	/**
 	 * apply standard xjdf settings
-	 * 
-	 * @param splitXJMF TODO
+	 *
+	 * @param splitXJMF     TODO
 	 * @param explicitAudit TODO
 	 */
 	public void setXJDF(final boolean splitXJMF, final boolean explicitAudit)
@@ -130,14 +134,16 @@ public class JSONWriter extends JSONObjHelper
 
 	/**
 	 * apply standard xjdf settings
-	 * 
-	 * @param splitXJMF TODO
+	 *
+	 * @param splitXJMF     TODO
 	 * @param explicitAudit TODO
 	 */
 	public void setXJDF(final boolean splitXJMF, final boolean explicitAudit, EnumVersion version)
 	{
 		if (version == null)
+		{
 			version = XJDF20.getDefaultVersion();
+		}
 		final JSONPrepWalker jsonPrepWalker = new JSONPrepWalker();
 		jsonPrepWalker.setExplicitAudit(false);
 		jsonPrepWalker.setSplitXJMF(splitXJMF);
@@ -149,8 +155,11 @@ public class JSONWriter extends JSONObjHelper
 		setJsonRoot(eJSONRoot.xmlname);
 		addMixed(ElementName.COMMENT);
 		String schemaURL = getSchemaURL(version, true);
+		setJsonSchemaURL(version);
 		if (schemaURL == null)
+		{
 			schemaURL = getSchemaURL(version, false);
+		}
 		final UrlPart part = UrlUtil.writerToURL(schemaURL, null, UrlUtil.GET, null, null);
 		XMLDoc schema = UrlPart.isReturnCodeOK(part) ? part.getXMLDoc() : null;
 		if (schema == null)
@@ -325,6 +334,10 @@ public class JSONWriter extends JSONObjHelper
 	public void setJsonRoot(final eJSONRoot jsonRoot)
 	{
 		this.rootType = jsonRoot;
+		if (eJSONRoot.schema.equals(jsonRoot) && StringUtil.isEmpty(jsonSchemaURL))
+		{
+			setJsonSchemaURL(XJDFHelper.getDefaultVersion());
+		}
 	}
 
 	/**
@@ -379,7 +392,9 @@ public class JSONWriter extends JSONObjHelper
 	{
 		final String key = StringUtil.normalize(attribute, true, "_ -");
 		if (knownAtts.contains(key) || knownElems.contains(key))
+		{
 			return false;
+		}
 		return addList(attribute, alwaysString);
 	}
 
@@ -429,13 +444,19 @@ public class JSONWriter extends JSONObjHelper
 				{
 					final String name = e.getNonEmpty(NAME);
 					if (name != null)
+					{
 						nameMap.putOne(name, e);
+					}
 					final String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
 					if (sg != null)
+					{
 						nameMap.putOne(sg, e);
+					}
 					final String ref = e.getNonEmpty(REF);
 					if (ref != null)
+					{
 						nameMap.putOne(ref, e);
+					}
 				}
 			}
 		}
@@ -448,8 +469,8 @@ public class JSONWriter extends JSONObjHelper
 		{
 
 			final Set<String> types = new HashSet<>();
-			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList", "IntegerRange", "LabColor",
-					"matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
+			types.addAll(new StringArray(new String[] { "float", "double", "int", "integer", "long", "boolean", "CMYKColor", "FloatList", "IntegerList",
+					"IntegerRange", "LabColor", "matrix", "rectangle", "shape", "sRGBColor", "XYPair", "TransferFunction" }));
 			if (ve != null)
 			{
 				for (final KElement e : ve)
@@ -505,8 +526,9 @@ public class JSONWriter extends JSONObjHelper
 				alwaysString.remove(name);
 				addList(name, numbers);
 			}
-			else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type) || "LabColor".equals(type)
-					|| "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type) || "XYPair".equals(type))
+			else if ("CMYKColor".equals(type) || "FloatList".equals(type) || "IntegerList".equals(type) || "IntegerRange".equals(type)
+					|| "LabColor".equals(type) || "matrix".equals(type) || "rectangle".equals(type) || "shape".equals(type) || "sRGBColor".equals(type)
+					|| "XYPair".equals(type))
 			{
 				alwaysString.remove(name);
 				addList(name, numList);
@@ -548,24 +570,30 @@ public class JSONWriter extends JSONObjHelper
 			{
 				isMulti = EnumFamily.getEnum(e.getAttribute(SUBSTITUTION_GROUP)) == null;
 			}
-			isMulti = isMulti && !(splitXJMF && ElementName.MESSAGE.equals(e.getAttribute(REF)));
+			isMulti = isMulti && (!splitXJMF || !ElementName.MESSAGE.equals(e.getAttribute(REF)));
 			if (isMulti)
 			{
 				fillArrayFromSchema(e);
 			}
 			final List<String> namesFromSchema = getNamesFromSchema(e, true);
 			for (final String name : namesFromSchema)
+			{
 				addList(name, knownElems);
+			}
 
 		}
 
 		KElement getAncestor(final KElement e, final String name)
 		{
 			if (e == null)
+			{
 				return null;
+			}
 			final KElement parent = e.getParentNode_KElement();
 			if (parent != null && name.equals(parent.getLocalName()))
+			{
 				return parent;
+			}
 			return getAncestor(parent, name);
 		}
 
@@ -573,14 +601,18 @@ public class JSONWriter extends JSONObjHelper
 		{
 			final List<String> keys = getNamesFromSchema(e, true);
 			for (final String key : keys)
+			{
 				addArray(key);
+			}
 		}
 
 		List<String> getNamesFromSchema(final KElement e, final boolean checkName)
 		{
 			List<String> names = getNamesFromRef(e, checkName);
 			if (StringUtil.isEmpty(names))
+			{
 				names = new StringArray(e.getNonEmpty(NAME));
+			}
 
 			KElement parentContent = getAncestor(e, COMPLEX_TYPE);
 			String contentName = null;
@@ -612,7 +644,9 @@ public class JSONWriter extends JSONObjHelper
 		{
 			String nonEmpty = e.getNonEmpty(REF);
 			if (StringUtil.isEmpty(nonEmpty) && checkName)
+			{
 				nonEmpty = e.getNonEmpty(NAME);
+			}
 			return getNamesFromRef(nonEmpty);
 		}
 
@@ -625,7 +659,9 @@ public class JSONWriter extends JSONObjHelper
 		protected List<String> getNamesFromRef(final String nonEmpty)
 		{
 			if (nonEmpty == null)
+			{
 				return null;
+			}
 			final StringArray ret = new StringArray();
 			final List<KElement> vv = nameMap.get(nonEmpty);
 			for (final KElement e2 : vv)
@@ -633,7 +669,9 @@ public class JSONWriter extends JSONObjHelper
 				if (nonEmpty.equals(e2.getNonEmpty(NAME)))
 				{
 					if (!StringUtil.parseBoolean(ABSTRACT, false))
+					{
 						ret.add(nonEmpty);
+					}
 				}
 				else if (nonEmpty.equals(e2.getNonEmpty(SUBSTITUTION_GROUP)))
 				{
@@ -665,7 +703,9 @@ public class JSONWriter extends JSONObjHelper
 	{
 		final boolean abst = StringUtil.parseBoolean(e.getAttribute(ABSTRACT), false);
 		if (abst)
+		{
 			return null;
+		}
 		String type = e.getAttribute("type");
 		if (StringUtil.isEmpty(type))
 		{
@@ -730,6 +770,23 @@ public class JSONWriter extends JSONObjHelper
 		mixedText = TEXT;
 		prefix = eJSONPrefix.retain;
 		rootType = eJSONRoot.retain;
+		jsonSchemaURL = null;
+	}
+
+	public String getJsonSchemaURL()
+	{
+		return jsonSchemaURL;
+	}
+
+	public void setJsonSchemaURL(String jsonSchemaURL)
+	{
+		this.jsonSchemaURL = jsonSchemaURL;
+	}
+
+	public void setJsonSchemaURL(EnumVersion jsonSchemaVersion)
+	{
+		final String url = jsonSchemaVersion == null ? null : JSON_SCHEMA_Base + jsonSchemaVersion.getMinorVersion() + XJDF_SCHEMA_JSON;
+		this.jsonSchemaURL = url;
 	}
 
 	/**
@@ -874,7 +931,8 @@ public class JSONWriter extends JSONObjHelper
 						return ar;
 					}
 				}
-				else if ((numList.contains(normalized) || numList.contains(normalized2)) && !numbers.contains(normalized) && JDFNumberList.createNumberList(val) != null)
+				else if ((numList.contains(normalized) || numList.contains(normalized2)) && !numbers.contains(normalized)
+						&& JDFNumberList.createNumberList(val) != null)
 				{
 					return getNumListArray(val);
 				}
@@ -1049,8 +1107,8 @@ public class JSONWriter extends JSONObjHelper
 	@Override
 	public String toString()
 	{
-		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe=" + isTypeSafe()
-				+ ", arrayNames=" + arrayNames + "]";
+		return "JSONWriter [wantArray=" + wantArray + ", learnArrays=" + learnArrays + " keyCase=" + keyCase + " valueCase=" + valueCase + ", typeSafe="
+				+ isTypeSafe() + ", arrayNames=" + arrayNames + "]";
 	}
 
 	public eJSONCase getKeyCase()
@@ -1114,78 +1172,124 @@ public class JSONWriter extends JSONObjHelper
 	public boolean equals(final Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (!super.equals(obj))
+		{
 			return false;
+		}
 		if (getClass() != obj.getClass())
+		{
 			return false;
+		}
 		final JSONWriter other = (JSONWriter) obj;
 		if (alwaysString == null)
 		{
 			if (other.alwaysString != null)
+			{
 				return false;
+			}
 		}
 		else if (!alwaysString.equals(other.alwaysString))
+		{
 			return false;
+		}
 		if (arrayNames == null)
 		{
 			if (other.arrayNames != null)
+			{
 				return false;
+			}
 		}
 		else if (!arrayNames.equals(other.arrayNames))
+		{
 			return false;
+		}
 		if (keyCase != other.keyCase)
+		{
 			return false;
+		}
 		if (learnArrays != other.learnArrays)
+		{
 			return false;
+		}
 		if (mixedElements == null)
 		{
 			if (other.mixedElements != null)
+			{
 				return false;
+			}
 		}
 		else if (!mixedElements.equals(other.mixedElements))
+		{
 			return false;
+		}
 		if (mixedText == null)
 		{
 			if (other.mixedText != null)
+			{
 				return false;
+			}
 		}
 		else if (!mixedText.equals(other.mixedText))
+		{
 			return false;
+		}
 		if (prefix != other.prefix)
+		{
 			return false;
+		}
 		if (skipPool == null)
 		{
 			if (other.skipPool != null)
+			{
 				return false;
+			}
 		}
 		else if (!skipPool.equals(other.skipPool))
+		{
 			return false;
+		}
 		if (stringArray == null)
 		{
 			if (other.stringArray != null)
+			{
 				return false;
+			}
 		}
 		else if (!stringArray.equals(other.stringArray))
+		{
 			return false;
+		}
 		if (transferFunction == null)
 		{
 			if (other.transferFunction != null)
+			{
 				return false;
+			}
 		}
 		else if (!transferFunction.equals(other.transferFunction))
+		{
 			return false;
+		}
 		if (typeSafe != other.typeSafe)
+		{
 			return false;
+		}
 		if (valueCase != other.valueCase)
+		{
 			return false;
+		}
 		if (wantArray != other.wantArray)
+		{
 			return false;
+		}
 		return true;
 	}
 
 	/**
-	 * @deprecated use th 2 parameter version
+	 * @deprecated use the 2 parameter version
 	 * @param xjdfSchemaElement
 	 */
 	@Deprecated
@@ -1195,9 +1299,8 @@ public class JSONWriter extends JSONObjHelper
 	}
 
 	/**
-	 * 
 	 * @param xjdfSchemaElement
-	 * @param splitXJMF if true, xjmf messages are singular
+	 * @param splitXJMF         if true, xjmf messages are singular
 	 */
 	public void fillTypesFromSchema(final KElement xjdfSchemaElement, final boolean splitXJMF)
 	{
@@ -1213,6 +1316,10 @@ public class JSONWriter extends JSONObjHelper
 	{
 		final JSONRootWalker jsonRootWalker = new JSONRootWalker(this, xjdf);
 		jsonRootWalker.convert();
+		if (XJDFHelper.isXJDF(xjdf) || XJDFHelper.isXJMF(xjdf))
+		{
+			jsonRootWalker.setString("$schema", jsonSchemaURL);
+		}
 		return jsonRootWalker;
 	}
 

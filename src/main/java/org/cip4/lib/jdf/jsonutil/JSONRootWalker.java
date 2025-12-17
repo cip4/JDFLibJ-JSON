@@ -65,7 +65,7 @@ class JSONRootWalker extends JSONObjHelper
 	ArrayList<String> contextStack;
 
 	/**
-	 * 
+	 *
 	 */
 	private final JSONWriter jsonWriter;
 
@@ -155,7 +155,9 @@ class JSONRootWalker extends JSONObjHelper
 			{
 				final String newPrefix = JDFConstants.XMLNS + JDFConstants.COLON + e.getPrefix();
 				if (!contextStack.contains(newPrefix))
+				{
 					contextStack.add(newPrefix);
+				}
 			}
 			if (contextStack.size() > contextSize)
 			{
@@ -164,7 +166,9 @@ class JSONRootWalker extends JSONObjHelper
 				{
 					final Object c = updateSingleContext(h, e);
 					if (c != null)
+					{
 						me.put("@context", c);
+					}
 				}
 				else
 				{
@@ -175,7 +179,9 @@ class JSONRootWalker extends JSONObjHelper
 						ContainerUtil.add(a, c);
 					}
 					if (!a.isEmpty())
+					{
 						me.put("@context", a);
+					}
 				}
 			}
 		}
@@ -187,7 +193,9 @@ class JSONRootWalker extends JSONObjHelper
 		final String prefix = StringUtil.token(xmlns, 1, JDFConstants.COLON);
 		final String url = e.getNamespaceURIFromPrefix(prefix);
 		if ("xsi".equals(prefix))
+		{
 			return null;
+		}
 		if (prefix != null)
 		{
 			final JSONObject o = new JSONObject();

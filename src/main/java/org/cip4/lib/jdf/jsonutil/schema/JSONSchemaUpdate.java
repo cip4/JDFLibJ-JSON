@@ -84,21 +84,21 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	public JSONSchemaUpdate(final File f)
 	{
 		super(f);
-		explicitAbstract = new HashSet<String>();
+		explicitAbstract = new HashSet<>();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
 	public JSONSchemaUpdate(final InputStream is)
 	{
 		super(is);
-		explicitAbstract = new HashSet<String>();
+		explicitAbstract = new HashSet<>();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
 	public JSONSchemaUpdate(final JSONObject base)
 	{
 		super(base);
-		explicitAbstract = new HashSet<String>();
+		explicitAbstract = new HashSet<>();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
 	}
 
@@ -171,7 +171,9 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			{
 				final JSONObjHelper o = ah.getJSONHelper(i);
 				if (o == null)
+				{
 					return null;
+				}
 				final JSONObjHelper schemaParent = getSchemaParent(o);
 				if (schemaParent != null)
 				{
@@ -195,12 +197,15 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			{
 				final JSONObjHelper h = getHelper(DEFS_SLASH + x);
 				if (h == null)
+				{
 					continue;
+				}
 
 				h.setString("properties/Name/type", STRING);
-				h.getCreateArray("properties/@context/Name").addString(x);
+				// h.getCreateArray("properties/@context/Name").addString(x);
 
-				h.setString("properties/@context/type", STRING);
+				// h.setString("properties/@context/type", STRING);
+				h.setString("properties/$schema/type", STRING);
 			}
 
 			final JSONObjHelper ref = new JSONObjHelper(new JSONObject());

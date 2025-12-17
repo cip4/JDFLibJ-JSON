@@ -60,8 +60,6 @@ import org.cip4.lib.jdf.jsonutil.XJDFJSONWriterTest;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.networknt.schema.Error;
 
 class JSONSchemaReaderTest extends JSONTestCaseBase
@@ -86,9 +84,9 @@ class JSONSchemaReaderTest extends JSONTestCaseBase
 	}
 
 	@Test
-	void testCheckJSON() throws URISyntaxException, JsonMappingException, JsonProcessingException
+	void testCheckJSON() throws Exception
 	{
-		final JSONSchemaReader srf = new JSONSchemaReader(new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json"));
+		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
 		final XJMFHelper h = new XJMFHelper();
 		final JDFNotification n = (JDFNotification) h.appendMessage(EnumFamily.Signal, EnumType.Notification).appendElement(ElementName.NOTIFICATION);
 		n.setClass(EClass.Information);
