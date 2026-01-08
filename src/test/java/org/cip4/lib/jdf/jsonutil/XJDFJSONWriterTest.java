@@ -193,7 +193,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
-		final XJDFHelper h = new XJDFHelper(EnumVersion.Version_2_2, "Job1");
+		final XJDFHelper h = new XJDFHelper(XJDFHelper.defaultVersion(), "Job1");
 		h.setTypes("Product");
 		final ResourceHelper p = h.getCreateSet(ElementName.NODEINFO, EnumUsage.Input).getCreatePartition(0, true);
 		p.setDescriptiveName("my status");
