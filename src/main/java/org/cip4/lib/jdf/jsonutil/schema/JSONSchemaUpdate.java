@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2026 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -66,6 +66,7 @@ public class JSONSchemaUpdate extends JSONObjHelper
 	static final String OBJECT = "object";
 	static final String PRODUCT_INTENT = "ProductIntent";
 	static final String ADDITIONAL_PROPERTIES = "additionalProperties";
+	static final String ADDITIONAL_ITEMS = "additionalItems";
 	static final String REF = "$ref";
 	static final String SLASH_REF = "/" + REF;
 	static final String STRING = "string";
@@ -86,6 +87,11 @@ public class JSONSchemaUpdate extends JSONObjHelper
 		super(f);
 		explicitAbstract = new HashSet<>();
 		jsonSchemaWalker = new JSONSchemaWalker(this);
+	}
+
+	public void setAdditional(boolean additional)
+	{
+		jsonSchemaWalker.setAdditional(additional);
 	}
 
 	public JSONSchemaUpdate(final InputStream is)
