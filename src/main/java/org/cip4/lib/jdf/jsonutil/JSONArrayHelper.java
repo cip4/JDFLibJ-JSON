@@ -126,6 +126,11 @@ public class JSONArrayHelper
 		return array;
 	}
 
+	public JSONArray getCopy()
+	{
+		return (JSONArray) JSONObjHelper.getCopy(getArray());
+	}
+
 	/**
 	 * @param i
 	 * @param def
@@ -227,7 +232,9 @@ public class JSONArrayHelper
 				l.addAll(JSONArrayHelper.getHelper(o).getObjects());
 			}
 			else
+			{
 				l.add(o);
+			}
 		}
 		return l;
 	}
@@ -259,7 +266,7 @@ public class JSONArrayHelper
 	 */
 	public static JSONArrayHelper getHelper(final Object jsonArray)
 	{
-		return (jsonArray instanceof JSONArray) ? new JSONArrayHelper((JSONArray) jsonArray) : null;
+		return (jsonArray instanceof final JSONArray j) ? new JSONArrayHelper(j) : null;
 	}
 
 	/**
@@ -335,7 +342,9 @@ public class JSONArrayHelper
 	public void remove(final Object o)
 	{
 		if (array != null)
+		{
 			array.remove(o);
+		}
 	}
 
 	public void addString(final String s)
@@ -359,7 +368,9 @@ public class JSONArrayHelper
 	public void clear()
 	{
 		if (array != null)
+		{
 			array.clear();
+		}
 	}
 
 	public boolean addAll(final Collection c)
@@ -370,7 +381,9 @@ public class JSONArrayHelper
 	public void sort(final Comparator c)
 	{
 		if (array != null)
+		{
 			array.sort(c);
+		}
 	}
 
 	@Override
@@ -383,11 +396,17 @@ public class JSONArrayHelper
 	public boolean equals(final Object obj)
 	{
 		if (this == obj)
+		{
 			return true;
+		}
 		if (obj == null)
+		{
 			return false;
+		}
 		if (getClass() != obj.getClass())
+		{
 			return false;
+		}
 		final JSONArrayHelper other = (JSONArrayHelper) obj;
 		return Objects.equals(array, other.array);
 	}

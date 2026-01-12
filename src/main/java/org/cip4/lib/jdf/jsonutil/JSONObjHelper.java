@@ -53,6 +53,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -287,9 +288,8 @@ public class JSONObjHelper implements IStreamWriter
 	public static JSONObjHelper getHelper(final Object o)
 	{
 		final JSONObjHelper h;
-		if (o instanceof InputStream)
+		if (o instanceof final InputStream is)
 		{
-			final InputStream is = (InputStream) o;
 			return getHelperFromStream(is, false);
 		}
 		else if (o instanceof JSONObject)
@@ -306,7 +306,7 @@ public class JSONObjHelper implements IStreamWriter
 
 	/**
 	 * get the underlying object
-	 * 
+	 *
 	 * @param o
 	 * @return
 	 */
@@ -377,7 +377,7 @@ public class JSONObjHelper implements IStreamWriter
 		}
 		if (base instanceof Integer)
 		{
-			return ((Integer) base).intValue();
+			return ((Integer) base);
 		}
 		if (base instanceof Double)
 		{
@@ -408,7 +408,7 @@ public class JSONObjHelper implements IStreamWriter
 		}
 		if (base instanceof Double)
 		{
-			return ((Double) base).doubleValue();
+			return ((Double) base);
 		}
 		if (base instanceof String)
 		{
@@ -427,7 +427,7 @@ public class JSONObjHelper implements IStreamWriter
 		final Object base = getPathObject(path);
 		if (base instanceof Boolean)
 		{
-			return ((Boolean) base).booleanValue();
+			return ((Boolean) base);
 		}
 		else if (base instanceof String)
 		{
@@ -617,7 +617,7 @@ public class JSONObjHelper implements IStreamWriter
 				nextString += "[0]";
 				newNext = getFirstObject(nextString);
 			}
-			return (newNext instanceof JSONObject) ? new JSONObjHelper((JSONObject) newNext).getPathObject(next) : null;
+			return (newNext instanceof final JSONObject j) ? new JSONObjHelper(j).getPathObject(next) : null;
 		}
 	}
 
@@ -981,6 +981,43 @@ public class JSONObjHelper implements IStreamWriter
 			obj = new JSONObject();
 		}
 		return obj.put(key, value);
+	}
+
+	public JSONObjHelper getCopy()
+	{
+		return (JSONObjHelper) getCopy(this);
+	}
+
+	public static Object getCopy(final Object src)
+	{
+		if (src instanceof final JSONObject srcObject)
+		{
+			final JSONObject next = new JSONObject();
+			for (final Object o : srcObject.entrySet())
+			{
+				final Entry e = (Entry) o;
+				next.put(e.getKey(), getCopy(e.getValue()));
+			}
+			return next;
+		}
+		else if (src instanceof final JSONObjHelper srcObject)
+		{
+			return new JSONObjHelper((JSONObject) getCopy(srcObject.getRoot()));
+		}
+		else if (src instanceof final JSONArray srcArray)
+		{
+			final JSONArray next = new JSONArray();
+			for (final Object o : srcArray)
+			{
+				next.add(getCopy(o));
+			}
+			return next;
+		}
+		else if (src instanceof final JSONArrayHelper srcArray)
+		{
+			return new JSONArrayHelper((JSONArray) getCopy(srcArray.getArray()));
+		}
+		return src;
 	}
 
 	public void clear()

@@ -39,6 +39,8 @@ package org.cip4.lib.jdf.jsonutil.schema;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -190,6 +192,46 @@ public class JSONSchemaUpdate extends JSONObjHelper
 			}
 		}
 		return null;
+	}
+
+	List<JSONObjHelper> getSchemaParents(final JSONObjHelper h)
+	{
+
+		final List<JSONObjHelper> ret = new ArrayList<>();
+		if (h != null)
+		{
+			final JSONObjHelper p = h.getHelper(PROPERTIES);
+			if (p != null)
+			{
+				ret.add(h);
+			}
+			else
+			{
+				final String ref = h.getString(REF);
+				if (ref != null)
+				{
+					final JSONObjHelper refHelper = getHelper(DEFS_SLASH + StringUtil.token(ref, -1, "/"));
+					ContainerUtil.addAll(ret, getSchemaParents(refHelper));
+				}
+				final JSONArrayHelper ah = h.getArrayHelper(ALL_OF);
+				for (int i = 0; ah != null && i < 42; i++)
+				{
+					final JSONObjHelper o = ah.getJSONHelper(i);
+					if (o == null)
+					{
+						return ret;
+					}
+					final Collection<JSONObjHelper> schemaParents = getSchemaParents(o);
+					for (final JSONObjHelper schemaParent : schemaParents)
+					{
+
+						ret.add(o.getString(REF) == null ? o : schemaParent);
+					}
+
+				}
+			}
+		}
+		return ret;
 	}
 
 	void updateOneOf(final StringArray xRoots, final StringArray roots)

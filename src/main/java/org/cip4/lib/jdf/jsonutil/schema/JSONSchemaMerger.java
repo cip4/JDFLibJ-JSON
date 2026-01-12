@@ -47,9 +47,11 @@ import java.util.Set;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
+import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JSONSchemaMerger extends JSONSchemaUpdate
@@ -120,6 +122,10 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 	void fixbroken()
 	{
 		setString(DEFS + "/SurfaceColor/type", OBJECT);
+		setString(DEFS + "/Glue/properties/Name/const", "Glue");
+		setString(DEFS + "/Glue/properties/Name/type", "string");
+		setString(DEFS + "/Media/properties/Name/const", "Media");
+		setString(DEFS + "/Media/properties/Name/type", "string");
 
 	}
 
@@ -161,7 +167,9 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 			{
 				final JSONArrayHelper req = a.getCreateArray(REQUIRED);
 				for (final String r : r0.getStrings())
+				{
 					req.appendUnique(r);
+				}
 			}
 			a.setObj(PROPERTIES, p0);
 			a.setString("properties/Header/$ref", "#/$defs/Header");
@@ -227,7 +235,7 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 		h.remove(PRODUCT_INTENT);
 		for (final String def : alldefs)
 		{
-			if (def.endsWith(XJDFConstants.Intent) && !def.equals(XJDFConstants.Intent) && !def.equals(PRODUCT_INTENT))
+			if (def.endsWith(XJDFConstants.Intent) && !XJDFConstants.Intent.equals(def) && !PRODUCT_INTENT.equals(def))
 			{
 				h.setString(def + SLASH_REF, HASH_DEFS + def);
 				explicitAbstract.add(def);
@@ -240,13 +248,29 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 	{
 		final JSONObjHelper xjmfprop = getHelper("$defs/XJMF/properties");
 		final JSONObjHelper msg = getHelper(DEFS_SLASH + key);
-		final JSONObjHelper family = getHelper(DEFS_SLASH + fam);
-		final JSONObjHelper message = getHelper("$defs/Message");
-		final JSONObjHelper msgProp = getSchemaParent(msg).getHelper(PROPERTIES);
-		final JSONObjHelper famProp = getSchemaParent(family).getHelper(PROPERTIES);
-		final JSONObjHelper messageProp = getSchemaParent(message).getHelper(PROPERTIES);
-		msgProp.putAll(famProp);
-		msgProp.putAll(messageProp);
+		// final JSONObjHelper family = getHelper(DEFS_SLASH + fam);
+		// final JSONObjHelper message = getHelper("$defs/Message");
+		final List<JSONObjHelper> allProps = getSchemaParents(msg);
+		// allProps.addAll(getSchemaParents(family));
+		// allProps.addAll(getSchemaParents(message));
+		//
+		// msgProp.putAll(famProp);
+		// msgProp.putAll(messageProp);
+		final JSONObjHelper updated = new JSONObjHelper(new JSONObject());
+		final JSONObjHelper first = allProps.remove(0);
+		updated.putAll(first.getCopy());
+		final JSONObjHelper firstProp = updated.getHelper(PROPERTIES);
+		JSONArray firstReq = updated.getCreateArray(REQUIRED).getArray();
+		for (final JSONObjHelper prop : allProps)
+		{
+			final JSONObjHelper messageProp = prop.getHelper(PROPERTIES).getCopy();
+			final JSONArray messageReq = prop.getArray(REQUIRED);
+
+			firstReq = (JSONArray) ContainerUtil.addAll(firstReq, messageReq);
+			firstProp.putAll(messageProp.getCopy());
+		}
+		updated.put(REQUIRED, firstReq);
+		setObj(DEFS_SLASH + key, updated);
 		xjmfprop.setString(key + SLASH_REF, HASH_DEFS + key);
 		explicitAbstract.add(key);
 	}

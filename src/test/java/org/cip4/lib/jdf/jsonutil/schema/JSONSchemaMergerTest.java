@@ -80,8 +80,10 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	@Test
 	void testJSONSchemaMerge() throws URISyntaxException
 	{
-		new File(sm_dirTestDataTemp + "schema/test/xjdf.json").delete();
-		getNewSchema();
+		File f0 = getNewSchema();
+		FileUtil.deleteAll(f0);
+		f0 = getNewSchema();
+		assertTrue(f0.canRead());
 	}
 
 	@Test
