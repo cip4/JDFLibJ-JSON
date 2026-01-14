@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2026 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -64,6 +64,7 @@ import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.datatypes.JDFAttributeMap;
 import org.cip4.jdflib.datatypes.JDFNumberList;
 import org.cip4.jdflib.elementwalker.ElementWalker;
+import org.cip4.jdflib.extensions.BaseXJDFHelper;
 import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
@@ -336,7 +337,7 @@ public class JSONWriter extends JSONObjHelper
 		this.rootType = jsonRoot;
 		if (eJSONRoot.schema.equals(jsonRoot) && StringUtil.isEmpty(jsonSchemaURL))
 		{
-			setJsonSchemaURL(XJDFHelper.getDefaultVersion());
+			setJsonSchemaURL(BaseXJDFHelper.getDefaultVersion());
 		}
 	}
 
@@ -1318,7 +1319,7 @@ public class JSONWriter extends JSONObjHelper
 		jsonRootWalker.convert();
 		if (XJDFHelper.isXJDF(xjdf) || XJDFHelper.isXJMF(xjdf))
 		{
-			jsonRootWalker.setString("$schema", jsonSchemaURL);
+			jsonRootWalker.setString(SCHEMA, jsonSchemaURL);
 		}
 		return jsonRootWalker;
 	}
