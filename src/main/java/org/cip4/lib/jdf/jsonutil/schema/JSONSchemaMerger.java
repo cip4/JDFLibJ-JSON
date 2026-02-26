@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.StringArray;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
@@ -231,11 +232,40 @@ public class JSONSchemaMerger extends JSONSchemaUpdate
 	void updateAbstractIntent()
 	{
 		final JSONObjHelper h = getHelper("$defs/Intent/properties");
+		final JSONArrayHelper req = getArrayHelper("$defs/Intent/oneOf");
+		for (final JSONObject o : req.getJSONObjects())
+		{
+			final JSONArray reqa = new JSONObjHelper(o).getArray(REQUIRED);
+			if (reqa != null && reqa.contains("IntentResource"))
+			{
+				req.remove(o);
+			}
+			if (reqa == null)
+			{
+				final JSONArrayHelper o2 = new JSONObjHelper(o).getArrayHelper("not/anyOf");
+				if (o2 != null)
+				{
+					for (final JSONObject o3 : o2.getJSONObjects())
+					{
+						final JSONArray reqa3 = new JSONObjHelper(o3).getArray(REQUIRED);
+						if (reqa3 != null && reqa3.contains("IntentResource"))
+						{
+							o2.remove(o3);
+						}
+
+					}
+				}
+			}
+		}
+
 		final List<String> alldefs = getHelper(DEFS).getKeys();
+
 		h.remove(PRODUCT_INTENT);
+		h.remove("IntentResource");
 		for (final String def : alldefs)
 		{
-			if (def.endsWith(XJDFConstants.Intent) && !XJDFConstants.Intent.equals(def) && !PRODUCT_INTENT.equals(def))
+			if (def.endsWith(XJDFConstants.Intent) && !XJDFConstants.Intent.equals(def) && !PRODUCT_INTENT.equals(def)
+					&& !AttributeName.RENDERINGINTENT.equals(def))
 			{
 				h.setString(def + SLASH_REF, HASH_DEFS + def);
 				explicitAbstract.add(def);

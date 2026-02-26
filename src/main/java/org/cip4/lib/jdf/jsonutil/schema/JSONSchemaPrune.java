@@ -201,6 +201,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 			zapper.addAll(pruneKeys);
 			zapper.walk();
 		}
+		updateXjdfXjmf();
 		jsonSchemaWalker.setJsonCase(getJsonCase());
 		jsonSchemaWalker.setSorted(true);
 		final JSONObjHelper oh = jsonSchemaWalker.walk();
@@ -333,13 +334,13 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		final Map<String, Object> m = cw.getCollected();
 		if (m != null)
 		{
-			final List<String> keyList = new StringArray();
+			final Collection<String> keyList = new HashSet<>();
 			for (final Entry<String, Object> e : m.entrySet())
 			{
 				final Object o = e.getValue();
 				final String s = (String) o;
 				final String token = StringUtil.token(s, -1, JDFConstants.SLASH);
-				if (!pruneType.contains(token))
+				if (!pruneType.contains(token) || retain.contains(token))
 				{
 					keyList.add(token);
 				}
@@ -388,8 +389,8 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	@Override
 	public String toString()
 	{
-		return "JSONSchemaPrunee [ pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources + ", allowedPartitions="
-				+ allowedPartitions + ", pruneMore=" + pruneType + "]";
+		return "JSONSchemaPrunee [ pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources
+				+ ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneType + "]";
 	}
 
 }

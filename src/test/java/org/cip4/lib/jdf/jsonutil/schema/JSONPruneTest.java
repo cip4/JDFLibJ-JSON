@@ -47,6 +47,7 @@ import java.net.URISyntaxException;
 
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.resource.JDFResource.EnumPartIDKey;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
@@ -89,6 +90,19 @@ class JSONPruneTest extends JSONTestCaseBase
 		up.addPruneRoot("XJDF");
 		up.prune();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdfonly.json"));
+	}
+
+	@Test
+	void testJSONSchemaUpdateProduct() throws URISyntaxException, IOException
+	{
+		final JSONSchemaPrune up = getUpdater();
+		up.addPruneRoot("XJDF");
+		up.addPruneMore(XJDFConstants.ResourceSet);
+		up.addPruneMore(ElementName.AUDITPOOL);
+		up.addSingleResource("fnarf");
+		up.prune();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/productonly.json"));
+
 	}
 
 	@Test
