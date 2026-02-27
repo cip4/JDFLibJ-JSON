@@ -112,18 +112,20 @@ public abstract class JSONTestCaseBase
 
 	protected static File getNewSchema()
 	{
-
-		final File file = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
-		if (!file.exists())
+		synchronized (JSONTestCaseBase.class)
 		{
-			final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
-			assertTrue(f.canRead());
-			final JSONSchemaMerger up = new JSONSchemaMerger(f);
-			final File f2 = new File(sm_dirTestData + "schema/Version_2_3/xjmf.json");
-			up.mergeSchema(f2);
-			FileUtil.writeFile(up, file);
+			final File file = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
+			if (!file.exists())
+			{
+				final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
+				assertTrue(f.canRead());
+				final JSONSchemaMerger up = new JSONSchemaMerger(f);
+				final File f2 = new File(sm_dirTestData + "schema/Version_2_3/xjmf.json");
+				up.mergeSchema(f2);
+				FileUtil.writeFile(up, file);
+			}
+			return file;
 		}
-		return file;
 	}
 
 	protected static JSONSchemaPrune getUpdater() throws IOException
@@ -358,8 +360,7 @@ public abstract class JSONTestCaseBase
 			// legacy - pre maven file structure support
 			path = "test" + File.separator + "data";
 		}
-		path = FilenameUtils.normalize(path) + File.separator;
-		return path;
+		return FilenameUtils.normalize(path) + File.separator;
 	}
 
 	protected final Log log;
