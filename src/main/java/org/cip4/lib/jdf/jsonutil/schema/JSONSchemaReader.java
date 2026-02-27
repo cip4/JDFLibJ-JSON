@@ -86,6 +86,7 @@ public class JSONSchemaReader
 		if (!first)
 		{
 			ThreadUtil.sleep(420);
+			log.warn("retry parse schema at " + schemaURL);
 		}
 		try
 		{
