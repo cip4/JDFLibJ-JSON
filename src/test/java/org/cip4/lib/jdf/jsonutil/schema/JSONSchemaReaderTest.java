@@ -86,7 +86,7 @@ class JSONSchemaReaderTest extends JSONTestCaseBase
 	@Test
 	void testCheckJSON() throws Exception
 	{
-		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
+		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(false));
 		final XJMFHelper h = new XJMFHelper();
 		final JDFNotification n = (JDFNotification) h.appendMessage(EnumFamily.Signal, EnumType.Notification).appendElement(ElementName.NOTIFICATION);
 		n.setClass(EClass.Information);

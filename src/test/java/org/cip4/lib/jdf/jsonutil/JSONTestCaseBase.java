@@ -93,9 +93,10 @@ public abstract class JSONTestCaseBase
 	@BeforeAll
 	static void setTmpSchema()
 	{
+		getNewSchema(true);
 		for (int i = 2; i < 3; i++)
 		{
-			final File f = getNewSchema();
+			final File f = getNewSchema(false);
 			assertTrue(f.canRead());
 			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
 			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
@@ -110,12 +111,16 @@ public abstract class JSONTestCaseBase
 		}
 	}
 
-	protected static File getNewSchema()
+	protected static File getNewSchema(boolean force)
 	{
 		synchronized (JSONTestCaseBase.class)
 		{
 			final File file = new File(sm_dirTestDataTemp + "schema/Version_2_3/xjdf.json");
-			if (!file.exists())
+			if (force)
+			{
+				FileUtil.forceDelete(file);
+			}
+			if (force || !file.exists())
 			{
 				final File f = new File(sm_dirTestData + "schema/Version_2_3/xjdf.json");
 				assertTrue(f.canRead());
@@ -306,7 +311,7 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
-		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema());
+		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(false));
 		final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
 		if (checkJSONSchema)
 		{

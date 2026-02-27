@@ -67,7 +67,7 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	@Test
 	void testJSONSchemaUpdateBad() throws URISyntaxException
 	{
-		final File f = getNewSchema();
+		final File f = getNewSchema(false);
 		assertTrue(f.canRead());
 		final KElement e = KElement.createRoot("foo");
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
@@ -80,16 +80,16 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	@Test
 	void testJSONSchemaMerge() throws URISyntaxException
 	{
-		File f0 = getNewSchema();
+		File f0 = getNewSchema(false);
 		FileUtil.deleteAll(f0);
-		f0 = getNewSchema();
+		f0 = getNewSchema(false);
 		assertTrue(f0.canRead());
 	}
 
 	@Test
 	void testJSONSchemaReaderDigiPrint() throws URISyntaxException
 	{
-		final JSONSchemaReader sr = new JSONSchemaReader(UrlUtil.fileToUrl(getNewSchema(), true));
+		final JSONSchemaReader sr = new JSONSchemaReader(UrlUtil.fileToUrl(getNewSchema(false), true));
 		assertNotNull(sr.getTheSchema());
 		final String jos = FileUtil.fileToString(new File(sm_dirTestData + "json/Duplex-1Up.XJDF.json"), null);
 		assertNotNull(new JSONObjHelper(jos).getRoot());
@@ -100,7 +100,7 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	@Test
 	void testJSONSchemaReaderIntent() throws URISyntaxException
 	{
-		final File fs = getNewSchema();
+		final File fs = getNewSchema(false);
 		final JSONWriter w = new JSONWriter();
 		w.setXJDF();
 		for (final File f : FileUtil.listFilesWithExtension(new File(sm_dirTestData + "xjdf"), "xjdf"))
@@ -117,7 +117,7 @@ class JSONSchemaMergerTest extends JSONTestCaseBase
 	@Test
 	void testToString() throws URISyntaxException
 	{
-		final File f = getNewSchema();
+		final File f = getNewSchema(false);
 		assertTrue(f.canRead());
 		final JSONSchemaUpdate up = new JSONSchemaUpdate(f);
 		assertNotNull(up.toString());
