@@ -44,6 +44,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.util.ContainerUtil;
+import org.cip4.jdflib.util.ThreadUtil;
 import org.cip4.jdflib.util.UrlUtil;
 
 import com.networknt.schema.Error;
@@ -65,7 +66,7 @@ public class JSONSchemaReader
 	public JSONSchemaReader(final String url)
 	{
 		super();
-		theSchema = readJsonSchema(url);
+		theSchema = readJsonSchema(url, true);
 	}
 
 	public JSONSchemaReader(final File file)
@@ -80,8 +81,12 @@ public class JSONSchemaReader
 		return theSchema;
 	}
 
-	Schema readJsonSchema(final String schemaURL)
+	Schema readJsonSchema(final String schemaURL, boolean first)
 	{
+		if (!first)
+		{
+			ThreadUtil.sleep(420);
+		}
 		try
 		{
 			final Builder builder = SchemaRegistry.builder();
@@ -94,7 +99,7 @@ public class JSONSchemaReader
 		catch (final SchemaException e)
 		{
 			log.error("Could not parse schema at " + schemaURL, e);
-			return null;
+			return first ? readJsonSchema(schemaURL, false) : null;
 		}
 
 	}
