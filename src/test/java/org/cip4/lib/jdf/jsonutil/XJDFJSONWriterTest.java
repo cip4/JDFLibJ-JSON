@@ -48,13 +48,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.net.URISyntaxException;
 
+import org.cip4.jdflib.auto.JDFAutoMedia.EISOPaperSubstrate;
 import org.cip4.jdflib.auto.JDFAutoMedia.EMediaType;
 import org.cip4.jdflib.auto.JDFAutoMedia.EMediaUnit;
+import org.cip4.jdflib.auto.JDFAutoPart.EnumSide;
 import org.cip4.jdflib.core.AttributeName;
 import org.cip4.jdflib.core.ElementName;
 import org.cip4.jdflib.core.JDFComment;
 import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.JDFElement;
+import org.cip4.jdflib.core.JDFElement.ESides;
 import org.cip4.jdflib.core.JDFElement.EnumVersion;
 import org.cip4.jdflib.core.JDFNodeInfo;
 import org.cip4.jdflib.core.JDFResourceLink.EnumUsage;
@@ -64,13 +67,19 @@ import org.cip4.jdflib.datatypes.JDFXYPair;
 import org.cip4.jdflib.extensions.AuditHelper;
 import org.cip4.jdflib.extensions.AuditHelper.eAudit;
 import org.cip4.jdflib.extensions.AuditPoolHelper;
+import org.cip4.jdflib.extensions.IntentHelper;
+import org.cip4.jdflib.extensions.IntentHelper.EIntentType;
+import org.cip4.jdflib.extensions.ProductHelper;
+import org.cip4.jdflib.extensions.ProductHelper.eProductType;
 import org.cip4.jdflib.extensions.ResourceHelper;
 import org.cip4.jdflib.extensions.SetHelper;
 import org.cip4.jdflib.extensions.XJDFConstants;
 import org.cip4.jdflib.extensions.XJDFHelper;
 import org.cip4.jdflib.jmf.JDFDeviceInfo;
 import org.cip4.jdflib.resource.JDFProcessRun;
+import org.cip4.jdflib.resource.intent.JDFColorIntent;
 import org.cip4.jdflib.resource.process.JDFAddress;
+import org.cip4.jdflib.resource.process.JDFColor;
 import org.cip4.jdflib.resource.process.JDFCompany;
 import org.cip4.jdflib.resource.process.JDFContact;
 import org.cip4.jdflib.resource.process.JDFMedia;
@@ -327,6 +336,69 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		h.getRoot().removeChild(null, null, 0);
 
 		writeBothJson(h.getRoot(), jsonWriter, "minimal.json", true, false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testProductMinimal()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+
+		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().removeChild(null, null, 0);
+
+		writeBothJson(h.getRoot(), jsonWriter, "minimalproduct.json", true, true, new File(sm_dirTestData + "schema/Version_2_3/productonly.json"));
+	}
+
+	/**
+	*
+	*/
+	@Test
+	void testProductType()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+
+		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().removeChild(null, null, 0);
+		final ProductHelper product = h.getCreateRootProduct(0);
+		product.setProductType(eProductType.BusinessCard);
+
+		writeBothJson(h.getRoot(), jsonWriter, "productType.json", true, true, new File(sm_dirTestData + "schema/Version_2_3/productonly.json"));
+	}
+
+	/**
+	*
+	*/
+	@Test
+	void testProductLayout()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+
+		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().removeChild(null, null, 0);
+		final ProductHelper product = h.getCreateRootProduct(0);
+		product.setProductType(eProductType.BusinessCard);
+		final IntentHelper loi = product.appendIntent(EIntentType.LayoutIntent);
+		loi.setSpan(AttributeName.DIMENSIONS, "300 200");
+		loi.setSpan(AttributeName.SIDES, ESides.TwoSidedHeadToHead.name());
+
+		final IntentHelper cii = product.appendIntent(EIntentType.ColorIntent);
+		final JDFColorIntent ci = (JDFColorIntent) cii.getCreateResource();
+		final KElement sc = ci.getCreateElement(XJDFConstants.SurfaceColor);
+		sc.setAttribute(AttributeName.SURFACE, EnumSide.Front, null);
+		sc.setAttribute(ElementName.COLORSUSED, JDFColor.getCMYKSeparations(), null);
+		final KElement scb = ci.getCreateElement(XJDFConstants.SurfaceColor, null, 1);
+		scb.setAttribute(AttributeName.SURFACE, EnumSide.Back, null);
+		scb.setAttribute(ElementName.COLORSUSED, "Black", null);
+
+		final IntentHelper mi = product.appendIntent(EIntentType.MediaIntent);
+		mi.setSpan(AttributeName.MEDIATYPE, EMediaType.Paper.name());
+		mi.setSpan(AttributeName.WEIGHT, "130");
+		mi.setSpan(AttributeName.ISOPAPERSUBSTRATE, EISOPaperSubstrate.PS1.name());
+
+		writeBothJson(h.getRoot(), jsonWriter, "productLayout.json", true, true, new File(sm_dirTestData + "schema/Version_2_3/productonly.json"));
 	}
 
 	/**

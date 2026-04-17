@@ -285,6 +285,14 @@ public abstract class JSONTestCaseBase
 			final boolean checkJSONSchema)
 
 	{
+		final File schemaFile = checkJSONSchema ? getNewSchema(false) : null;
+		return writeBothJson(e, jsonWriter, output, equals, cleansnippets, schemaFile);
+	}
+
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets,
+			final File schemaFile)
+
+	{
 		final File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
 		final BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
 		if (cleansnippets || e.equals(baseHelper.getRoot()))
@@ -311,10 +319,10 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
-		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(false));
-		final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
-		if (checkJSONSchema)
+		if (schemaFile != null)
 		{
+			final JSONSchemaReader srf = new JSONSchemaReader(schemaFile);
+			final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
 			assertTrue(ContainerUtil.isEmpty(schemabugs));
 		}
 		final JSONReader reader = new JSONReader();
