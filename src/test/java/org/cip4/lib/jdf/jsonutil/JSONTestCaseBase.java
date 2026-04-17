@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -90,14 +91,16 @@ import com.networknt.schema.Error;
 public abstract class JSONTestCaseBase
 {
 
+	private final static AtomicBoolean first = new AtomicBoolean(true);
+
 	@BeforeAll
 	static void setTmpSchema()
 	{
-		getNewSchema(true);
+		getNewSchema(first.getAndSet(false));
 		for (int i = 2; i < 3; i++)
 		{
 			final File f = getNewSchema(false);
-			assertTrue(f.canRead());
+			assertTrue(f.canRead(), "cannot read " + f);
 			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
 			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
 			if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
