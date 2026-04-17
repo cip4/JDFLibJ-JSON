@@ -103,7 +103,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testConvertBoolean()
+	synchronized void testConvertBoolean()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(true);
@@ -120,7 +120,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testConvertSkipProductList()
+	synchronized void testConvertSkipProductList()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/Poster.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
@@ -134,7 +134,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testConvertSkipProductListBroc()
+	synchronized void testConvertSkipProductListBroc()
 	{
 		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
 		final JSONWriter jsonWriter = getXJDFWriter(false);
@@ -165,7 +165,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 * @throws URISyntaxException
 	 */
 	@Test
-	void testAddressLine()
+	synchronized void testAddressLine()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -185,7 +185,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testSetCache()
+	synchronized void testSetCache()
 	{
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, "file:foo");
 		JSONWriter.setSchemaUrl(EnumVersion.Version_2_1, null);
@@ -199,7 +199,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 */
 	@Test
 
-	void testResourceSet()
+	synchronized void testResourceSet()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = new XJDFHelper(XJDFHelper.defaultVersion(), "Job1");
@@ -219,7 +219,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 * @throws URISyntaxException
 	 */
 	@Test
-	void testComment()
+	synchronized void testComment()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 		final XJDFHelper h = getBaseXJDF();
@@ -238,7 +238,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testCommentString()
+	synchronized void testCommentString()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 		final XJDFHelper h = getBaseXJDF();
@@ -255,7 +255,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 * @throws URISyntaxException
 	 */
 	@Test
-	void testOrgUnit()
+	synchronized void testOrgUnit()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -277,7 +277,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testForeign()
+	synchronized void testForeign()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -295,7 +295,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testForeignAttribute()
+	synchronized void testForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -311,7 +311,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testMultiForeignAttribute()
+	synchronized void testMultiForeignAttribute()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(false);
 
@@ -328,7 +328,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testMinimal()
+	synchronized void testMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -342,7 +342,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testProductMinimal()
+	synchronized void testProductMinimal()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -356,7 +356,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	*
 	*/
 	@Test
-	void testProductType()
+	synchronized void testProductType()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -372,7 +372,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	*
 	*/
 	@Test
-	void testProductLayout()
+	synchronized void testProductLayout()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -405,7 +405,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testAuditPool()
+	synchronized void testAuditPool()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -451,7 +451,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 *
 	 */
 	@Test
-	void testAuditPoolStatus()
+	synchronized void testAuditPoolStatus()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
 
@@ -478,7 +478,7 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	 * @throws URISyntaxException
 	 */
 	@Test
-	void testAdhesive()
+	synchronized void testAdhesive()
 	{
 		final XJDFHelper xjdfHelper = new XJDFHelper("Converting", "Corrugated", null);
 		xjdfHelper.setTypes(JDFConstants.CONVENTIONALPRINTING);
