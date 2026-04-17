@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -90,14 +91,16 @@ import com.networknt.schema.Error;
 public abstract class JSONTestCaseBase
 {
 
+	private final static AtomicBoolean first = new AtomicBoolean(true);
+
 	@BeforeAll
 	static void setTmpSchema()
 	{
-		getNewSchema(true);
+		getNewSchema(first.getAndSet(false));
 		for (int i = 2; i < 3; i++)
 		{
 			final File f = getNewSchema(false);
-			assertTrue(f.canRead());
+			assertTrue(f.canRead(), "cannot read " + f);
 			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
 			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
 			if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
@@ -285,6 +288,14 @@ public abstract class JSONTestCaseBase
 			final boolean checkJSONSchema)
 
 	{
+		final File schemaFile = checkJSONSchema ? getNewSchema(false) : null;
+		return writeBothJson(e, jsonWriter, output, equals, cleansnippets, schemaFile);
+	}
+
+	public JSONObjHelper writeBothJson(final KElement e, final JSONWriter jsonWriter, final String output, final boolean equals, final boolean cleansnippets,
+			final File schemaFile)
+
+	{
 		final File xmlFile = new File(sm_dirTestDataTemp + "xjdf/xjdf", UrlUtil.newExtension(output, "xml"));
 		final BaseXJDFHelper baseHelper = BaseXJDFHelper.getBaseHelper(e);
 		if (cleansnippets || e.equals(baseHelper.getRoot()))
@@ -311,10 +322,10 @@ public abstract class JSONTestCaseBase
 		FileUtil.writeFile(jsonWriter, new File(sm_dirTestDataTemp + "xjdf/json", output));
 		FileUtil.writeFile(new JSONRtfWalker(jsonWriter), new File(sm_dirTestDataTemp + "xjdf/rtf", output + ".rtf"));
 
-		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(false));
-		final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
-		if (checkJSONSchema)
+		if (schemaFile != null)
 		{
+			final JSONSchemaReader srf = new JSONSchemaReader(schemaFile);
+			final Collection<Error> schemabugs = srf.checkJSON(jo.toJSONString());
 			assertTrue(ContainerUtil.isEmpty(schemabugs));
 		}
 		final JSONReader reader = new JSONReader();
