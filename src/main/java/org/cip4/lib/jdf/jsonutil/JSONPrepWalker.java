@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2023 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2026 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -100,8 +100,7 @@ public class JSONPrepWalker extends BaseElementWalker
 		final XJMFHelper xh = splitXJMF ? XJMFHelper.getHelper(input) : null;
 		if (xh != null)
 		{
-			final List<KElement> l = splitXJMF(xh);
-			return l;
+			return splitXJMF(xh);
 		}
 
 		final VElement v = new VElement();
@@ -188,17 +187,16 @@ public class JSONPrepWalker extends BaseElementWalker
 		public KElement walk(final KElement e, final KElement xjdf)
 		{
 			final List<KElement> elems = e.getChildArray_KElement(null, null, null, true, 0);
-			KElement parent = e.getParentNode_KElement();
-			if (parent == null)
+			final KElement parent = e.getParentNode_KElement();
+			if (parent != null)
 			{
-				parent = e;
-			}
-			for (final KElement elem : elems)
-			{
-				if (auditnames.contains(elem.getLocalName()))
+				for (final KElement elem : elems)
 				{
-					parent.moveElement(elem, e);
-					walkTree(elem, xjdf);
+					if (auditnames.contains(elem.getLocalName()))
+					{
+						parent.moveElement(elem, e);
+						walkTree(elem, xjdf);
+					}
 				}
 			}
 			e.deleteNode();
