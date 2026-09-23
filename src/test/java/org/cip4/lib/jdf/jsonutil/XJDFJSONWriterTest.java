@@ -87,6 +87,7 @@ import org.cip4.jdflib.resource.process.JDFMediaLayers;
 import org.cip4.jdflib.resource.process.postpress.JDFGlue;
 import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.JDFDate;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONRoot;
 import org.cip4.lib.jdf.jsonutil.rtf.JSONRtfWalker;
 import org.json.simple.JSONObject;
@@ -141,6 +142,21 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 		final JSONObject o = jsonWriter.convert(xjdf);
 		assertNotNull(o.toJSONString());
 		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, "brochure.json", false, false, true);
+		assertNotNull(jo);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testConvertSkipProductListBrocLower()
+	{
+		final KElement xjdf = KElement.parseFile(sm_dirTestData + "xjdf/brochure.xjdf");
+		final JSONWriter jsonWriter = getXJDFWriter(false);
+		jsonWriter.setKeyCase(eJSONCase.lower);
+		final JSONObject o = jsonWriter.convert(xjdf);
+		assertNotNull(o.toJSONString());
+		final JSONObjHelper jo = writeBothJson(xjdf, jsonWriter, "brochure.json", false, false, false);
 		assertNotNull(jo);
 	}
 
@@ -280,6 +296,26 @@ public class XJDFJSONWriterTest extends JSONTestCaseBase
 	void testForeign()
 	{
 		final JSONWriter jsonWriter = getXJDFWriter(true);
+
+		final XJDFHelper h = getBaseXJDF();
+		h.getRoot().addNameSpace("Foo", "www.foo.com");
+		final SetHelper set = h.getCreateSet("Foo:FooBar", EnumUsage.Input);
+		final ResourceHelper rh = set.getCreatePartition(0, false);
+		rh.getRoot().appendElement("Foo:FooBar", "www.foo.com");
+		h.cleanUp();
+		h.getAuditPool().deleteNode();
+		writeBothJson(h.getRoot(), jsonWriter, "foreign.json", false, false, false);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testForeignLower()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter(true);
+		jsonWriter.setXJDF();
+		jsonWriter.setKeyCase(eJSONCase.lower);
 
 		final XJDFHelper h = getBaseXJDF();
 		h.getRoot().addNameSpace("Foo", "www.foo.com");

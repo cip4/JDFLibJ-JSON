@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2024 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2026 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -220,6 +220,34 @@ class XJMFJSONWriterTest extends JSONTestCaseBase
 		xjmfHelper.cleanUp();
 		setSnippet(xjmfHelper, true);
 		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignal.json", true, false, true);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testSignalStatusLower()
+	{
+		final JSONWriter jsonWriter = getXJDFWriter();
+		jsonWriter.setKeyCase(JSONWriter.eJSONCase.lower);
+
+		JMFBuilderFactory.getJMFBuilder(XJDFConstants.XJMF).setSenderID("DeviceID");
+		final XJMFHelper xjmfHelper = new XJMFHelper();
+		xjmfHelper.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(16, 30, 0).getDateTimeISO());
+		final MessageHelper s = xjmfHelper.appendMessage(EnumFamily.Signal, EnumType.Status);
+		s.getHeader().setID("S1");
+		s.getHeader().setAttribute(AttributeName.REFID, "SubStatus");
+		s.getHeader().setAttribute(AttributeName.TIME, new JDFDate().setTime(16, 30, 0).getDateTimeISO());
+		final JDFDeviceInfo di = (JDFDeviceInfo) s.getRoot().appendElement(ElementName.DEVICEINFO);
+		di.setAttribute(AttributeName.STATUS, "Setup");
+		final JDFJobPhase p = addJobPhase(di, "j1", "sheet1", "ws1", 0, 100);
+		p.setStatus(EnumNodeStatus.Setup);
+		p.setStartTime(new JDFDate().setTime(16, 20, 0));
+		p.setEndTime(new JDFDate().setTime(16, 30, 0));
+		xjmfHelper.cleanUp();
+		setSnippet(xjmfHelper, true);
+		writeBothJson(xjmfHelper.getRoot(), jsonWriter, "statusSignalSetup.json", true, false, false);
+
 	}
 
 	/**

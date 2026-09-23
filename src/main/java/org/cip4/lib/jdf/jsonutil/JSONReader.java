@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -54,12 +55,18 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFConstants;
 import org.cip4.jdflib.core.JDFDoc;
 import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.KElement;
+import org.cip4.jdflib.core.StringArray;
+import org.cip4.jdflib.core.VElement;
+import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.elementwalker.ElementWalker;
 import org.cip4.jdflib.extensions.XJDF20;
 import org.cip4.jdflib.extensions.XJDFConstants;
+import org.cip4.jdflib.extensions.XSDUtil;
+import org.cip4.jdflib.util.ContainerUtil;
 import org.cip4.jdflib.util.StringUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -75,6 +82,8 @@ public class JSONReader
 	private final Set<String> text;
 	ElementWalker postWalker;
 	private boolean xjdf;
+	private final HashSet<String> names = new HashSet<>();
+	private final HashMap<String, String> nameMap = new HashMap<>();
 
 	public boolean addText(final String attribute)
 	{
@@ -107,8 +116,9 @@ public class JSONReader
 		return wantAttributes;
 	}
 
-	String getKey(final String key, final Object object, final KElement root)
+	String getKey(final String key0, final Object object, final KElement root)
 	{
+		final String key = updateCase(key0);
 		final String prefix = KElement.xmlnsPrefix(key);
 		if (prefix != null)
 		{
@@ -136,6 +146,33 @@ public class JSONReader
 			return KElement.xmlnsLocalName(key);
 		}
 		return key;
+	}
+
+	String updateCase(String key0)
+	{
+		if (xjdf)
+		{
+			final String localName = KElement.xmlnsLocalName(key0);
+			if (!names.contains(localName))
+			{
+				final String name = nameMap.get(localName.toLowerCase());
+				if (name != null)
+				{
+					final String prefix = KElement.xmlnsPrefix(key0);
+					if (prefix != null)
+					{
+						return prefix + JDFConstants.COLON + name;
+					}
+					else
+					{
+						return name;
+					}
+				}
+			}
+		}
+
+		return key0;
+
 	}
 
 	void processContext(final Object object, final KElement root)
@@ -204,6 +241,29 @@ public class JSONReader
 		addText(ElementName.ADDRESSLINE);
 		addText(ElementName.ORGANIZATIONALUNIT);
 		xjdf = true;
+		fillXJDFNames();
+	}
+
+	void fillXJDFNames()
+	{
+		final XMLDoc schemaDoc = XSDUtil.getLocalXJDFSchemaDoc(null);
+		final KElement schemaElement = schemaDoc == null ? null : schemaDoc.getRoot();
+		if (schemaElement != null)
+		{
+			for (final String ea : new StringArray("xs:attribute xs:element"))
+			{
+				final VElement va = schemaElement.getChildrenByTagName(ea);
+				for (final KElement e : va)
+				{
+					final String name = e.getNonEmpty("name");
+					ContainerUtil.add(names, name);
+					if (name != null)
+					{
+						nameMap.put(name.toLowerCase(), name);
+					}
+				}
+			}
+		}
 	}
 
 	public JSONReader()
@@ -376,7 +436,7 @@ public class JSONReader
 					final String token = StringUtil.token(h.getString(name), -1, "/#");
 					if (o.get(token) == null)
 					{
-						root = KElement.createRoot(token, null);
+						root = KElement.createRoot(updateCase(token), null);
 						o.remove(name);
 						break;
 					}
@@ -397,7 +457,7 @@ public class JSONReader
 	KElement createRoot(final String key)
 	{
 		final String xmlnsLocalName = KElement.xmlnsLocalName(key);
-		if (XJDFConstants.XJDF.equals(xmlnsLocalName) || XJDFConstants.XJMF.equals(xmlnsLocalName))
+		if (XJDFConstants.XJDF.equalsIgnoreCase(xmlnsLocalName) || XJDFConstants.XJMF.equalsIgnoreCase(xmlnsLocalName))
 		{
 			return JDFElement.createRoot(xmlnsLocalName, XJDF20.getDefaultVersion());
 		}

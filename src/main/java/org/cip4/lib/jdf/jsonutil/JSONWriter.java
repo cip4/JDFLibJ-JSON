@@ -436,28 +436,25 @@ public class JSONWriter extends JSONObjHelper
 		{
 			this.schema = schema;
 			this.splitXJMF = splitXJMF;
-			ve = schema == null ? null : schema.getChildrenByTagName(ELEMENT, XML_SCHEMA_NS, null, false, true, 0);
+			ve = schema == null ? new ArrayList<>() : schema.getChildrenByTagName(ELEMENT, XML_SCHEMA_NS, null, false, true, 0);
 			nameMap = new ListMap<>();
 			nameMap.setUnique(true);
-			if (ve != null)
+			for (final KElement e : ve)
 			{
-				for (final KElement e : ve)
+				final String name = e.getNonEmpty(NAME);
+				if (name != null)
 				{
-					final String name = e.getNonEmpty(NAME);
-					if (name != null)
-					{
-						nameMap.putOne(name, e);
-					}
-					final String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
-					if (sg != null)
-					{
-						nameMap.putOne(sg, e);
-					}
-					final String ref = e.getNonEmpty(REF);
-					if (ref != null)
-					{
-						nameMap.putOne(ref, e);
-					}
+					nameMap.putOne(name, e);
+				}
+				final String sg = e.getNonEmpty(SUBSTITUTION_GROUP);
+				if (sg != null)
+				{
+					nameMap.putOne(sg, e);
+				}
+				final String ref = e.getNonEmpty(REF);
+				if (ref != null)
+				{
+					nameMap.putOne(ref, e);
 				}
 			}
 		}
@@ -484,13 +481,10 @@ public class JSONWriter extends JSONObjHelper
 				}
 			}
 
-			final Collection<KElement> va = schema == null ? null : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
-			if (va != null)
+			final Collection<KElement> va = schema == null ? new ArrayList<>() : schema.getChildrenByTagName("attribute", XML_SCHEMA_NS, null, false, true, 0);
+			for (final KElement e : va)
 			{
-				for (final KElement e : va)
-				{
-					fillAttributeFromSchema(e, types);
-				}
+				fillAttributeFromSchema(e, types);
 			}
 		}
 
@@ -694,8 +688,7 @@ public class JSONWriter extends JSONObjHelper
 		final String key = StringUtil.normalize(name, true, "_ -");
 		if (key != null)
 		{
-			final boolean add = list.add(key);
-			return add;
+			return list.add(key);
 		}
 		return false;
 	}
@@ -742,8 +735,7 @@ public class JSONWriter extends JSONObjHelper
 				}
 			}
 		}
-		type = StringUtil.token(type, -1, JDFConstants.COLON);
-		return type;
+		return StringUtil.token(type, -1, JDFConstants.COLON);
 	}
 
 	/**
@@ -1165,8 +1157,7 @@ public class JSONWriter extends JSONObjHelper
 		result = prime * result + ((transferFunction == null) ? 0 : transferFunction.hashCode());
 		result = prime * result + (typeSafe ? 1231 : 1237);
 		result = prime * result + ((valueCase == null) ? 0 : valueCase.hashCode());
-		result = prime * result + (wantArray ? 1231 : 1237);
-		return result;
+		return prime * result + (wantArray ? 1231 : 1237);
 	}
 
 	@Override

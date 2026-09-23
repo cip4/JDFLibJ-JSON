@@ -55,8 +55,11 @@ import org.cip4.jdflib.core.JDFElement;
 import org.cip4.jdflib.core.KElement;
 import org.cip4.jdflib.core.XMLDoc;
 import org.cip4.jdflib.datatypes.JDFTransferFunction;
+import org.cip4.jdflib.extensions.XJMFHelper;
+import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.resource.process.JDFColorControlStrip;
 import org.cip4.jdflib.util.FileUtil;
+import org.cip4.lib.jdf.jsonutil.JSONWriter.eJSONCase;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -507,6 +510,30 @@ class JSONReaderTest extends JSONTestCaseBase
 		assertTrue(r.createRoot("XJDF") instanceof JDFElement);
 		assertTrue(r.createRoot("XJMF") instanceof JDFElement);
 		assertFalse(r.createRoot("xxx") instanceof JDFElement);
+	}
+
+	/**
+	 *
+	 */
+	@Test
+	void testConvertLowerCase()
+	{
+		final XJMFHelper xjmfHelper = new XJMFHelper(KElement.createRoot("XJMF", null));
+		xjmfHelper.appendMessage(EnumFamily.Signal, "Resource");
+		xjmfHelper.cleanUp();
+		final KElement xjdf = xjmfHelper.getRoot();
+		final JSONWriter jsonWriter = new JSONWriter();
+		jsonWriter.setKeyCase(eJSONCase.lower);
+		final JSONObject o = jsonWriter.convert(xjdf);
+		final String jsonString = o.toJSONString();
+		assertTrue(jsonString.indexOf("\"signalresource\":") > 0);
+		assertFalse(jsonString.indexOf("\"SignalResource\":") > 0);
+		log.info(jsonString);
+		final JSONReader r = new JSONReader();
+		r.setXJDF();
+		final KElement e0 = r.getElement(jsonString);
+		assertEquals("XJMF", e0.getNodeName());
+		assertNotNull(XJMFHelper.getHelper(e0).getMessageHelper(0));
 	}
 
 	/**
