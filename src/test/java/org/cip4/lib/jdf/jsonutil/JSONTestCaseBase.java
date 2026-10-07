@@ -2,7 +2,7 @@
  * The CIP4 Software License, Version 1.0
  *
  *
- * Copyright (c) 2001-2025 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
+ * Copyright (c) 2001-2026 The International Cooperation for the Integration of Processes in Prepress, Press and Postpress (CIP4). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -96,20 +96,31 @@ public abstract class JSONTestCaseBase
 	@BeforeAll
 	static void setTmpSchema()
 	{
-		getNewSchema(first.getAndSet(false));
-		for (int i = 2; i < 3; i++)
+		final boolean force = first.getAndSet(false);
+		if (force)
 		{
-			final File f = getNewSchema(false);
-			assertTrue(f.canRead(), "cannot read " + f);
-			final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
-			final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
-			if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
+			final File tempDir = new File(sm_dirTestDataTemp);
+			if (tempDir.exists() && System.currentTimeMillis() - tempDir.lastModified() > 3600l * 1000l)
 			{
-				FileUtil.copyFile(f, f1);
+				FileUtil.deleteAll(tempDir);
+				tempDir.mkdirs();
 			}
-			if (!f2.exists() || (System.currentTimeMillis() - f2.lastModified()) > 42000)
+
+			getNewSchema(force);
+			for (int i = 2; i < 3; i++)
 			{
-				FileUtil.copyFile(f, f2);
+				final File f = getNewSchema(false);
+				assertTrue(f.canRead(), "cannot read " + f);
+				final File f1 = new File(sm_dirTestDataTemp + "schema/Version_2_" + i + "/xjdf.json");
+				final File f2 = new File(sm_dirTestDataTemp + "schemakeep/Version_2_" + i + "/xjdf.json");
+				if (!f1.exists() || (System.currentTimeMillis() - f1.lastModified()) > 42000)
+				{
+					FileUtil.copyFile(f, f1);
+				}
+				if (!f2.exists() || (System.currentTimeMillis() - f2.lastModified()) > 42000)
+				{
+					FileUtil.copyFile(f, f2);
+				}
 			}
 		}
 	}
