@@ -243,7 +243,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 				{
 					rq.addString(key);
 				}
-				else if (explicitAbstract.contains(key))
+				else if (!explicitAbstract.contains(key))
 				{
 					resProp.remove(key);
 				}

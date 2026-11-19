@@ -98,6 +98,7 @@ class JSONPruneTest extends JSONTestCaseBase
 		final JSONSchemaPrune up = getUpdater();
 		up.addPruneRoot("XJDF");
 		up.addPruneMore(XJDFConstants.ResourceSet);
+		up.addPruneMore(XJDFConstants.XJMF);
 		up.addPruneMore(ElementName.AUDITPOOL);
 		up.addSingleResource("fnarf");
 		up.prune();
@@ -129,7 +130,7 @@ class JSONPruneTest extends JSONTestCaseBase
 	{
 		final JSONSchemaPrune up = getUpdater();
 		up.addPruneRoot("XJMF");
-		up.addSingleMessage("SignalNotification");
+		up.addSingleMessage("SignalResource");
 		up.addSingleResource("Media");
 		up.prune();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmedia.json"));
