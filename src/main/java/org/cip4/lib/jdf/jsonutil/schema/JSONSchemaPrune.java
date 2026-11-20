@@ -68,6 +68,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	private final StringArray allowedPartitions;
 	private final StringArray pruneType;
 	private final StringArray pruneKeys;
+	private boolean requireExplicitResource;
 
 	public List<String> getSingleMessages()
 	{
@@ -93,6 +94,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
+		requireExplicitResource = false;
 		preparePrune();
 	}
 
@@ -105,6 +107,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
+		requireExplicitResource = false;
 		preparePrune();
 	}
 
@@ -117,6 +120,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
+		requireExplicitResource = false;
 		preparePrune();
 	}
 
@@ -212,7 +216,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	void preparePrune()
 	{
 		prepareResources();
-
 	}
 
 	void prepareResources()
@@ -234,7 +237,6 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	{
 		if (!allowedResources.isEmpty())
 		{
-			final JSONArrayHelper rq = getCreateArray("$defs/Resource/oneOf");
 			final JSONObjHelper resProp = getHelper("$defs/Resource/properties");
 
 			final List<String> alldefs = resProp.getKeys();
@@ -242,11 +244,15 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 			{
 				if (allowedResources.contains(key))
 				{
-					final JSONObjHelper joh = new JSONObjHelper(new JSONObject());
-					final JSONArrayHelper jah = new JSONArrayHelper("[]");
-					jah.addString(key);
-					joh.put("required", jah.getArray());
-					rq.add(joh.getRootObject());
+					if (requireExplicitResource)
+					{
+						final JSONArrayHelper rq = getCreateArray("$defs/Resource/oneOf");
+						final JSONObjHelper joh = new JSONObjHelper(new JSONObject());
+						final JSONArrayHelper jah = new JSONArrayHelper("[]");
+						jah.addString(key);
+						joh.put("required", jah.getArray());
+						rq.add(joh.getRootObject());
+					}
 				}
 				else if (!explicitAbstract.contains(key))
 				{
@@ -395,7 +401,17 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	public String toString()
 	{
 		return "JSONSchemaPrunee [ pruneRoots=" + pruneRoots + ", allowedMessages=" + allowedMessages + ", allowedResources=" + allowedResources
-				+ ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneType + "]";
+				+ ", requireExplicitResource=" + requireExplicitResource + ", allowedPartitions=" + allowedPartitions + ", pruneMore=" + pruneType + "]";
+	}
+
+	public boolean isRequireExplicitResource()
+	{
+		return requireExplicitResource;
+	}
+
+	public void setRequireExplicitResource(boolean requireExplicitResource)
+	{
+		this.requireExplicitResource = requireExplicitResource;
 	}
 
 }

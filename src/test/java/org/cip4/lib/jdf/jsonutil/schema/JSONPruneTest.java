@@ -132,6 +132,7 @@ class JSONPruneTest extends JSONTestCaseBase
 		up.addPruneRoot("XJMF");
 		up.addSingleMessage("SignalResource");
 		up.addSingleResource("Media");
+		up.setRequireExplicitResource(true);
 		up.prune();
 		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalresmedia.json"));
 	}
