@@ -201,6 +201,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 			zapper.addAll(pruneKeys);
 			zapper.walk();
 		}
+		updatePart();
 		updateXjdfXjmf();
 		jsonSchemaWalker.setJsonCase(getJsonCase());
 		jsonSchemaWalker.setSorted(true);
@@ -289,7 +290,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		}
 	}
 
-	public void pruneMore()
+	void pruneMore()
 	{
 		if (!pruneType.isEmpty())
 		{
