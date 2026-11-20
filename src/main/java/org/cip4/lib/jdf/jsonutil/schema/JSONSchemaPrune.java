@@ -233,7 +233,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	{
 		if (!allowedResources.isEmpty())
 		{
-			final JSONArrayHelper rq = getCreateArray("$defs/Resource/required");
+			final JSONArrayHelper rq = getCreateArray("$defs/Resource/oneOf");
 			final JSONObjHelper resProp = getHelper("$defs/Resource/properties");
 
 			final List<String> alldefs = resProp.getKeys();
@@ -241,7 +241,11 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 			{
 				if (allowedResources.contains(key))
 				{
-					rq.addString(key);
+					final JSONObjHelper joh = new JSONObjHelper(new JSONObject());
+					final JSONArrayHelper jah = new JSONArrayHelper("[]");
+					jah.addString(key);
+					joh.put("required", jah.getArray());
+					rq.add(joh.getRootObject());
 				}
 				else if (!explicitAbstract.contains(key))
 				{
