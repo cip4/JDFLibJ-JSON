@@ -216,12 +216,12 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 
 	void prepareResources()
 	{
-		final JSONObjHelper resource = getDef("Resource");
+		final JSONObjHelper resource = getDef("Resource/properties");
 		final List<String> keys = resource.getKeys();
-		keys.remove(ElementName.AMOUNTPOOL); // the only non-array in resource
+		explicitAbstract.add(ElementName.AMOUNTPOOL); // the only non-array in resource
 		for (final String key : keys)
 		{
-			if (resource.getObject(key) != null)
+			if (resource.getPathObject(key + "/$ref") == null)
 			{
 				explicitAbstract.add(key);
 			}
