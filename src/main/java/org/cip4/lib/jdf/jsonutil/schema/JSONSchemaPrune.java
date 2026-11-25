@@ -188,6 +188,14 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	{
 		prunemessages();
 		pruneResources();
+		updatePart();
+		pruneMore();
+		if (!pruneKeys.isEmpty())
+		{
+			final JSONPruneWalker zapper = new JSONPruneWalker(this);
+			zapper.addAll(pruneKeys);
+			zapper.walk();
+		}
 		if (!pruneRoots.isEmpty())
 		{
 			final HashSet<String> retain = new HashSet<>();
@@ -198,14 +206,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 
 			prune(retain);
 		}
-		pruneMore();
-		if (!pruneKeys.isEmpty())
-		{
-			final JSONPruneWalker zapper = new JSONPruneWalker(this);
-			zapper.addAll(pruneKeys);
-			zapper.walk();
-		}
-		updatePart();
+
 		updateXjdfXjmf();
 		jsonSchemaWalker.setJsonCase(getJsonCase());
 		jsonSchemaWalker.setSorted(true);
