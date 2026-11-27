@@ -58,6 +58,7 @@ import org.cip4.lib.jdf.jsonutil.JSONArrayHelper;
 import org.cip4.lib.jdf.jsonutil.JSONCollectWalker;
 import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONPruneWalker;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JSONSchemaPrune extends JSONSchemaUpdate
@@ -65,6 +66,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	private final StringArray pruneRoots;
 	private final StringArray allowedMessages;
 	private final StringArray allowedResources;
+	private final StringArray alwaysOptional;
 	private final StringArray allowedPartitions;
 	private final StringArray pruneType;
 	private final StringArray pruneKeys;
@@ -90,6 +92,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		super(f);
 		pruneRoots = new StringArray();
 		allowedMessages = new StringArray();
+		alwaysOptional = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
 		pruneType = new StringArray();
@@ -105,6 +108,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
 		allowedPartitions = new StringArray();
+		alwaysOptional = new StringArray();
 		pruneType = new StringArray();
 		pruneKeys = new StringArray();
 		requireExplicitResource = false;
@@ -114,6 +118,7 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	public JSONSchemaPrune(final JSONObject base)
 	{
 		super(base);
+		alwaysOptional = new StringArray();
 		pruneRoots = new StringArray();
 		allowedMessages = new StringArray();
 		allowedResources = new StringArray();
@@ -142,6 +147,16 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 	public void addPruneMore(final String skip)
 	{
 		ContainerUtil.appendUnique(pruneType, skip);
+	}
+
+	/**
+	 * add the Type of object to make optional
+	 *
+	 * @param optional
+	 */
+	public void addOptional(final String optional)
+	{
+		ContainerUtil.appendUnique(alwaysOptional, optional);
 	}
 
 	/**
@@ -212,6 +227,18 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 		jsonSchemaWalker.setSorted(true);
 		final JSONObjHelper oh = jsonSchemaWalker.walk();
 		setRoot(oh.getRoot());
+		if (!alwaysOptional.isEmpty())
+		{
+			final JSONCollectWalker walker = getOptionalWalker(oh);
+			final Map<String, Object> m = walker.getCollected();
+			for (final Object o : m.values())
+			{
+				if (o instanceof final JSONArray a)
+				{
+					a.removeAll(alwaysOptional);
+				}
+			}
+		}
 	}
 
 	void preparePrune()
@@ -366,6 +393,16 @@ public class JSONSchemaPrune extends JSONSchemaUpdate
 				}
 			}
 		}
+	}
+
+	JSONCollectWalker getOptionalWalker(final JSONObjHelper root)
+	{
+		final JSONCollectWalker cw = new JSONCollectWalker(root);
+		cw.setFilter("required");
+		cw.setPath(false);
+		cw.setKeyInArray(false);
+		cw.walk();
+		return cw;
 	}
 
 	JSONCollectWalker getPruneWalker(final JSONObjHelper root)

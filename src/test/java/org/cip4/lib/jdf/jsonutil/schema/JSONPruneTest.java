@@ -126,6 +126,17 @@ class JSONPruneTest extends JSONTestCaseBase
 	}
 
 	@Test
+	void testJSONSchemaUpdateXJMFSignalNotificationNoXJMF() throws Exception
+	{
+		final JSONSchemaPrune up = getUpdater();
+		up.addPruneRoot("SignalNotification");
+		up.addSingleMessage("SignalNotification");
+		up.addOptional("Header");
+		up.prune();
+		FileUtil.writeFile(up, new File(sm_dirTestDataTemp + "schema/Version_2_3/signalnotification2.json"));
+	}
+
+	@Test
 	void testJSONSchemaUpdateXJMFSignalResourceMedia() throws Exception
 	{
 		final JSONSchemaPrune up = getUpdater();

@@ -69,7 +69,7 @@ public class JSONCollectWalker extends JSONWalker
 		final String path = isPath ? myPath : key;
 		if (StringUtil.matches(path, filter))
 		{
-			collected.put(path, a);
+			collected.put(myPath, a);
 		}
 		return a;
 	}
@@ -80,7 +80,9 @@ public class JSONCollectWalker extends JSONWalker
 		context = StringUtil.addToken(context, "/", rootKey);
 		final Object ret = super.walkTree(rootKey, o);
 		if (!StringUtil.isEmpty(rootKey))
+		{
 			context = StringUtil.removeToken(context, -1, "/");
+		}
 		return ret;
 	}
 

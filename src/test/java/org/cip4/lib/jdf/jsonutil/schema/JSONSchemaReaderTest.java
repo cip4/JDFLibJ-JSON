@@ -48,12 +48,16 @@ import java.util.Collection;
 
 import org.cip4.jdflib.auto.JDFAutoNotification.EClass;
 import org.cip4.jdflib.core.ElementName;
+import org.cip4.jdflib.core.JDFElement.EnumVersion;
+import org.cip4.jdflib.extensions.BaseXJDFHelper;
 import org.cip4.jdflib.extensions.XJMFHelper;
 import org.cip4.jdflib.jmf.JDFMessage.EnumFamily;
 import org.cip4.jdflib.jmf.JDFMessage.EnumType;
 import org.cip4.jdflib.resource.JDFNotification;
 import org.cip4.jdflib.util.ContainerUtil;
+import org.cip4.jdflib.util.FileUtil;
 import org.cip4.jdflib.util.UrlUtil;
+import org.cip4.lib.jdf.jsonutil.JSONObjHelper;
 import org.cip4.lib.jdf.jsonutil.JSONTestCaseBase;
 import org.cip4.lib.jdf.jsonutil.JSONWriter;
 import org.cip4.lib.jdf.jsonutil.XJDFJSONWriterTest;
@@ -86,13 +90,15 @@ class JSONSchemaReaderTest extends JSONTestCaseBase
 	@Test
 	void testCheckJSON() throws Exception
 	{
-		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(false));
+		BaseXJDFHelper.setDefaultVersion(EnumVersion.Version_2_3);
+		final JSONSchemaReader srf = new JSONSchemaReader(getNewSchema(true));
 		final XJMFHelper h = new XJMFHelper();
 		final JDFNotification n = (JDFNotification) h.appendMessage(EnumFamily.Signal, EnumType.Notification).appendElement(ElementName.NOTIFICATION);
 		n.setClass(EClass.Information);
 		final JSONWriter jsonWriter = XJDFJSONWriterTest.getXJDFWriter(false);
 
 		final JSONObject jo = jsonWriter.convert(h.getRoot());
+		FileUtil.writeFile(new JSONObjHelper(jo), new File(sm_dirTestDataTemp + "testCheckJSON.json"));
 		final Collection<Error> ret = srf.checkJSON(jo.toJSONString());
 		assertTrue(ContainerUtil.isEmpty(ret));
 		final Collection<Error> retbad = srf.checkJSON("{\"foo\":\"bar\"}");
